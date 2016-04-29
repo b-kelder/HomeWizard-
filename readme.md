@@ -2,7 +2,7 @@
 
 HomeWizard++ is een project voor de 4e periode van de informatica opleiding van stenden
 
-<div style="text-align:center"><img src ="http://i.imgur.com/95Dpiga.png" /></div>
+<div style="margin: 0 auto;"><img src ="http://i.imgur.com/95Dpiga.png" /></div>
 
 ### Wat is de HomeWizard++?
 
