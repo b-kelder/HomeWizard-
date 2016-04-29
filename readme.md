@@ -6,7 +6,7 @@ HomeWizard++ is een project voor de 4e periode van de informatica opleiding van 
 
 ### Wat is de HomeWizard++?
 
-Behalve een copyright strike op de naam, is de HomeWizard++ een verbetering op de HomeWizard.
+Behalve een copyright strike op de naam en het logo, is de HomeWizard++ een verbetering op de HomeWizard.
 
 Het systeem zet JSON om naar MQTT en bevat een APP waarmee alles simpel te bedienen is.
 
