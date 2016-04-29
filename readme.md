@@ -2,7 +2,9 @@
 
 HomeWizard++ is een project voor de 4e periode van de informatica opleiding van stenden
 
-### Wat is de HomeWizard++
+![Image of Yaktocat](http://i.imgur.com/I6WqdVk.png)
+
+### Wat is de HomeWizard++?
 
 Behalve een copyright strike op de naam, is de HomeWizard++ een verbetering op de HomeWizard.
 
