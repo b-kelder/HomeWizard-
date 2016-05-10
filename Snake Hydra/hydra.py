@@ -7,33 +7,32 @@ def on_connect(client, userdata, flags, rc):
 
     # subscribe here to make sure we resub after a reconnect
     #client.subscribe("$SYS/broker/log/M/#")
-    client.subscribe(homewizardBaseTopic + "#")
+    client.subscribe(homewizardBaseTopic + "/#")
 
 # PUBLISH Message recieved callback
 def on_message(client, userdata, msg):
     if(msg.topic.startswith(homewizardBaseTopic)):
         if(msg.payload.startswith(b"RETURN:")):
             # Return value from a homewizard?
-            pass
             # How did this end up here?
-            # print("Return message recieved")
-            # print(msg.topic, str(msg.payload))
+            print("Return message recieved")
+            print(msg.topic, str(msg.payload))
         else:
             # Not a return, request homewizard data
             # TODO: THREADS/CALLBACK
             # url is base url plus topic minus the base topic
             print("Recieved message for HomeWizard")
             print(msg.topic, str(msg.payload))
-            url = homewizardBaseUrl + msg.topic.replace(homewizardBaseTopic, "")
+            url = homewizardBaseUrl + msg.topic.replace(homewizardBaseTopic, "") + "/" + msg.payload.decode("utf-8")
             response = urllib.request.urlopen(url)
             # data = json.loads(response.read().decode("utf-8"))
             # TODO: QoS?
             client.publish(msg.topic, "RETURN:" + response.read().decode("utf-8"))
 
-# HomeWizard base topic. MUST END WITH A FORWARD SLASH
-homewizardBaseTopic = "HMWZ/"
-# HomeWizard base url. MUST END WITH A FORWARD SLASH
-homewizardBaseUrl = "http://localhost/homewizard/"
+# HomeWizard base topic. MUST NOT END WITH A FORWARD SLASH
+homewizardBaseTopic = "HMWZ"
+# HomeWizard base url. MUST NOT END WITH A FORWARD SLASH
+homewizardBaseUrl = "http://localhost/homewizard"
 
 print("Snake Hydra Protocol Translator - V0.1")
 print("--------------------------------------")

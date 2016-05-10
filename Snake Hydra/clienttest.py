@@ -7,7 +7,7 @@ def on_connect(client, userdata, flags, rc):
 
     # subscribe here to make sure we resub after a reconnect
     #client.subscribe("$SYS/broker/log/M/#")
-    client.subscribe(homewizardBaseTopic + "#")
+    client.subscribe(homewizardBaseTopic + "/#")
 
 # PUBLISH Message recieved callback
 def on_message(client, userdata, msg):
@@ -24,8 +24,8 @@ def on_message(client, userdata, msg):
         print(data["status"])
 
 
-# HomeWizard base topic. MUST END WITH A FORWARD SLASH
-homewizardBaseTopic = "HMWZ/"
+# HomeWizard base topic.
+homewizardBaseTopic = "HMWZ"
 
 client = mqtt.Client()
 client.on_connect = on_connect
@@ -39,4 +39,11 @@ client.loop_start()
 import time
 time.sleep(0.2)
 
-client.publish(homewizardBaseTopic + "get-status")
+client.publish(homewizardBaseTopic, "get-sensors")
+
+time.sleep(0.2)
+# Switch test
+client.publish(homewizardBaseTopic + "/sw/1", "on")
+
+time.sleep(0.2)
+client.publish(homewizardBaseTopic + "/sw/1", "off")
