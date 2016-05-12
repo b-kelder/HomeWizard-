@@ -44,7 +44,9 @@ time.sleep(0.2)
 
 client.publish(homewizardBaseTopic, "get-status")
 client.publish(homewizardBaseTopic, "get-sensors")
-client.publish(homewizardBaseTopic, "telist")
-client.publish(homewizardBaseTopic, "swlist")
-client.publish(homewizardBaseTopic, "gplist")
-client.publish(homewizardBaseTopic + "/wea", "get")
+#client.publish(homewizardBaseTopic, "telist")
+#client.publish(homewizardBaseTopic, "swlist")
+#client.publish(homewizardBaseTopic, "gplist")
+#client.publish(homewizardBaseTopic + "/wea", "get")
+
+

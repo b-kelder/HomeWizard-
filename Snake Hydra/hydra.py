@@ -171,7 +171,7 @@ except socket.gaierror:
 except ConnectionAbortedError:
     print("Connection aborted")
 except:
-    print("An unexpected error occured")
+    print("An unexpected error occured while trying to connect to the MQTT broker")
 
 # Test?
 # client.publish(homewizardBaseTopic + "get-status")
