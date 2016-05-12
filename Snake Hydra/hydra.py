@@ -148,7 +148,9 @@ else:
         sys.exit()
 
 homewizardBaseUrl = homewizard_connect(username, password, local)
-
+if homewizardBaseUrl is None:
+    print("Could not connect to HomeWizard")
+    sys.exit()
 
 print("Snake Hydra Protocol Translator - V0.1")
 print("--------------------------------------")
