@@ -3,47 +3,48 @@ import urllib.request, json
 
 # Client connected (CONNACK recieved) callback
 def on_connect(client, userdata, flags, rc):
-    print("Connected with result code", str(rc))
+    print("Conected with result code", str(rc))
 
     # subscribe here to make sure we resub after a reconnect
     #client.subscribe("$SYS/broker/log/M/#")
-    client.subscribe(homewizardBaseTopic + "/#")
+    client.subscribe(homewizardBaseReturnTopic + "/#")
+    client.subscribe(homewizardBaseReturnTopic)
 
 # PUBLISH Message recieved callback
 def on_message(client, userdata, msg):
-    if(msg.payload.startswith(b"RETURN:")):
-        # Return value from a homewizard?
-        print("Return message recieved")
-        print(msg.topic, str(msg.payload))
-        
-        import json
-        string = msg.payload[7:].decode("utf-8")
-        print(string)
-        data = json.loads(string)
-        print(data["time"])
-        print(data["status"])
+    # Return value from a homewizard
+    print("Return message recieved on topic", msg.topic)
+    print("")
+    string = msg.payload.decode("utf-8")
+    import json
+    data = json.loads(string)
+    print("Status:", data["status"])
+    print("Request:", data["request"]["route"])
+    print("RAW:")
+    print(string)
+
+    
 
 
-# HomeWizard base topic.
+# HomeWizard base topics.
 homewizardBaseTopic = "HMWZ"
+homewizardBaseReturnTopic = "HMWZRETURN"
 
 client = mqtt.Client()
 client.on_connect = on_connect
 client.on_message = on_message
 
 # Start the loop
-client.connect("test.mosquitto.org", 1883, 60)
+client.connect("10.110.111.141", 1883, 60)
 client.loop_start()
 
 # TODO: Optimize
 import time
 time.sleep(0.2)
 
+client.publish(homewizardBaseTopic, "get-status")
 client.publish(homewizardBaseTopic, "get-sensors")
-
-time.sleep(0.2)
-# Switch test
-client.publish(homewizardBaseTopic + "/sw/1", "on")
-
-time.sleep(0.2)
-client.publish(homewizardBaseTopic + "/sw/1", "off")
+client.publish(homewizardBaseTopic, "telist")
+client.publish(homewizardBaseTopic, "swlist")
+client.publish(homewizardBaseTopic, "gplist")
+client.publish(homewizardBaseTopic + "/wea", "get")
