@@ -103,6 +103,10 @@ def on_message(client, userdata, msg):
 #parse params
 argv = sys.argv[1:]
 
+# HomeWizard base topic. MUST NOT END WITH A FORWARD SLASH
+homewizardBaseTopic = "HMWZ"
+homewizardBaseReturnTopic = "HMWZRETURN"
+
 username = None#"bram.kelder@student.stenden.com"
 password = None#"1234567890"
 local = False
@@ -142,20 +146,8 @@ else:
     if brokerAddr is None:
         print("MQTT Broker address required")
         sys.exit()
-    
 
-#jsonLogonResult = homewizard_logon("bram.kelder@student.stenden.com", "1234567890")
-#homewizardBaseUrl = homewizard_get_url(jsonLogonResult)
 homewizardBaseUrl = homewizard_connect(username, password, local)
-
-
-
-# HomeWizard base topic. MUST NOT END WITH A FORWARD SLASH
-homewizardBaseTopic = "HMWZ"
-homewizardBaseReturnTopic = "HMWZRETURN"
-
-# HomeWizard base url. MUST NOT END WITH A FORWARD SLASH
-#homewizardBaseUrl = "http://10.110.110.71/1234567890"
 
 
 print("Snake Hydra Protocol Translator - V0.1")
