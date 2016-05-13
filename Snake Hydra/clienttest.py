@@ -10,6 +10,7 @@ def on_connect(client, userdata, flags, rc):
     #client.subscribe("$SYS/broker/log/M/#")
     client.subscribe(homewizardBaseReturnTopic + "/#")
     client.subscribe(homewizardBaseReturnTopic)
+    client.subscribe(hydraStatusTopic)
 
 # PUBLISH Message recieved callback
 def on_message(client, userdata, msg):
@@ -17,11 +18,13 @@ def on_message(client, userdata, msg):
     print("Return message recieved on topic", msg.topic)
     print("")
     string = msg.payload.decode("utf-8")
-    import json
-    data = json.loads(string)
-    print("Status:", data["status"])
-    print("Request:", data["request"]["route"])
-    print("RAW:")
+
+    if(msg.topic != hydraStatusTopic):
+        import json
+        data = json.loads(string)
+        print("Status:", data["status"])
+        print("Request:", data["request"]["route"])
+        print("RAW:")
     print(string)
 
     
@@ -47,6 +50,9 @@ else:
 homewizardBaseTopic = "HMWZ"
 homewizardBaseReturnTopic = "HMWZRETURN"
 
+# Hydra status topic
+hydraStatusTopic = "HYDRA"
+
 client = mqtt.Client()
 client.on_connect = on_connect
 client.on_message = on_message
@@ -65,6 +71,10 @@ client.publish(homewizardBaseTopic, "get-sensors")
 #client.publish(homewizardBaseTopic, "swlist")
 #client.publish(homewizardBaseTopic, "gplist")
 #client.publish(homewizardBaseTopic + "/wea", "get")
-input("Press anything to continue \n")
+inputstring = ""
+while inputstring != "EXIT":
+    inputstring = input(">>>")
+    if inputstring == "HAIL":
+        client.publish(hydraStatusTopic, "HAIL")
 
 

@@ -82,10 +82,13 @@ def on_connect(client, userdata, flags, rc):
     # subscribe here to make sure we resub after a reconnect
     client.subscribe(homewizardBaseTopic + "/#")
     client.subscribe(homewizardBaseTopic)
+    client.subscribe(hydraStatusTopic)
 
 # Tries to access a HomeWizard url based on topic and payload of the message
 # When successful the result is published on the return topic
+# Will try to reconnect if connection to the HomeWizard is lost
 def message_handler(client, userdata, msg):
+    global homewizardBaseUrl
     try:
         url = homewizardBaseUrl + msg.topic.replace(homewizardBaseTopic, "") + "/" + msg.payload.decode("utf-8")
         response = urllib.request.urlopen(url)    
@@ -95,7 +98,22 @@ def message_handler(client, userdata, msg):
         # TODO: QoS?
         # Publish result on base return topic with same topic as incoming message
         print(get_time_string(), "Processed message for HomeWizard at", msg.topic, str(msg.payload))
-        client.publish(homewizardBaseReturnTopic + msg.topic.replace(homewizardBaseTopic, ""), response.read().decode("utf-8"))
+        result = response.read().decode("utf-8")
+        jsonData = json.loads(result)
+        
+        if(jsonData["status"] == "failed"):
+            print(get_time_string(), "Failed request at", msg.topic, str(msg.payload), "with error", jsonData["error"], jsonData["errorMessage"])
+            # Try to reconnect
+            # TODO: This may happen at multiple threads at the same time, which is redundant. Join threads first or something.
+            homewizardBaseUrl = homewizard_connect(username, password, local)
+            if homewizardBaseUrl is None:
+                print(get_time_string(), "Could not reconnect to HomeWizard")
+            else:
+                # Try again after the reconnect
+                print(get_time_string(), "Reconnected to HomeWizard, retrying message")
+                message_handler(client, userdata, msg)
+        else:
+            client.publish(homewizardBaseReturnTopic + msg.topic.replace(homewizardBaseTopic, ""), result)
 
 # PUBLISH Message recieved callback
 def on_message(client, userdata, msg):
@@ -104,15 +122,22 @@ def on_message(client, userdata, msg):
             pass
         else:
             # Not a return, request homewizard data
-            # TODO: THREADS/CALLBACK
             # url is base url plus topic minus the base topic
             print(get_time_string(), "Recieved message for HomeWizard at", msg.topic, str(msg.payload))
             # Launch thread
             threading.Thread(target=message_handler, args=(client, userdata, msg)).start()
-            
-            
+    elif(msg.topic.startswith(hydraStatusTopic)):
+        # Respond to hail with HYDRA-TIMESTAMP-URL to indicate we are still running
+        if(msg.payload.startswith(b"HAIL")):
+            print(get_time_string(), "Responding to hail")
+            client.publish(hydraStatusTopic, "HYDRA#" + get_time_string() + "#" + homewizardBaseUrl)
 
-#CODE START
+
+# ------------------------------------------------------#
+#                                                       #
+#                   Script code start                   #
+#                                                       #
+# ------------------------------------------------------#
                 
 print("Snake Hydra Protocol Translator - V0.1")
 print("--------------------------------------")
@@ -120,6 +145,9 @@ print("--------------------------------------")
 # HomeWizard base topics
 homewizardBaseTopic = "HMWZ"
 homewizardBaseReturnTopic = "HMWZRETURN"
+
+# Hydra status topic
+hydraStatusTopic = "HYDRA"
 
 # Parse params
 argv = sys.argv[1:]
