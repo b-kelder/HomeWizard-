@@ -1,11 +1,17 @@
+# MQTT/HomeWizard
 import paho.mqtt.client as mqtt
 import urllib.request, json
+# Errors
 import socket
+# Timestamps
+import time
 import datetime
+# HomeWizard auth info
 import hashlib
 import base64
-import time
-
+# Async message handling
+import threading
+# Launch param parsing
 import sys, getopt
 
 # Tries to logon to a homewizard account and returns a json object with the data
@@ -74,9 +80,22 @@ def on_connect(client, userdata, flags, rc):
     print(get_time_string(), "Connected to MQTT server with result code", str(rc))
 
     # subscribe here to make sure we resub after a reconnect
-    #client.subscribe("$SYS/broker/log/M/#")
     client.subscribe(homewizardBaseTopic + "/#")
     client.subscribe(homewizardBaseTopic)
+
+# Tries to access a HomeWizard url based on topic and payload of the message
+# When successful the result is published on the return topic
+def message_handler(client, userdata, msg):
+    try:
+        url = homewizardBaseUrl + msg.topic.replace(homewizardBaseTopic, "") + "/" + msg.payload.decode("utf-8")
+        response = urllib.request.urlopen(url)    
+    except urllib.request.URLError:
+        print(get_time_string(), "HomeWizard url could not be reached for", msg.topic, str(msg.payload))
+    else:
+        # TODO: QoS?
+        # Publish result on base return topic with same topic as incoming message
+        print(get_time_string(), "Processed message for HomeWizard at", msg.topic, str(msg.payload))
+        client.publish(homewizardBaseReturnTopic + msg.topic.replace(homewizardBaseTopic, ""), response.read().decode("utf-8"))
 
 # PUBLISH Message recieved callback
 def on_message(client, userdata, msg):
@@ -88,25 +107,17 @@ def on_message(client, userdata, msg):
             # TODO: THREADS/CALLBACK
             # url is base url plus topic minus the base topic
             print(get_time_string(), "Recieved message for HomeWizard at", msg.topic, str(msg.payload))
+            # Launch thread
+            threading.Thread(target=message_handler, args=(client, userdata, msg)).start()
             
-            try:
-                url = homewizardBaseUrl + msg.topic.replace(homewizardBaseTopic, "") + "/" + msg.payload.decode("utf-8")
-                response = urllib.request.urlopen(url)
-                # data = json.loads(response.read().decode("utf-8"))      
-            except urllib.request.URLError:
-                print(get_time_string(), "HomeWizard url could not be reached for", msg.topic, str(msg.payload))
-            else:
-                # TODO: QoS?
-                #publish result on base return topic with same topic as incoming message
-                print(get_time_string(), "Processed message for HomeWizard at", msg.topic, str(msg.payload))
-                client.publish(homewizardBaseReturnTopic + msg.topic.replace(homewizardBaseTopic, ""), response.read().decode("utf-8"))
+            
 
 #CODE START
                 
 print("Snake Hydra Protocol Translator - V0.1")
 print("--------------------------------------")
 
-# HomeWizard base topic. MUST NOT END WITH A FORWARD SLASH
+# HomeWizard base topics
 homewizardBaseTopic = "HMWZ"
 homewizardBaseReturnTopic = "HMWZRETURN"
 
