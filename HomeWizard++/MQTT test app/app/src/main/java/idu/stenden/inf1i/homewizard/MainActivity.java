@@ -1,7 +1,7 @@
 package idu.stenden.inf1i.homewizard;
 
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -11,8 +11,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
@@ -22,18 +24,18 @@ import org.eclipse.paho.client.mqttv3.IMqttToken;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
-public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     MqttAndroidClient client;
     boolean connectSucces = false;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
-        client =  new MqttAndroidClient(getApplicationContext(), "tcp://10.110.111.141", "testusermetmooiappje");
+        //client =  new MqttAndroidClient(getApplicationContext(), "tcp://10.110.111.141", "HomeWizard++");
+        client =  new MqttAndroidClient(getApplicationContext(), "tcp://test.mosquitto.org", "HomeWizard++");
 
         try {
             client.connect(null, new IMqttActionListener() {
@@ -64,27 +66,22 @@ public class MainActivity extends AppCompatActivity
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
                     // The toggle is enabled
-                    mqtt("on");
-                    Toast toast = Toast.makeText(getApplicationContext(), "ON", Toast.LENGTH_SHORT);
-                    toast.show();
+                    mqtt("HMWZ/sw/1", "on");
+
                 } else {
                     // The toggle is disabled
-                    mqtt("off");
-                    Toast toast = Toast.makeText(getApplicationContext(), "OFF", Toast.LENGTH_SHORT);
-                    toast.show();
+                    mqtt("HMWZ/sw/1", "off");
                 }
             }
         }));
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mqtt("on");
+        Button button = (Button) findViewById(R.id.testbutton);
+        assert button != null;
+        button.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                mqtt("HMWZ", "get-sensors");
             }
         });
-
-
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -153,7 +150,10 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    public void mqtt(final String payload){
+
+    public void mqtt(String topic, String payload){
+
+
         client.setCallback(new MqttCallback() {
             @Override
             public void connectionLost(Throwable cause) {
@@ -162,9 +162,23 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public void messageArrived(String topic, MqttMessage message) throws Exception {
-                Toast toast = Toast.makeText(getApplicationContext(), message.toString(), Toast.LENGTH_LONG);
-                toast.show();
 
+                TextView text = (TextView) findViewById(R.id.textView3);
+                text.setText(message.toString());
+                TextView text2 = (TextView) findViewById(R.id.textView4);
+
+                JSONObject json = new JSONObject(message.toString());
+                json = json.getJSONObject("response");
+
+                JSONArray array = json.getJSONArray("switches");
+
+                for (int i = 0; i < 3; i++){
+                    JSONObject Swagtestsysteem = array.getJSONObject(i);
+
+                    String name = Swagtestsysteem.getString("name");
+                    String status = Swagtestsysteem.getString("status");
+                    text2.append(name + ": " + status + " " + array.length() + " ");
+                }
             }
 
             @Override
@@ -177,18 +191,19 @@ public class MainActivity extends AppCompatActivity
         message.setQos(2);
         message.setRetained(false);
 
-        try {
-            client.subscribe("HMWZRETURN", 0);
-            client.subscribe("HMWZRETURN/#", 0);
-            client.publish("HMWZ/sw/1", message);
-            Toast toast = Toast.makeText(getApplicationContext(), "text is verzonden", Toast.LENGTH_SHORT);
+        if(connectSucces){
+            try {
+                client.subscribe("HMWZRETURN", 0);
+                client.subscribe("HMWZRETURN/#", 0);
+                client.publish(topic, message);
+                Toast toast = Toast.makeText(getApplicationContext(), "MQTT message send", Toast.LENGTH_SHORT);
+                toast.show();
+            } catch (MqttException e) {
+                e.printStackTrace();
+            }
+        }else{
+            Toast toast = Toast.makeText(getApplicationContext(), "Could not connect to broker", Toast.LENGTH_SHORT);
             toast.show();
-
-            //client.disconnect();
-        } catch (MqttException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
         }
-
     }
 }
