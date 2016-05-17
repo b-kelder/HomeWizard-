@@ -27,6 +27,12 @@ def on_message(client, userdata, msg):
         print("RAW:")
     print(string)
 
+# Stress TEST
+def stress_test(topic, msg, amount, delay):
+    for i in range(0, amount):
+        client.publish(topic, msg)
+        time.sleep(delay)
+    print("Finished stress test")
     
 argv = sys.argv[1:]
 brokerAddr = None#"10.110.111.141"
@@ -104,6 +110,8 @@ while inputstring.upper() != "EXIT":
     elif inputstring.upper() == "SENSORS":
         print("Requesting sensors...")
         client.publish(homewizardBaseTopic, "get-sensors")
+    elif inputstring.upper() == "STRESS":
+        stress_test(homewizardBaseTopic, "get-sensors", 10, 0)
     else:
         try:
             exec(inputstring)

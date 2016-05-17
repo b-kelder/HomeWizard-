@@ -74,7 +74,7 @@ def homewizard_connect(username, password, local=False):
 
 # Returns a string with the current date and time
 def get_time_string():
-    #return "0000-00-00 00:00:00"
+
     return datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
 
 
@@ -87,23 +87,77 @@ def on_connect(client, userdata, flags, rc):
     client.subscribe(homewizardBaseTopic)
     client.subscribe(hydraStatusTopic)
 
+
+# PUBLISH Message recieved callback
+def on_message(client, userdata, msg):
+    global messageQueue
+    if(msg.topic.startswith(homewizardBaseTopic)):
+        print(get_time_string(), "Recieved message for HomeWizard at", msg.topic, str(msg.payload))
+        #threading.Thread(target=process_message, args=(client, userdata, msg, 1)).start()
+        # Put it in the queue
+        messageQueue.put(msg)
+    elif(msg.topic.startswith(hydraStatusTopic)):
+        # Respond to STS with HYD to indicate we are still running
+        if(msg.payload.startswith(b"STS")):
+            print(get_time_string(), "Responding to STS request")
+            client.publish(hydraStatusTopic, "HYD")
+
+    
+# Publish a message containing a json string with error data
+# This is send when we have an error when processing a message
+# and we have no response from the HomeWizard
+def publish_fail_msg(client, msg, error):
+    # The format of this json object is similar to the HomeWizard's own errors
+    errorMsg = {1: 'Url does not exist',
+                2: 'Cannot login to HomeWizard',
+                3: 'Connection to HomeWizard was lost'}
+    
+    data = {'status': 'failed_hydra',
+            'error': error,
+            'errorMessage': errorMsg[error],
+            'request':{'route':msg.topic.replace(homewizardBaseTopic, "")}}
+    string = json.dumps(data)
+    client.publish(homewizardBaseReturnTopic + msg.topic.replace(homewizardBaseTopic, ""), string)
+
+
+# Loop that handles processing messages in the queue
+# Spawns threads to handle each message
+def message_processing_loop(client, msgQueue):
+    global homewizardBaseUrl    
+    while True:
+        # Get a message or block until one is available
+        message = msgQueue.get()
+        threading.Thread(target = process_message, args = (client, message, 1)).start()
+
+
+# Tries to reconnect to a HomeWizard using the current globals and updates them accordingly
+# This is a function so it can be put in a thread
+def homewizard_reconnect():
+    global homewizardBaseUrl
+    homewizardBaseUrl = homewizard_connect(username, password, local)
+
 # Tries to access a HomeWizard url based on topic and payload of the message
 # When successful the result is published on the return topic
 # Will try to reconnect if connection to the HomeWizard is lost
-# attempt is the amount of attempts we're at
-def message_handler(client, userdata, msg, attempt):
+def process_message(client, msg, attempt):
     global homewizardBaseUrl
-
+    global reconnectThread
+    
     # Look, we tried 3 times already, it's not happening
+    # FAIL STATE 3: ATTEMPT LIMIT REACHED
     if(attempt > 3):
         print(get_time_string(), "Hit attempt limit for message at", msg.topic, str(msg.payload))
+        publish_fail_msg(client, msg, 3)
         return
     
     try:
+        # url is base url plus topic minus the base topic
         url = homewizardBaseUrl + msg.topic.replace(homewizardBaseTopic, "") + "/" + msg.payload.decode("utf-8")
         response = urllib.request.urlopen(url)    
     except urllib.request.URLError:
+        # FAIL STATE 1: URL DOES NOT EXIST
         print(get_time_string(), "HomeWizard url could not be reached for", msg.topic, str(msg.payload))
+        publish_fail_msg(client, msg, 1)
     else:
         # TODO: QoS?
         # Publish result on base return topic with same topic as incoming message
@@ -114,36 +168,30 @@ def message_handler(client, userdata, msg, attempt):
         if(jsonData["status"] == "failed"):
             if "errorMessage" not in jsonData:
                 # Testing shows this is porbably a bad URL, not a connection error
+                # We should publish the response anyway
+                # TODO: More testing
                 print(get_time_string(), "Failed request at", msg.topic, str(msg.payload), "with error", jsonData["error"])
                 client.publish(homewizardBaseReturnTopic + msg.topic.replace(homewizardBaseTopic, ""), result)
-                return
             else:
+                # Probably a connection error, try to reconnect
                 print(get_time_string(), "Failed request at", msg.topic, str(msg.payload), "with error", jsonData["error"], jsonData["errorMessage"])
-            # Probably a connection error, try to reconnect
-            # TODO: This may happen at multiple threads at the same time, which is bad.
-            homewizardBaseUrl = homewizard_connect(username, password, local)
-            if homewizardBaseUrl is None:
-                print(get_time_string(), "Could not reconnect to HomeWizard")
-            else:
-                # Try again after the reconnect
-                print(get_time_string(), "Reconnected to HomeWizard, retrying message, attempt", attempt + 1)
-                message_handler(client, userdata, msg, attempt + 1)
+
+                # Wait until reconnect is finished
+                if((reconnectThread is None) or (reconnectThread.is_alive() == False)):
+                    reconnectThread = threading.Thread(target = homewizard_reconnect)
+                    reconnectThread.start()
+                reconnectThread.join()
+                
+                if homewizardBaseUrl is None:
+                    # FAIL STATE 2: FAILED AND CAN'T LOGIN
+                    print(get_time_string(), "Could not reconnect to HomeWizard")
+                    publish_fail_msg(client, msg, 2)
+                else:
+                    # Try again after the reconnect
+                    print(get_time_string(), "Reconnected to HomeWizard at attempt", attempt, ", retrying message")
+                    process_message(client, msg, attempt + 1)
         else:
             client.publish(homewizardBaseReturnTopic + msg.topic.replace(homewizardBaseTopic, ""), result)
-
-# PUBLISH Message recieved callback
-def on_message(client, userdata, msg):
-    if(msg.topic.startswith(homewizardBaseTopic)):
-        # Not a return, request homewizard data
-        # url is base url plus topic minus the base topic
-        print(get_time_string(), "Recieved message for HomeWizard at", msg.topic, str(msg.payload))
-        # Launch thread
-        threading.Thread(target=message_handler, args=(client, userdata, msg, 1)).start()
-    elif(msg.topic.startswith(hydraStatusTopic)):
-        # Respond to STS with HYD to indicate we are still running
-        if(msg.payload.startswith(b"STS")):
-            print(get_time_string(), "Responding to STS request")
-            client.publish(hydraStatusTopic, "HYD")
 
 
 # ------------------------------------------------------#
@@ -169,94 +217,82 @@ certFile = None
 
 # QUEUEUEUEUEUEUE
 messageQueue = queue.Queue()
+messageThread = None
+
+# Thread for connecting to the HomeWizard
+# Used to prevent multiple message threads from reconnecting at the same time
+reconnectThread = None
 
 # ------------------------------------------------------#
 #                                                       #
 #                   Script code start                   #
 #                                                       #
 # ------------------------------------------------------#
-                
-print("Snake Hydra Protocol Translator - V0.3")
-print("--------------------------------------")
 
-# Parse params
-argv = sys.argv[1:]
+if __name__ == '__main__':
+    print("Snake Hydra Protocol Translator - V0.3")
+    print("--------------------------------------")
 
-try:
-    opts, args = getopt.getopt(argv,"hu:p:lb:s:")
-except getopt.GetoptError:
-    print("INPUT ERROR")
-    sys.exit()
-else:
-    for opt, arg in opts:
-        if opt == '-h':
-            print("TODO: Help")
-            sys.exit()
-        elif opt in ("-u"):
-            username = arg
-        elif opt in ("-p"):
-            password = arg
-        elif opt in ("-l"):
-            local = True
-        elif opt in ("-b"):
-            brokerAddr = arg
-        elif opt in ("-s"):
-            certFile = arg
-            tls = True
-            
-    if username is not None:
-        if password is None:
-            print("Password required for username", username)
-            sys.exit()
+    # Parse params
+    argv = sys.argv[1:]
+
+    try:
+        opts, args = getopt.getopt(argv,"hu:p:lb:s:")
+    except getopt.GetoptError:
+        print("INPUT ERROR")
+        sys.exit()
     else:
-        if local is not None:
             if password is None:
-                print("Password required for local HomeWizard")
+                print("Password required for username", username)
                 sys.exit()
         else:
-            print("Username and password required")
+            if local is not None:
+                if password is None:
+                    print("Password required for local HomeWizard")
+                    sys.exit()
+            else:
+                print("Username and password required")
+                sys.exit()
+            
+        if brokerAddr is None:
+            print("MQTT Broker address required")
             sys.exit()
-        
-    if brokerAddr is None:
-        print("MQTT Broker address required")
+
+    homewizardBaseUrl = homewizard_connect(username, password, local)
+    if homewizardBaseUrl is None:
+        print("Could not connect to HomeWizard")
         sys.exit()
 
-homewizardBaseUrl = homewizard_connect(username, password, local)
-if homewizardBaseUrl is None:
-    print("Could not connect to HomeWizard")
-    sys.exit()
+    # Start MQTT client
+    client = mqtt.Client()
+    client.on_connect = on_connect
+    client.on_message = on_message
 
-# Start MQTT client
+    # TODO: Proper error handling
+    try:
+        port = 1883
+        if(tls):
+            port = 8883
+            ####
+            import os
+            script_dir = os.path.dirname(__file__) #<-- absolute dir the script is in
+            client.tls_set(os.path.join(script_dir, certFile))
+            print("Using cert", certFile)
+            ####
 
-client = mqtt.Client()
-client.on_connect = on_connect
-client.on_message = on_message
-
-
-
-
-# TODO: Proper error handling
-try:
-    port = 1883
-    if(tls):
-        port = 8883
-        ####
-        import os
-        script_dir = os.path.dirname(__file__) #<-- absolute dir the script is in
-        client.tls_set(os.path.join(script_dir, certFile))
-        print("Using cert", certFile)
-        ####
-
-    client.connect(brokerAddr, port, 60)
-except socket.gaierror:
-    print("Could not connect to server at", brokerAddr)
-    print("Possible soloutions:")
-    print("Check network connection")
-    print("Check server address")
-except ConnectionAbortedError:
-    print("Connection aborted")
-else:
-    client.loop_forever()
+        client.connect(brokerAddr, port, 60)
+    except socket.gaierror:
+        print("Could not connect to server at", brokerAddr)
+        print("Possible soloutions:")
+        print("Check network connection")
+        print("Check server address")
+    except ConnectionAbortedError:
+        print("Connection aborted")
+    else:
+        messageThread = threading.Thread(target=message_processing_loop, args=(client, messageQueue))
+        messageThread
+        messageThread.start()
+        client.loop_forever()
 
 
 
