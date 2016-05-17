@@ -15,11 +15,11 @@ def on_connect(client, userdata, flags, rc):
 # PUBLISH Message recieved callback
 def on_message(client, userdata, msg):
     # Return value from a homewizard
-    print("Return message recieved on topic", msg.topic)
+    print("Message recieved on topic", msg.topic)
     print("")
     string = msg.payload.decode("utf-8")
 
-    if(msg.topic != hydraStatusTopic):
+    if(msg.topic.startswith(homewizardBaseReturnTopic)):
         import json
         data = json.loads(string)
         print("Status:", data["status"])
@@ -65,16 +65,27 @@ client.loop_start()
 import time
 time.sleep(0.2)
 
-client.publish(homewizardBaseTopic, "get-status")
-client.publish(homewizardBaseTopic, "get-sensors")
+#client.publish(homewizardBaseTopic, "get-status")
+#client.publish(homewizardBaseTopic, "get-sensors")
 #client.publish(homewizardBaseTopic, "telist")
 #client.publish(homewizardBaseTopic, "swlist")
 #client.publish(homewizardBaseTopic, "gplist")
 #client.publish(homewizardBaseTopic + "/wea", "get")
 inputstring = ""
-while inputstring != "EXIT":
-    inputstring = input(">>>")
-    if inputstring == "HAIL":
+while inputstring.upper() != "EXIT":
+    inputstring = input("")
+    if inputstring.upper() == "HAIL":
+        print("Hailing hydra...")
         client.publish(hydraStatusTopic, "HAIL")
-
+    elif inputstring.upper() == "STATUS":
+        print("Requesting status...")
+        client.publish(homewizardBaseTopic, "get-status")
+    elif inputstring.upper() == "SENSORS":
+        print("Requesting sensors...")
+        client.publish(homewizardBaseTopic, "get-sensors")
+    else:
+        try:
+            exec(inputstring)
+        except:
+            print("An error occured while parsing")
 
