@@ -1,0 +1,33 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 23
+    buildToolsVersion "23.0.3"
+
+    defaultConfig {
+        applicationId "com.example.bram.homewizard"
+        minSdkVersion 21
+        targetSdkVersion 23
+        versionCode 1
+        versionName "1.0"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    wearApp project(':wear')
+    testCompile 'junit:junit:4.12'
+    compile files('src/main/java/com/example/bram/homewizard/org.eclipse.paho.android.service-1.0.2-javadoc.jar')
+    compile files('src/main/java/com/example/bram/homewizard/mqtt-client-0.4.0.jar')
+    compile files('src/main/java/com/example/bram/homewizard/org.eclipse.paho.android.service-1.0.2.jar')
+    compile 'com.android.support:appcompat-v7:23.3.0'
+    compile 'com.google.android.gms:play-services:8.4.0'
+    compile 'com.android.support:support-v4:23.3.0'
+    compile 'com.android.support:design:23.3.0'
+}
