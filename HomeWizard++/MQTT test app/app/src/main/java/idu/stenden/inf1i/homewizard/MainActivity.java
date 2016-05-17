@@ -34,8 +34,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        //client =  new MqttAndroidClient(getApplicationContext(), "tcp://10.110.111.141", "HomeWizard++");
-        client =  new MqttAndroidClient(getApplicationContext(), "tcp://test.mosquitto.org", "HomeWizard++");
+        client =  new MqttAndroidClient(getApplicationContext(), "tcp://10.110.111.141", "HomeWizard++");
+        //client =  new MqttAndroidClient(getApplicationContext(), "tcp://test.mosquitto.org", "HomeWizard++");
 
         try {
             client.connect(null, new IMqttActionListener() {
@@ -177,7 +177,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                     String name = Swagtestsysteem.getString("name");
                     String status = Swagtestsysteem.getString("status");
-                    text2.append(name + ": " + status + " " + array.length() + " ");
+                    text2.append(name + ": " + status + " ");
                 }
             }
 
