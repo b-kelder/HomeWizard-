@@ -72,9 +72,9 @@ def homewizard_connect(username, password, local=False):
                 print("Logon failed with error code", jsonData["error"], jsonData["errorMessage"])
         return None
 
+
 # Returns a string with the current date and time
 def get_time_string():
-
     return datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
 
 
@@ -242,6 +242,23 @@ if __name__ == '__main__':
         print("INPUT ERROR")
         sys.exit()
     else:
+        for opt, arg in opts:
+            if opt == '-h':
+                print("TODO: Help")
+                sys.exit()
+            elif opt in ("-u"):
+                username = arg
+            elif opt in ("-p"):
+                password = arg
+            elif opt in ("-l"):
+                local = True
+            elif opt in ("-b"):
+                brokerAddr = arg
+            elif opt in ("-s"):
+                certFile = arg
+                tls = True
+                
+        if username is not None:
             if password is None:
                 print("Password required for username", username)
                 sys.exit()
