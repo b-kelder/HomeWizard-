@@ -127,10 +127,10 @@ def on_message(client, userdata, msg):
             # Launch thread
             threading.Thread(target=message_handler, args=(client, userdata, msg)).start()
     elif(msg.topic.startswith(hydraStatusTopic)):
-        # Respond to hail with HYDRA-TIMESTAMP-URL to indicate we are still running
+        # Respond to hail with HYDRA to indicate we are still running
         if(msg.payload.startswith(b"HAIL")):
             print(get_time_string(), "Responding to hail")
-            client.publish(hydraStatusTopic, "HYDRA#" + get_time_string() + "#" + homewizardBaseUrl)
+            client.publish(hydraStatusTopic, "HYDRA")
 
 
 # ------------------------------------------------------#
