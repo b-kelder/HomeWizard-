@@ -16,7 +16,7 @@ try:
 
                 time.sleep(2)
 
-                pdata = {"on":True, "sat":254, "bri":50,"hue":46920}
+                pdata = {"on":False, "sat":254, "bri":50,"hue":25500}
 
                 r = requests.put(url,data=json.dumps(pdata),headers=headers)
 
