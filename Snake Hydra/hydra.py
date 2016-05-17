@@ -74,7 +74,8 @@ def homewizard_connect(username, password, local=False):
 # Returns a string with the current date and time
 def get_time_string():
     return datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
-    
+
+
 # Client connected (CONNACK recieved) callback
 def on_connect(client, userdata, flags, rc):
     print(get_time_string(), "Connected to MQTT server with result code", str(rc))
@@ -87,8 +88,15 @@ def on_connect(client, userdata, flags, rc):
 # Tries to access a HomeWizard url based on topic and payload of the message
 # When successful the result is published on the return topic
 # Will try to reconnect if connection to the HomeWizard is lost
-def message_handler(client, userdata, msg):
+# attempt is the amount of attempts we're at
+def message_handler(client, userdata, msg, attempt):
     global homewizardBaseUrl
+
+    # Look, we tried 7 times already, it's not happening
+    if(attempt > 7):
+        print(get_time_string(), "Hit attempt limit for message at", msg.topic, str(msg.payload))
+        return
+    
     try:
         url = homewizardBaseUrl + msg.topic.replace(homewizardBaseTopic, "") + "/" + msg.payload.decode("utf-8")
         response = urllib.request.urlopen(url)    
@@ -110,8 +118,8 @@ def message_handler(client, userdata, msg):
                 print(get_time_string(), "Could not reconnect to HomeWizard")
             else:
                 # Try again after the reconnect
-                print(get_time_string(), "Reconnected to HomeWizard, retrying message")
-                message_handler(client, userdata, msg)
+                print(get_time_string(), "Reconnected to HomeWizard, retrying message, attempt", attempt + 1)
+                message_handler(client, userdata, msg, attempt + 1)
         else:
             client.publish(homewizardBaseReturnTopic + msg.topic.replace(homewizardBaseTopic, ""), result)
 
@@ -125,7 +133,7 @@ def on_message(client, userdata, msg):
             # url is base url plus topic minus the base topic
             print(get_time_string(), "Recieved message for HomeWizard at", msg.topic, str(msg.payload))
             # Launch thread
-            threading.Thread(target=message_handler, args=(client, userdata, msg)).start()
+            threading.Thread(target=message_handler, args=(client, userdata, msg, 1)).start()
     elif(msg.topic.startswith(hydraStatusTopic)):
         # Respond to hail with HYDRA to indicate we are still running
         if(msg.payload.startswith(b"HAIL")):
@@ -135,12 +143,9 @@ def on_message(client, userdata, msg):
 
 # ------------------------------------------------------#
 #                                                       #
-#                   Script code start                   #
+#                        GLOBALS                        #
 #                                                       #
 # ------------------------------------------------------#
-                
-print("Snake Hydra Protocol Translator - V0.1")
-print("--------------------------------------")
 
 # HomeWizard base topics
 homewizardBaseTopic = "HMWZ"
@@ -149,13 +154,23 @@ homewizardBaseReturnTopic = "HMWZRETURN"
 # Hydra status topic
 hydraStatusTopic = "HYDRA"
 
-# Parse params
-argv = sys.argv[1:]
-
+# Data
 username = None
 password = None
 local = False
 brokerAddr = None
+
+# ------------------------------------------------------#
+#                                                       #
+#                   Script code start                   #
+#                                                       #
+# ------------------------------------------------------#
+                
+print("Snake Hydra Protocol Translator - V0.3")
+print("--------------------------------------")
+
+# Parse params
+argv = sys.argv[1:]
 
 try:
     opts, args = getopt.getopt(argv,"hu:p:lb:")
