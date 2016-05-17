@@ -73,6 +73,7 @@ def homewizard_connect(username, password, local=False):
 
 # Returns a string with the current date and time
 def get_time_string():
+    #return "0000-00-00 00:00:00"
     return datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
 
 
