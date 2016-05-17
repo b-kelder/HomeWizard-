@@ -11,6 +11,7 @@ import hashlib
 import base64
 # Async message handling
 import threading
+import queue
 # Launch param parsing
 import sys, getopt
 
@@ -111,9 +112,15 @@ def message_handler(client, userdata, msg, attempt):
         jsonData = json.loads(result)
         
         if(jsonData["status"] == "failed"):
-            print(get_time_string(), "Failed request at", msg.topic, str(msg.payload), "with error", jsonData["error"], jsonData["errorMessage"])
-            # Try to reconnect
-            # TODO: This may happen at multiple threads at the same time, which is redundant. Join threads first or something.
+            if "errorMessage" not in jsonData:
+                # Testing shows this is porbably a bad URL, not a connection error
+                print(get_time_string(), "Failed request at", msg.topic, str(msg.payload), "with error", jsonData["error"])
+                client.publish(homewizardBaseReturnTopic + msg.topic.replace(homewizardBaseTopic, ""), result)
+                return
+            else:
+                print(get_time_string(), "Failed request at", msg.topic, str(msg.payload), "with error", jsonData["error"], jsonData["errorMessage"])
+            # Probably a connection error, try to reconnect
+            # TODO: This may happen at multiple threads at the same time, which is bad.
             homewizardBaseUrl = homewizard_connect(username, password, local)
             if homewizardBaseUrl is None:
                 print(get_time_string(), "Could not reconnect to HomeWizard")
@@ -127,14 +134,11 @@ def message_handler(client, userdata, msg, attempt):
 # PUBLISH Message recieved callback
 def on_message(client, userdata, msg):
     if(msg.topic.startswith(homewizardBaseTopic)):
-        if(msg.payload.startswith(b"RETURN:")):
-            pass
-        else:
-            # Not a return, request homewizard data
-            # url is base url plus topic minus the base topic
-            print(get_time_string(), "Recieved message for HomeWizard at", msg.topic, str(msg.payload))
-            # Launch thread
-            threading.Thread(target=message_handler, args=(client, userdata, msg, 1)).start()
+        # Not a return, request homewizard data
+        # url is base url plus topic minus the base topic
+        print(get_time_string(), "Recieved message for HomeWizard at", msg.topic, str(msg.payload))
+        # Launch thread
+        threading.Thread(target=message_handler, args=(client, userdata, msg, 1)).start()
     elif(msg.topic.startswith(hydraStatusTopic)):
         # Respond to STS with HYD to indicate we are still running
         if(msg.payload.startswith(b"STS")):
@@ -160,6 +164,11 @@ username = None
 password = None
 local = False
 brokerAddr = None
+tls = False
+certFile = None
+
+# QUEUEUEUEUEUEUE
+messageQueue = queue.Queue()
 
 # ------------------------------------------------------#
 #                                                       #
@@ -174,7 +183,7 @@ print("--------------------------------------")
 argv = sys.argv[1:]
 
 try:
-    opts, args = getopt.getopt(argv,"hu:p:lb:")
+    opts, args = getopt.getopt(argv,"hu:p:lb:s:")
 except getopt.GetoptError:
     print("INPUT ERROR")
     sys.exit()
@@ -191,6 +200,10 @@ else:
             local = True
         elif opt in ("-b"):
             brokerAddr = arg
+        elif opt in ("-s"):
+            certFile = arg
+            tls = True
+            
     if username is not None:
         if password is None:
             print("Password required for username", username)
@@ -219,9 +232,22 @@ client = mqtt.Client()
 client.on_connect = on_connect
 client.on_message = on_message
 
+
+
+
 # TODO: Proper error handling
 try:
-    client.connect(brokerAddr, 1883, 60)
+    port = 1883
+    if(tls):
+        port = 8883
+        ####
+        import os
+        script_dir = os.path.dirname(__file__) #<-- absolute dir the script is in
+        client.tls_set(os.path.join(script_dir, certFile))
+        print("Using cert", certFile)
+        ####
+
+    client.connect(brokerAddr, port, 60)
 except socket.gaierror:
     print("Could not connect to server at", brokerAddr)
     print("Possible soloutions:")

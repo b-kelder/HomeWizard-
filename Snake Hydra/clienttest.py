@@ -30,8 +30,11 @@ def on_message(client, userdata, msg):
     
 argv = sys.argv[1:]
 brokerAddr = None#"10.110.111.141"
+tls = False
+certFile = None
+
 try:
-    opts, args = getopt.getopt(argv,"hb:")
+    opts, args = getopt.getopt(argv,"hb:s:")
 except getopt.GetoptError:
     print("INPUT ERROR")
     sys.exit()
@@ -40,8 +43,11 @@ else:
         if opt == '-h':
             print("TODO: Help")
             sys.exit()
-        if opt == '-b':
+        elif opt == '-b':
             brokerAddr = arg
+        elif opt in ("-s"):
+            certFile = arg
+            tls = True
     if brokerAddr is None:
         print("MQTT Broker address required")
         sys.exit()
@@ -57,9 +63,24 @@ client = mqtt.Client()
 client.on_connect = on_connect
 client.on_message = on_message
 
+
+
 # Start the loop
-client.connect(brokerAddr, 1883, 60)
-client.loop_start()
+try:
+    port = 1883
+    if(tls):
+        port = 8883
+        ####
+        import os
+        script_dir = os.path.dirname(__file__) #<-- absolute dir the script is in
+        client.tls_set(os.path.join(script_dir, certFile))
+        print("Using cert", certFile)
+        ####
+    client.connect(brokerAddr, port, 60)
+except:
+    print("Oops")
+else:
+    client.loop_start()
 
 # TODO: Optimize
 import time
