@@ -74,9 +74,9 @@ time.sleep(0.2)
 inputstring = ""
 while inputstring.upper() != "EXIT":
     inputstring = input("")
-    if inputstring.upper() == "HAIL":
+    if inputstring.upper() == "STS":
         print("Hailing hydra...")
-        client.publish(hydraStatusTopic, "HAIL")
+        client.publish(hydraStatusTopic, "STS")
     elif inputstring.upper() == "STATUS":
         print("Requesting status...")
         client.publish(homewizardBaseTopic, "get-status")

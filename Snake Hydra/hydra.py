@@ -92,8 +92,8 @@ def on_connect(client, userdata, flags, rc):
 def message_handler(client, userdata, msg, attempt):
     global homewizardBaseUrl
 
-    # Look, we tried 7 times already, it's not happening
-    if(attempt > 7):
+    # Look, we tried 3 times already, it's not happening
+    if(attempt > 3):
         print(get_time_string(), "Hit attempt limit for message at", msg.topic, str(msg.payload))
         return
     
@@ -135,10 +135,10 @@ def on_message(client, userdata, msg):
             # Launch thread
             threading.Thread(target=message_handler, args=(client, userdata, msg, 1)).start()
     elif(msg.topic.startswith(hydraStatusTopic)):
-        # Respond to hail with HYDRA to indicate we are still running
-        if(msg.payload.startswith(b"HAIL")):
-            print(get_time_string(), "Responding to hail")
-            client.publish(hydraStatusTopic, "HYDRA")
+        # Respond to STS with HYD to indicate we are still running
+        if(msg.payload.startswith(b"STS")):
+            print(get_time_string(), "Responding to STS request")
+            client.publish(hydraStatusTopic, "HYD")
 
 
 # ------------------------------------------------------#
