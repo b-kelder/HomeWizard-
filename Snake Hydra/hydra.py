@@ -215,6 +215,9 @@ username = None
 password = None
 local = False
 brokerAddr = None
+brokerPort = None
+brokerUser = None
+brokerPass = None
 tls = False
 certFile = None
 
@@ -239,26 +242,41 @@ if __name__ == '__main__':
     argv = sys.argv[1:]
 
     try:
-        opts, args = getopt.getopt(argv,"hu:p:lb:s:")
+        opts, args = getopt.getopt(argv,"hlu:p:b:s:x:")
     except getopt.GetoptError:
-        print("INPUT ERROR")
+        print("Type -h for help")
         sys.exit()
     else:
         for opt, arg in opts:
-            if opt == '-h':
-                print("TODO: Help")
+            try:
+                if opt == '-h':
+                    print("Snake Hydra help")
+                    print("-u USERNAME -- Username for the HomeWizard account")
+                    print("-p PASSWORD -- Password for the HomeWizard (account)")
+                    print("-b IP:PORT  -- IP and Port for MQTT broker")
+                    print("-s PATH     -- Path to MQTT server TSL certificate")
+                    print("-x USER:PW  -- Username and password for MQTT server")
+                    print("-l          -- Connection to HomeWizard local instead of via cloud")
+                    sys.exit()
+                elif opt in ("-u"):
+                    username = arg
+                elif opt in ("-p"):
+                    password = arg
+                elif opt in ("-l"):
+                    local = True
+                elif opt in ("-b"):
+                    brokerAddr = arg.split(':')[0]
+                    brokerPort = int(arg.split(':')[1])
+                elif opt in ("-s"):
+                    certFile = arg
+                    tls = True
+                elif opt in ("-x"):
+                    brokerUser = arg.split(':')[0]
+                    brokerPass = arg.split(':')[1]
+            except:
+                print("Something went wrong trying to parse the arguments. Please check and try again")
+                print("Type -h for help")
                 sys.exit()
-            elif opt in ("-u"):
-                username = arg
-            elif opt in ("-p"):
-                password = arg
-            elif opt in ("-l"):
-                local = True
-            elif opt in ("-b"):
-                brokerAddr = arg
-            elif opt in ("-s"):
-                certFile = arg
-                tls = True
                 
         if username is not None:
             if password is None:
@@ -274,7 +292,7 @@ if __name__ == '__main__':
                 sys.exit()
             
         if brokerAddr is None:
-            print("MQTT Broker address required")
+            print("MQTT Broker address and port IP:PORT required")
             sys.exit()
 
     homewizardBaseUrl = homewizard_connect(username, password, local)
@@ -286,21 +304,20 @@ if __name__ == '__main__':
     client = mqtt.Client()
     client.on_connect = on_connect
     client.on_message = on_message
-    client.username_pw_set("hydra", "HYyhmrbZnzfmYHR6WMNR5QPp")
+    if brokerUser is not None:
+        client.username_pw_set(brokerUser, brokerPass)
 
     # TODO: Proper error handling
     # TODO: Port via arguments
     try:
-        port = 1883
         if(tls):
-            port = 8883
             ####
             import os
             script_dir = os.path.dirname(__file__) #<-- absolute dir the script is in
             client.tls_set(os.path.join(script_dir, certFile))
             print("Using cert", certFile)
             ####
-        client.connect(brokerAddr, port, 60)
+        client.connect(brokerAddr, brokerPort, 60)
     except socket.gaierror:
         print("Could not connect to server at", brokerAddr)
         print("Possible soloutions:")

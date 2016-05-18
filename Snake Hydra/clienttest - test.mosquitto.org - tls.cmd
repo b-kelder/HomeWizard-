@@ -1,2 +1,2 @@
-clienttest.py -b test.mosquitto.org -s certs/mosquitto.org.crt
+clienttest.py -b test.mosquitto.org:8883 -s certs/mosquitto.org.crt
 pause

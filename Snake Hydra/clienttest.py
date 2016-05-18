@@ -38,25 +38,40 @@ def stress_test(topic, msg, amount, delay):
     print("Finished stress test")
     
 argv = sys.argv[1:]
-brokerAddr = None#"10.110.111.141"
+brokerAddr = None
+brokerPort = None
+brokerUser = None
+brokerPass = None
 tls = False
 certFile = None
 
 try:
-    opts, args = getopt.getopt(argv,"hb:s:")
+    opts, args = getopt.getopt(argv,"hb:s:x:")
 except getopt.GetoptError:
-    print("INPUT ERROR")
+    print("Type -h for help")
     sys.exit()
 else:
     for opt, arg in opts:
-        if opt == '-h':
-            print("TODO: Help")
+        try:
+            if opt == '-h':
+                print("Clienttest help")
+                print("-b IP:PORT  -- IP and Port for MQTT broker")
+                print("-s PATH     -- Path to MQTT server TSL certificate")
+                print("-x USER:PW  -- Username and password for MQTT server")
+                sys.exit()
+            elif opt in ("-b"):
+                brokerAddr = arg.split(':')[0]
+                brokerPort = int(arg.split(':')[1])
+            elif opt in ("-s"):
+                certFile = arg
+                tls = True
+            elif opt in ("-x"):
+                brokerUser = arg.split(':')[0]
+                brokerPass = arg.split(':')[1]
+        except:
+            print("Something went wrong trying to parse the arguments. Please check and try again")
+            print("Type -h for help")
             sys.exit()
-        elif opt == '-b':
-            brokerAddr = arg
-        elif opt in ("-s"):
-            certFile = arg
-            tls = True
     if brokerAddr is None:
         print("MQTT Broker address required")
         sys.exit()
@@ -71,21 +86,20 @@ hydraStatusTopic = "HYDRA"
 client = mqtt.Client()
 client.on_connect = on_connect
 client.on_message = on_message
-client.username_pw_set("app", "Jr3NKrKA3wcLVy5CMuhZv4kZ")
+if brokerUser is not None:
+    client.username_pw_set(brokerUser, brokerPass)
 
 
 # Start the loop
 try:
-    port = 1883
     if(tls):
-        port = 8883
         ####
         import os
         script_dir = os.path.dirname(__file__) #<-- absolute dir the script is in
         client.tls_set(os.path.join(script_dir, certFile))
         print("Using cert", certFile)
         ####
-    client.connect(brokerAddr, port, 60)
+    client.connect(brokerAddr, brokerPort, 60)
 except:
     print("Oops")
 else:

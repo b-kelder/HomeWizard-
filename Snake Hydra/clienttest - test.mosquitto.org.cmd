@@ -1,2 +1,2 @@
-clienttest.py -b test.mosquitto.org
+clienttest.py -b test.mosquitto.org:1883
 pause
