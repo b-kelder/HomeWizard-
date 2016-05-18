@@ -3,6 +3,7 @@ import paho.mqtt.client as mqtt
 import urllib.request, json
 # Errors
 import socket
+import http.client
 # Timestamps
 import time
 import datetime
@@ -143,7 +144,6 @@ def process_message(client, msg, attempt):
     global homewizardBaseUrl
     global reconnectThread
     
-    # Look, we tried 3 times already, it's not happening
     # FAIL STATE 3: ATTEMPT LIMIT REACHED
     if(attempt > 3):
         print(get_time_string(), "Hit attempt limit for message at", msg.topic, str(msg.payload))
@@ -158,6 +158,9 @@ def process_message(client, msg, attempt):
         # FAIL STATE 1: URL DOES NOT EXIST
         print(get_time_string(), "HomeWizard url could not be reached for", msg.topic, str(msg.payload))
         publish_fail_msg(client, msg, 1)
+    except http.client.RemoteDisconnected as e:
+        print(get_time_string(), e)
+        publish_fail_msg(client, msg, 3)
     else:
         # TODO: QoS?
         # Publish result on base return topic with same topic as incoming message
@@ -215,7 +218,6 @@ brokerAddr = None
 tls = False
 certFile = None
 
-# QUEUEUEUEUEUEUE
 messageQueue = queue.Queue()
 messageThread = None
 
@@ -286,6 +288,7 @@ if __name__ == '__main__':
     client.on_message = on_message
 
     # TODO: Proper error handling
+    # TODO: Port via arguments
     try:
         port = 1883
         if(tls):
