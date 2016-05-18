@@ -20,11 +20,14 @@ def on_message(client, userdata, msg):
     string = msg.payload.decode("utf-8")
 
     if(msg.topic.startswith(homewizardBaseReturnTopic)):
-        import json
-        data = json.loads(string)
-        print("Status:", data["status"])
-        print("Request:", data["request"]["route"])
-        print("RAW:")
+        try:
+            import json
+            data = json.loads(string)
+            print("Status:", data["status"])
+            print("Request:", data["request"]["route"])
+            print("RAW:")
+        except:
+            print("An error occurred while trying to parse as JSON")
     print(string)
 
 # Stress TEST
@@ -68,7 +71,7 @@ hydraStatusTopic = "HYDRA"
 client = mqtt.Client()
 client.on_connect = on_connect
 client.on_message = on_message
-
+client.username_pw_set("app", "Jr3NKrKA3wcLVy5CMuhZv4kZ")
 
 
 # Start the loop

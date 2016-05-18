@@ -286,6 +286,7 @@ if __name__ == '__main__':
     client = mqtt.Client()
     client.on_connect = on_connect
     client.on_message = on_message
+    client.username_pw_set("hydra", "HYyhmrbZnzfmYHR6WMNR5QPp")
 
     # TODO: Proper error handling
     # TODO: Port via arguments
@@ -299,7 +300,6 @@ if __name__ == '__main__':
             client.tls_set(os.path.join(script_dir, certFile))
             print("Using cert", certFile)
             ####
-
         client.connect(brokerAddr, port, 60)
     except socket.gaierror:
         print("Could not connect to server at", brokerAddr)
