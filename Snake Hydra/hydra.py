@@ -16,27 +16,38 @@ import queue
 # Launch param parsing
 import sys, getopt
 
+
+# Returns a string with the current date and time
+def get_time_string():
+    return datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
+
+def get_serial(url):
+    return url.rsplit('/', 1)[-1]
+
 # Tries to logon to a homewizard account and returns a json object with the data
 # Returns None on error
 def homewizard_logon(username, password):
     url = "https://cloud.homewizard.com/account/login"
 
-    authInfo = username + ":" + hashlib.sha1(password.encode("ascii")).hexdigest()
-    req = urllib.request.Request(
-    url, 
-    data=None, 
-    headers={
-            'Authorization' : 'Basic ' + base64.b64encode(authInfo.encode("ascii")).decode("utf-8")
-        }
-    )
-
     try:
-        response = urllib.request.urlopen(req)
+        authInfo = username + ":" + hashlib.sha1(password.encode("ascii")).hexdigest()
+        req = urllib.request.Request(
+        url, 
+        data=None, 
+        headers={
+                'Authorization' : 'Basic ' + base64.b64encode(authInfo.encode("ascii")).decode("utf-8")
+            }
+        )
     except:
-        print("Could not reach https://cloud.homewizard.com/account/login")
+        print("Could not create authInfo")
     else:
-        result = response.read().decode("utf-8")
-        data = json.loads(result)
+        try:
+            response = urllib.request.urlopen(req)
+        except:
+            print("Could not reach https://cloud.homewizard.com/account/login")
+        else:
+            result = response.read().decode("utf-8")
+            data = json.loads(result)
         return data
 
     return None
@@ -73,13 +84,9 @@ def homewizard_connect(username, password, local=False):
                 print("Logon failed with error code", jsonData["error"], jsonData["errorMessage"])
         return None
 
-
-# Returns a string with the current date and time
-def get_time_string():
-    return datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
-
-
+#
 # Client connected (CONNACK recieved) callback
+#
 def on_connect(client, userdata, flags, rc):
     print(get_time_string(), "Connected to MQTT server with result code", str(rc))
 
@@ -87,23 +94,49 @@ def on_connect(client, userdata, flags, rc):
     client.subscribe(homewizardBaseTopic + "/#")
     client.subscribe(homewizardBaseTopic)
     client.subscribe(hydraStatusTopic)
+    client.subscribe(homewizardAuthTopic)
 
-
+#
 # PUBLISH Message recieved callback
+#
 def on_message(client, userdata, msg):
+    global homewizardBaseTopic
     global messageQueue
     if(msg.topic.startswith(homewizardBaseTopic)):
         print(get_time_string(), "Recieved message for HomeWizard at", msg.topic, str(msg.payload))
         #threading.Thread(target=process_message, args=(client, userdata, msg, 1)).start()
         # Put it in the queue
-        messageQueue.put(msg)
+        if homewizardBaseUrl is not None:
+            messageQueue.put(msg)
+        else:
+            publish_fail_msg(client, msg, 4)
+            
     elif(msg.topic.startswith(hydraStatusTopic)):
         # Respond to STS with HYD to indicate we are still running
         if(msg.payload.startswith(b"STS")):
             print(get_time_string(), "Responding to STS request")
             client.publish(hydraStatusTopic, "HYD")
-
+    elif(msg.topic.startswith(homewizardAuthTopic)):
+        process_login_request(client, msg)
     
+
+#
+# Publish a message containing a json string with error data
+# This is used when trying to log into the HomeWizard
+#
+def publish_login_fail_msg(client, error):
+    # The format of this json object is similar to the HomeWizard's own errors
+    errorMsg = {70: 'Could not login to HomeWizard',
+                71: 'Invalid payload'}
+    
+    data = {'status': 'failed_hydra',
+            'error': error,
+            'errorMessage': errorMsg[error],
+            'request':{'route': 'hydralogin'}}
+    string = json.dumps(data)
+    client.publish(homewizardAuthReturnTopic, string)
+
+
 # Publish a message containing a json string with error data
 # This is send when we have an error when processing a message
 # and we have no response from the HomeWizard
@@ -111,7 +144,8 @@ def publish_fail_msg(client, msg, error):
     # The format of this json object is similar to the HomeWizard's own errors
     errorMsg = {1: 'Url does not exist',
                 2: 'Cannot login to HomeWizard',
-                3: 'Connection to HomeWizard was lost'}
+                3: 'Connection to HomeWizard was lost',
+                4: 'Not logged in to any HomeWizard'}
     
     data = {'status': 'failed_hydra',
             'error': error,
@@ -119,6 +153,57 @@ def publish_fail_msg(client, msg, error):
             'request':{'route':msg.topic.replace(homewizardBaseTopic, "")}}
     string = json.dumps(data)
     client.publish(homewizardBaseReturnTopic + msg.topic.replace(homewizardBaseTopic, ""), string)
+
+
+#
+# Processes a HomeWizard login request
+# Publishes errors and success on homewizardAuthTopic/results
+#
+def process_login_request(client, msg):
+    global homewizardBaseUrl
+    global homewizardBaseTopic
+    global homewizardBaseReturnTopic
+    
+    print(get_time_string(), "Recieved connection request for HomeWizard")
+    try:
+        loginData = json.loads(msg.payload.decode("utf-8"))
+    except:
+        print(get_time_string(), "Invalid login payload")
+        publish_login_fail_msg(client, 71)
+    else:
+        if loginData is not None:
+            urlResult = homewizard_connect(loginData["email"], loginData["password"], False)
+            if urlResult is None:
+                # 7X errors are login errors
+                print(get_time_string(), "Could not connect to HomeWizard")
+                publish_login_fail_msg(client, 70)
+            else:
+                serial = get_serial(urlResult)
+                homewizardBaseUrl = urlResult
+
+                # Clean up subscriptions
+                client.unsubscribe(homewizardBaseTopic)
+                
+                homewizardBaseTopic = homewizardBaseTopic.rsplit('/', 1)[0] + "/" + serial
+                homewizardBaseReturnTopic = homewizardBaseReturnTopic.rsplit('/', 1)[0] + "/" + serial
+                
+                client.subscribe(homewizardBaseTopic)
+
+                print("New topics:")
+                print(homewizardBaseTopic)
+                print(homewizardBaseReturnTopic)
+
+                # Publish result                
+                data = {'status': 'ok',
+                    'request':{'route': 'hydralogin'},
+                    'serial': serial}
+                string = json.dumps(data)
+                client.publish(homewizardAuthReturnTopic, string)
+        else:
+            print(get_time_string(), "Invalid login payload")
+            publish_login_fail_msg(client, 71)
+
+
 
 
 # Loop that handles processing messages in the queue
@@ -136,6 +221,7 @@ def message_processing_loop(client, msgQueue):
 def homewizard_reconnect():
     global homewizardBaseUrl
     homewizardBaseUrl = homewizard_connect(username, password, local)
+
 
 # Tries to access a HomeWizard url based on topic and payload of the message
 # When successful the result is published on the return topic
@@ -204,11 +290,16 @@ def process_message(client, msg, attempt):
 # ------------------------------------------------------#
 
 # HomeWizard base topics
-homewizardBaseTopic = "HMWZ"
-homewizardBaseReturnTopic = "HMWZRETURN"
+homewizardBaseTopic = "HMWZ" # + /serial
+homewizardBaseReturnTopic = "HMWZRETURN" # + /serial
+# Used for login requests
+homewizardAuthTopic = "HYDAUTH"
+homewizardAuthReturnTopic = homewizardAuthTopic + "/results"
 
 # Hydra status topic
 hydraStatusTopic = "HYDRA"
+
+homewizardBaseUrl = None
 
 # Data
 username = None
@@ -295,10 +386,10 @@ if __name__ == '__main__':
             print("MQTT Broker address and port IP:PORT required")
             sys.exit()
 
-    homewizardBaseUrl = homewizard_connect(username, password, local)
-    if homewizardBaseUrl is None:
-        print("Could not connect to HomeWizard")
-        sys.exit()
+    #homewizardBaseUrl = homewizard_connect(username, password, local)
+    #if homewizardBaseUrl is None:
+    #    print("Could not connect to HomeWizard")
+    #    sys.exit()
 
     # Start MQTT client
     client = mqtt.Client()

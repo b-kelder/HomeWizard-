@@ -10,6 +10,7 @@ def on_connect(client, userdata, flags, rc):
     #client.subscribe("$SYS/broker/log/M/#")
     client.subscribe(homewizardBaseReturnTopic + "/#")
     client.subscribe(homewizardBaseReturnTopic)
+    client.subscribe(homewizardAuthReturnTopic)
     client.subscribe(hydraStatusTopic)
 
 # PUBLISH Message recieved callback
@@ -30,12 +31,41 @@ def on_message(client, userdata, msg):
         except:
             print("An error occurred while trying to parse as JSON")
         print(string)
-    if(msg.topic.startswith(hydraStatusTopic)):
+    elif(msg.topic.startswith(hydraStatusTopic)):
         if(string == "HYD"):
             print("Hydra detected")
-    
+    elif(msg.topic.startswith(homewizardAuthReturnTopic)):
+        import json
+        data = json.loads(string)
+        if(data["status"] == "ok"):
+            set_homewizard_bases(data["serial"])
+        else:
+            print(data["errorMessage"])
+    else:
+        print(string)
 
-# Stress TEST
+
+# Sets MQTT topics based on the serial
+def set_homewizard_bases(serial):
+    global homewizardBaseTopic
+    global homewizardBaseReturnTopic
+    client.unsubscribe(homewizardBaseReturnTopic) # Clean up subscribtions
+    homewizardBaseTopic = homewizardBaseTopic.rsplit('/', 1)[0] + "/" + serial
+    homewizardBaseReturnTopic = homewizardBaseReturnTopic.rsplit('/', 1)[0] + "/" + serial
+    client.subscribe(homewizardBaseReturnTopic)
+    print("New topics:")
+    print(homewizardBaseTopic)
+    print(homewizardBaseReturnTopic)
+
+
+# Logs in to hydra/homewizard
+def login(email, password):
+    data = {'email':email, 'password':password}
+    string = json.dumps(data)
+    client.publish(homewizardAuthTopic, string)
+
+
+# Stress test
 def stress_test(topic, msg, amount, delay):
     for i in range(0, amount):
         client.publish(topic, msg)
@@ -81,12 +111,16 @@ else:
         print("MQTT Broker address required")
         sys.exit()
 
-# HomeWizard base topics.
-homewizardBaseTopic = "HMWZ"
-homewizardBaseReturnTopic = "HMWZRETURN"
 
+# HomeWizard base topics.
+homewizardBaseTopic = "HMWZ" # + /serial
+homewizardBaseReturnTopic = "HMWZRETURN" # + /serial
+# Used for login requests
+homewizardAuthTopic = "HYDAUTH"
+homewizardAuthReturnTopic = homewizardAuthTopic + "/results"
 # Hydra status topic
 hydraStatusTopic = "HYDRA"
+
 
 client = mqtt.Client()
 client.on_connect = on_connect
@@ -134,6 +168,8 @@ while inputstring.upper() != "EXIT":
         client.publish(homewizardBaseTopic, "get-sensors")
     elif inputstring.upper() == "STRESS":
         stress_test(homewizardBaseTopic, "get-sensors", 10, 0)
+    elif inputstring.upper() == "LOGIN":
+        login("bram.kelder@student.stenden.com", "1234567890")
     else:
         try:
             exec(inputstring)
