@@ -15,11 +15,12 @@ def on_connect(client, userdata, flags, rc):
 # PUBLISH Message recieved callback
 def on_message(client, userdata, msg):
     # Return value from a homewizard
-    print("Message recieved on topic", msg.topic)
-    print("")
+    
     string = msg.payload.decode("utf-8")
 
     if(msg.topic.startswith(homewizardBaseReturnTopic)):
+        print("Message recieved on topic", msg.topic)
+        print("")
         try:
             import json
             data = json.loads(string)
@@ -28,7 +29,11 @@ def on_message(client, userdata, msg):
             print("RAW:")
         except:
             print("An error occurred while trying to parse as JSON")
-    print(string)
+        print(string)
+    if(msg.topic.startswith(hydraStatusTopic)):
+        if(string == "HYD"):
+            print("Hydra detected")
+    
 
 # Stress TEST
 def stress_test(topic, msg, amount, delay):
