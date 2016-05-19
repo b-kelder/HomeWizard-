@@ -1,0 +1,29 @@
+
+[value] is een topic met variabele naam
+<value> is een geldige payload voor een bepaald topic
+(value) is een opmerking
+
+Opmerking:
+
+HYDRA
+	HMWZ
+		<get-status>
+		<get-sensors>
+			conf
+				<get>
+			sw
+				[id]
+					<on>
+					<off>
+		(HomeWizard URL based tree, etc.)
+	HMWZRETURN
+		(mirrors HMWZ but with json responses)
+	STATUS
+		results
+			<json response data>
+		<get-status>
+		
+	AUTH
+		<json login/disconnect data>
+		results
+			<json success/fail response>

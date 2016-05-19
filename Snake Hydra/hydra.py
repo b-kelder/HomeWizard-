@@ -94,17 +94,15 @@ def on_connect(client, userdata, flags, rc):
     client.subscribe(homewizardBaseTopic + "/#")
     client.subscribe(homewizardBaseTopic)
     client.subscribe(hydraStatusTopic)
-    client.subscribe(homewizardAuthTopic)
+    client.subscribe(hydraAuthTopic)
 
 #
 # PUBLISH Message recieved callback
 #
 def on_message(client, userdata, msg):
-    global homewizardBaseTopic
     global messageQueue
     if(msg.topic.startswith(homewizardBaseTopic)):
         print(get_time_string(), "Recieved message for HomeWizard at", msg.topic, str(msg.payload))
-        #threading.Thread(target=process_message, args=(client, userdata, msg, 1)).start()
         # Put it in the queue
         if homewizardBaseUrl is not None:
             messageQueue.put(msg)
@@ -113,10 +111,18 @@ def on_message(client, userdata, msg):
             
     elif(msg.topic.startswith(hydraStatusTopic)):
         # Respond to STS with HYD to indicate we are still running
-        if(msg.payload.startswith(b"STS")):
-            print(get_time_string(), "Responding to STS request")
-            client.publish(hydraStatusTopic, "HYD")
-    elif(msg.topic.startswith(homewizardAuthTopic)):
+        if(msg.payload.decode("utf-8") == "get-status"):
+            serial = ""
+            if homewizardBaseUrl is not None:
+                serial = get_serial(homewizardBaseUrl)
+            client.publish(hydraStatusTopic + "/results", json.dumps({
+                'status': 'ok',
+                'request': {
+                    'route': 'hydrastatus'},
+                'serial': serial}))
+                            
+            
+    elif(msg.topic.startswith(hydraAuthTopic)):
         process_login_request(client, msg)
     
 
@@ -134,7 +140,7 @@ def publish_login_fail_msg(client, error):
             'errorMessage': errorMsg[error],
             'request':{'route': 'hydralogin'}}
     string = json.dumps(data)
-    client.publish(homewizardAuthReturnTopic, string)
+    client.publish(hydraAuthTopic + "/results", string)
 
 
 # Publish a message containing a json string with error data
@@ -156,53 +162,92 @@ def publish_fail_msg(client, msg, error):
 
 
 #
-# Processes a HomeWizard login request
-# Publishes errors and success on homewizardAuthTopic/results
+# Updates the base urls, topics and subscriptions according to a HomeWizard cloud url
 #
-def process_login_request(client, msg):
+def set_topics(url = None):
+    #print(get_time_string(), "Setting topics for", url)
     global homewizardBaseUrl
     global homewizardBaseTopic
     global homewizardBaseReturnTopic
+    global hydraStatusTopic
+    global hydraAuthTopic
+
+    # Clean up subscriptions
+    try:
+        # This won't work the first time because all these are None
+        client.unsubscribe(homewizardBaseTopic)
+        client.unsubscribe(homewizardBaseTopic + "/#")
+        client.unsubscribe(homewizardBaseTopic)
+        client.unsubscribe(hydraStatusTopic)
+        client.unsubscribe(hydraAuthTopic)
+    except:
+        pass
     
-    print(get_time_string(), "Recieved connection request for HomeWizard")
+    
+    # Reset all 
+    homewizardBaseTopic = "HYDRA/HMWZ"
+    homewizardBaseReturnTopic = "HYDRA/HMWZRETURN"
+    hydraStatusTopic = "HYDRA/STATUS"
+    hydraAuthTopic = "HYDRA/AUTH"
+
+    homewizardBaseUrl = url
+
+    url = None
+
+    # Url?
+    if url is not None:
+        serial = get_serial(url)
+            
+        homewizardBaseTopic += "/" + serial
+        homewizardBaseReturnTopic += "/" + serial
+        hydraStatusTopic += "/" + serial
+        hydraAuthTopic += "/" + serial
+
+    # Resub          
+    client.subscribe(homewizardBaseTopic)
+    client.subscribe(homewizardBaseTopic + "/#")
+    client.subscribe(homewizardBaseTopic)
+    client.subscribe(hydraStatusTopic)
+    client.subscribe(hydraAuthTopic)
+
+#
+# Processes a HomeWizard login request
+# Publishes errors and success on hydraAuthTopic/results
+#
+def process_login_request(client, msg):    
     try:
         loginData = json.loads(msg.payload.decode("utf-8"))
-    except:
-        print(get_time_string(), "Invalid login payload")
-        publish_login_fail_msg(client, 71)
-    else:
-        if loginData is not None:
+
+        if(loginData["type"] == "login"):
+            print(get_time_string(), "Recieved connection request for HomeWizard")
             urlResult = homewizard_connect(loginData["email"], loginData["password"], False)
             if urlResult is None:
                 # 7X errors are login errors
                 print(get_time_string(), "Could not connect to HomeWizard")
                 publish_login_fail_msg(client, 70)
             else:
-                serial = get_serial(urlResult)
-                homewizardBaseUrl = urlResult
-
-                # Clean up subscriptions
-                client.unsubscribe(homewizardBaseTopic)
-                
-                homewizardBaseTopic = homewizardBaseTopic.rsplit('/', 1)[0] + "/" + serial
-                homewizardBaseReturnTopic = homewizardBaseReturnTopic.rsplit('/', 1)[0] + "/" + serial
-                
-                client.subscribe(homewizardBaseTopic)
-
-                print("New topics:")
-                print(homewizardBaseTopic)
-                print(homewizardBaseReturnTopic)
-
                 # Publish result                
                 data = {'status': 'ok',
                     'request':{'route': 'hydralogin'},
-                    'serial': serial}
+                    'serial': get_serial(urlResult)}
                 string = json.dumps(data)
-                client.publish(homewizardAuthReturnTopic, string)
+                client.publish(hydraAuthTopic + "/results", string)
+                set_topics(urlResult)
+                
+        elif(loginData["type"] == "disconnect"):
+            print(get_time_string(), "Recieved disconnect request for HomeWizard")
+            client.publish(hydraAuthTopic + "/results", json.dumps({
+                'status': 'ok',
+                'request': {
+                    'route': 'hydradisconnect'},
+                'serial': ''}))
+            set_topics()
         else:
             print(get_time_string(), "Invalid login payload")
             publish_login_fail_msg(client, 71)
-
+    except:
+        print(get_time_string(), "Invalid login payload")
+        publish_login_fail_msg(client, 71)
 
 
 
@@ -218,6 +263,7 @@ def message_processing_loop(client, msgQueue):
 
 # Tries to reconnect to a HomeWizard using the current globals and updates them accordingly
 # This is a function so it can be put in a thread
+# TODO: Send message on HYDRA/STATUS/serial about this
 def homewizard_reconnect():
     global homewizardBaseUrl
     homewizardBaseUrl = homewizard_connect(username, password, local)
@@ -290,14 +336,12 @@ def process_message(client, msg, attempt):
 # ------------------------------------------------------#
 
 # HomeWizard base topics
-homewizardBaseTopic = "HMWZ" # + /serial
-homewizardBaseReturnTopic = "HMWZRETURN" # + /serial
+homewizardBaseTopic = None
+homewizardBaseReturnTopic = None
 # Used for login requests
-homewizardAuthTopic = "HYDAUTH"
-homewizardAuthReturnTopic = homewizardAuthTopic + "/results"
-
-# Hydra status topic
-hydraStatusTopic = "HYDRA"
+hydraStatusTopic = None
+hydraAuthTopic = None
+hydraAuthReturnTopic = None
 
 homewizardBaseUrl = None
 
@@ -319,6 +363,7 @@ messageThread = None
 # Used to prevent multiple message threads from reconnecting at the same time
 reconnectThread = None
 
+
 # ------------------------------------------------------#
 #                                                       #
 #                   Script code start                   #
@@ -326,6 +371,8 @@ reconnectThread = None
 # ------------------------------------------------------#
 
 if __name__ == '__main__':
+    
+    
     print("Snake Hydra Protocol Translator - V0.3")
     print("--------------------------------------")
 
@@ -397,7 +444,7 @@ if __name__ == '__main__':
     client.on_message = on_message
     if brokerUser is not None:
         client.username_pw_set(brokerUser, brokerPass)
-
+    set_topics()    # set topics correctly
     # TODO: Proper error handling
     # TODO: Port via arguments
     try:

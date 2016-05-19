@@ -1,6 +1,53 @@
 import paho.mqtt.client as mqtt
-import urllib.request, json
+import json
+# Launch param parsing
 import sys, getopt
+# Import hydra so we can reuse it's generic stuff
+import hydra
+
+
+#
+# Updates the base urls, topics and subscriptions according to a HomeWizard cloud url
+#
+def set_topics(serial = None):
+
+    # Clean up subscriptions
+    try:
+        # This won't work the first time because all these are None
+        client.unsubscribe(hydra.homewizardBaseReturnTopic + "/#")
+        client.unsubscribe(hydra.homewizardBaseReturnTopic)
+        client.unsubscribe(hydra.hydraStatusTopic + "/results")
+        client.unsubscribe(hydra.hydraAuthTopic + "/results")
+    except:
+        pass
+    
+    
+    # Reset all 
+    hydra.homewizardBaseTopic = "HYDRA/HMWZ"
+    hydra.homewizardBaseReturnTopic = "HYDRA/HMWZRETURN"
+    hydra.hydraStatusTopic = "HYDRA/STATUS"
+    hydra.hydraAuthTopic = "HYDRA/AUTH"
+
+    serial = None
+
+    if serial is not None:
+            
+        hydra.homewizardBaseTopic += "/" + serial
+        hydra.homewizardBaseReturnTopic += "/" + serial
+        hydra.hydraStatusTopic += "/" + serial
+        hydra.hydraAuthTopic += "/" + serial
+
+    # Resub
+    client.subscribe(hydra.homewizardBaseReturnTopic + "/#")
+    client.subscribe(hydra.homewizardBaseReturnTopic)
+    client.subscribe(hydra.hydraStatusTopic + "/results")
+    client.subscribe(hydra.hydraAuthTopic + "/results")
+
+    #print(hydra.homewizardBaseTopic)
+    #print(hydra.homewizardBaseReturnTopic)
+    #print(hydra.hydraStatusTopic)
+    #print(hydra.hydraAuthTopic)
+
 
 # Client connected (CONNACK recieved) callback
 def on_connect(client, userdata, flags, rc):
@@ -8,10 +55,10 @@ def on_connect(client, userdata, flags, rc):
 
     # subscribe here to make sure we resub after a reconnect
     #client.subscribe("$SYS/broker/log/M/#")
-    client.subscribe(homewizardBaseReturnTopic + "/#")
-    client.subscribe(homewizardBaseReturnTopic)
-    client.subscribe(homewizardAuthReturnTopic)
-    client.subscribe(hydraStatusTopic)
+    client.subscribe(hydra.homewizardBaseReturnTopic + "/#")
+    client.subscribe(hydra.homewizardBaseReturnTopic)
+    client.subscribe(hydra.hydraStatusTopic + "/results")
+    client.subscribe(hydra.hydraAuthTopic + "/results")
 
 # PUBLISH Message recieved callback
 def on_message(client, userdata, msg):
@@ -19,7 +66,7 @@ def on_message(client, userdata, msg):
     
     string = msg.payload.decode("utf-8")
 
-    if(msg.topic.startswith(homewizardBaseReturnTopic)):
+    if(msg.topic.startswith(hydra.homewizardBaseReturnTopic)):
         print("Message recieved on topic", msg.topic)
         print("")
         try:
@@ -31,39 +78,37 @@ def on_message(client, userdata, msg):
         except:
             print("An error occurred while trying to parse as JSON")
         print(string)
-    elif(msg.topic.startswith(hydraStatusTopic)):
-        if(string == "HYD"):
-            print("Hydra detected")
-    elif(msg.topic.startswith(homewizardAuthReturnTopic)):
+    elif(msg.topic.startswith(hydra.hydraStatusTopic)):
+        print(msg.payload.decode("utf-8"))
+    elif(msg.topic.startswith(hydra.hydraAuthTopic)):
         import json
         data = json.loads(string)
         if(data["status"] == "ok"):
-            set_homewizard_bases(data["serial"])
+            if(data["request"]["route"] == "hydradisconnect"):
+                print("Disconnected HomeWizard")
+            elif(data["request"]["route"] == "hydralogin"):
+                print("Login successful")
+            # Check for serial
+            if data["serial"]:
+                set_topics(data["serial"])
+            else:
+                set_topics(None)
         else:
             print(data["errorMessage"])
     else:
         print(string)
 
-
-# Sets MQTT topics based on the serial
-def set_homewizard_bases(serial):
-    global homewizardBaseTopic
-    global homewizardBaseReturnTopic
-    client.unsubscribe(homewizardBaseReturnTopic) # Clean up subscribtions
-    homewizardBaseTopic = homewizardBaseTopic.rsplit('/', 1)[0] + "/" + serial
-    homewizardBaseReturnTopic = homewizardBaseReturnTopic.rsplit('/', 1)[0] + "/" + serial
-    client.subscribe(homewizardBaseReturnTopic)
-    print("New topics:")
-    print(homewizardBaseTopic)
-    print(homewizardBaseReturnTopic)
-
-
 # Logs in to hydra/homewizard
 def login(email, password):
-    data = {'email':email, 'password':password}
+    data = {'type': 'login', 'email':email, 'password':password}
     string = json.dumps(data)
-    client.publish(homewizardAuthTopic, string)
+    client.publish(hydra.hydraAuthTopic, string)
 
+# Tell hydra to disconnect
+def disconnect():
+    data = {'type': 'disconnect', 'email': '', 'password': ''}
+    string = json.dumps(data)
+    client.publish(hydra.hydraAuthTopic, string)
 
 # Stress test
 def stress_test(topic, msg, amount, delay):
@@ -71,14 +116,9 @@ def stress_test(topic, msg, amount, delay):
         client.publish(topic, msg)
         time.sleep(delay)
     print("Finished stress test")
-    
+
+
 argv = sys.argv[1:]
-brokerAddr = None
-brokerPort = None
-brokerUser = None
-brokerPass = None
-tls = False
-certFile = None
 
 try:
     opts, args = getopt.getopt(argv,"hb:s:x:")
@@ -95,50 +135,40 @@ else:
                 print("-x USER:PW  -- Username and password for MQTT server")
                 sys.exit()
             elif opt in ("-b"):
-                brokerAddr = arg.split(':')[0]
-                brokerPort = int(arg.split(':')[1])
+                hydra.brokerAddr = arg.split(':')[0]
+                hydra.brokerPort = int(arg.split(':')[1])
             elif opt in ("-s"):
-                certFile = arg
-                tls = True
+                hydra.certFile = arg
+                hydra.tls = True
             elif opt in ("-x"):
-                brokerUser = arg.split(':')[0]
-                brokerPass = arg.split(':')[1]
+                hydra.brokerUser = arg.split(':')[0]
+                hydra.brokerPass = arg.split(':')[1]
         except:
             print("Something went wrong trying to parse the arguments. Please check and try again")
             print("Type -h for help")
             sys.exit()
-    if brokerAddr is None:
+    if hydra.brokerAddr is None:
         print("MQTT Broker address required")
         sys.exit()
-
-
-# HomeWizard base topics.
-homewizardBaseTopic = "HMWZ" # + /serial
-homewizardBaseReturnTopic = "HMWZRETURN" # + /serial
-# Used for login requests
-homewizardAuthTopic = "HYDAUTH"
-homewizardAuthReturnTopic = homewizardAuthTopic + "/results"
-# Hydra status topic
-hydraStatusTopic = "HYDRA"
 
 
 client = mqtt.Client()
 client.on_connect = on_connect
 client.on_message = on_message
-if brokerUser is not None:
-    client.username_pw_set(brokerUser, brokerPass)
-
+if hydra.brokerUser is not None:
+    client.username_pw_set(hydra.brokerUser, hydra.brokerPass)
+set_topics()
 
 # Start the loop
 try:
-    if(tls):
+    if(hydra.tls):
         ####
         import os
         script_dir = os.path.dirname(__file__) #<-- absolute dir the script is in
-        client.tls_set(os.path.join(script_dir, certFile))
-        print("Using cert", certFile)
+        client.tls_set(os.path.join(script_dir, hydra.certFile))
+        print("Using cert", hydra.certFile)
         ####
-    client.connect(brokerAddr, brokerPort, 60)
+    client.connect(hydra.brokerAddr, hydra.brokerPort, 60)
 except:
     print("Oops")
 else:
@@ -159,17 +189,19 @@ while inputstring.upper() != "EXIT":
     inputstring = input("")
     if inputstring.upper() == "STS":
         print("Hailing hydra...")
-        client.publish(hydraStatusTopic, "STS")
+        client.publish(hydra.hydraStatusTopic, "get-status")
     elif inputstring.upper() == "STATUS":
         print("Requesting status...")
-        client.publish(homewizardBaseTopic, "get-status")
+        client.publish(hydra.homewizardBaseTopic, "get-status")
     elif inputstring.upper() == "SENSORS":
         print("Requesting sensors...")
-        client.publish(homewizardBaseTopic, "get-sensors")
+        client.publish(hydra.homewizardBaseTopic, "get-sensors")
     elif inputstring.upper() == "STRESS":
         stress_test(homewizardBaseTopic, "get-sensors", 10, 0)
     elif inputstring.upper() == "LOGIN":
         login("bram.kelder@student.stenden.com", "1234567890")
+    elif inputstring.upper() == "DISCONNECT":
+        disconnect()
     else:
         try:
             exec(inputstring)
