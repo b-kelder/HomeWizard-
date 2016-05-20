@@ -14,14 +14,29 @@ try:
 
                 print (r.text)
 
-                time.sleep(2)
+                time.sleep(0.5)
 
                 pdata = {"on":False, "sat":254, "bri":50,"hue":25500}
 
                 r = requests.put(url,data=json.dumps(pdata),headers=headers)
-
-                time.sleep(2)
                 print (r.text)
+                time.sleep(0.5)
+                
+
+                pdata = {"on":True, "sat":100, "bri":70,"hue":12371}
+
+                r = requests.put(url,data=json.dumps(pdata),headers=headers)
+
+                print (r.text)
+
+                time.sleep(0.5)
+
+                pdata = {"on":False, "sat":100, "bri":70,"hue":12371}
+
+                r = requests.put(url,data=json.dumps(pdata),headers=headers)
+                print (r.text)
+                time.sleep(0.5)
+                
 
 except KeyboardInterrupt:
         print ("End")
