@@ -121,14 +121,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         mainListView.setAdapter(listAdapter);
 
-        Button button = (Button) findViewById(R.id.testbutton);
-        button.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                mqttController.publish("HYDRA/HMWZ", "get-sensors");
-            }
-        });
-
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -186,10 +178,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
-
-
-
-
 
     private String readFile(){
         String settings = "";

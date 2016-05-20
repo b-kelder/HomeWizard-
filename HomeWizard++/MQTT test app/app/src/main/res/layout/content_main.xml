@@ -13,15 +13,6 @@
     tools:showIn="@layout/app_bar_main"
     android:id="@+id/test">
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="getsensors"
-        android:id="@+id/testbutton"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="54dp" />
-
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:orientation="vertical"
         android:layout_width="fill_parent"
@@ -32,6 +23,7 @@
             android:layout_height="495dp"
             android:id="@+id/mainListView">
         </ListView>
+
     </LinearLayout>
 
 </RelativeLayout>
