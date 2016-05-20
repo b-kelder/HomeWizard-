@@ -8,6 +8,12 @@ import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.List;
 
@@ -26,13 +32,36 @@ class DeviceAdapter extends ArrayAdapter<HomewizardSwitch> {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        HomewizardSwitch sw = getItem(position);
+
+        final HomewizardSwitch sw = getItem(position);
         if(convertView == null){
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.row, parent, false);
         }
 
         TextView swName = (TextView) convertView.findViewById(R.id.rowTextView);
-        Switch swSwitch = (Switch) convertView.findViewById(R.id.rowSwitch);
+        final Switch swSwitch = (Switch) convertView.findViewById(R.id.rowSwitch);
+
+        MqttController.getInstance().addMessageListener(new MqttControllerMessageCallbackListener() {
+            @Override
+            public void onMessageArrived(String topic, MqttMessage message) {
+
+                int id = Integer.parseInt(topic.substring(topic.lastIndexOf("/")+1));
+
+                if(id == sw.getId()) {
+                    try {
+                        JSONObject returnvalue = new JSONObject(message.toString());
+                        if (returnvalue.getString("status").equals("ok")) {
+                            swSwitch.setEnabled(true);
+                        } else {
+                            swSwitch.toggle();
+                            swSwitch.setEnabled(true);
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
 
         swName.setText(sw.getName());
         swSwitch.setChecked(sw.getStatus());
@@ -41,15 +70,20 @@ class DeviceAdapter extends ArrayAdapter<HomewizardSwitch> {
 
         swSwitch.setOnCheckedChangeListener((new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    MqttController.getInstance().publish("HMWZ/sw/" + switchId, "on");
+                if (swSwitch.isEnabled()) {
+                    if (isChecked) {
+                        MqttController.getInstance().publish("HYDRA/HMWZ/sw/" + switchId, "on");
+                        swSwitch.setEnabled(false);
 
-                } else {
-                    MqttController.getInstance().publish("HMWZ/sw/" + switchId, "off");
+                    } else {
+                        MqttController.getInstance().publish("HYDRA/HMWZ/sw/" + switchId, "off");
+                        swSwitch.setEnabled(false);
+                    }
                 }
             }
         }));
 
         return convertView;
     }
+
 }

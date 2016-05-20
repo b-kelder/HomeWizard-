@@ -1,6 +1,7 @@
 package idu.stenden.inf1i.homewizard;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Looper;
 import android.os.Message;
@@ -36,8 +37,14 @@ import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.logging.Handler;
@@ -46,6 +53,7 @@ import java.util.logging.LogRecord;
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private MqttController mqttController;
+
     private ListView mainListView;
     private DeviceAdapter listAdapter;
 
@@ -59,22 +67,37 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         //MQTT
         mqttController = MqttController.getInstance();
+        mqttController.setContext(getApplicationContext());
+        mqttController.connect("tcp://test.mosquitto.org:1883", "Homewizard++");
+
         mqttController.addMessageListener(new MqttControllerMessageCallbackListener() {
             @Override
             public void onMessageArrived(String topic, MqttMessage message) {
-                try{
+                try {
                     JSONObject json = new JSONObject(message.toString());
                     json = json.getJSONObject("request");
                     String route = json.getString("route");
 
-                    if (route.equals("/get-sensors")){
-                        listAdapter.clear();
+                    if (route.equals("hydrastatus")) {
+                        json = new JSONObject(message.toString());
+                        String serial = json.getString("serial");
 
+                        JSONObject file = new JSONObject(readFile());
+
+                        if (serial.equals(file.getString("serial"))){
+                            mqttController.publish("HYDRA/HMWZ", "get-sensors");
+                        } else if (file.getString("email").length() > 1){
+                            mqttController.publish("HYDRA/AUTH", "{\"email\":\"" + file.getString("email") + "\", \"password\":\"" + file.getString("password") + "\", \"type\":\"login\"}");
+                            mqttController.publish("HYDRA/HMWZ", "get-sensors");
+                        }
+                    }
+
+                    if (route.equals("/get-sensors")) {
+                        listAdapter.clear();
                         json = new JSONObject(message.toString());
                         json = json.getJSONObject("response");
                         JSONArray array = json.getJSONArray("switches");
-
-                        for (int i = 0; i < array.length(); i++){
+                        for (int i = 0; i < array.length(); i++) {
                             JSONObject Swagtestsysteem = array.getJSONObject(i);
 
                             String name = Swagtestsysteem.getString("name");
@@ -83,31 +106,28 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             listAdapter.add(new HomewizardSwitch(name, status, id));
                         }
                     }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-                catch(Exception e){
-                    //Fuck off
-                }
-
             }
         });
-        mqttController.setContext(getApplicationContext());
-        mqttController.connect("tcp://test.mosquitto.org:1883", "Homewizard++");
 
-        mainListView = (ListView) findViewById( R.id.mainListView );
+        mainListView = (ListView) findViewById(R.id.mainListView);
 
         // Create and populate a List of planet names.
         ArrayList<HomewizardSwitch> itemsList = new ArrayList<HomewizardSwitch>();
 
-        listAdapter = new DeviceAdapter(this, R.layout.row, R.id.rowTextView , itemsList);
+        listAdapter = new DeviceAdapter(this, R.layout.row, R.id.rowTextView, itemsList);
 
-        mainListView.setAdapter( listAdapter );
+        mainListView.setAdapter(listAdapter);
 
         Button button = (Button) findViewById(R.id.testbutton);
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                mqttController.publish("HMWZ", "get-sensors");
+                mqttController.publish("HYDRA/HMWZ", "get-sensors");
             }
         });
+
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -118,6 +138,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
     }
+
 
     @Override
     public void onBackPressed() {
@@ -157,22 +178,41 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
+        if (id == R.id.nav_settings) {
+            startActivity(new Intent(MainActivity.this, Settings.class));
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+
+
+
+
+    private String readFile(){
+        String settings = "";
+        try {
+            InputStream inputStream = openFileInput("config.json");
+
+            if ( inputStream != null ) {
+                InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+                String receiveString = "";
+                StringBuilder stringBuilder = new StringBuilder();
+
+                while ( (receiveString = bufferedReader.readLine()) != null ) {
+                    stringBuilder.append(receiveString);
+                }
+
+                inputStream.close();
+                settings = stringBuilder.toString();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return settings;
     }
 }

@@ -12,6 +12,7 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -55,6 +56,8 @@ public class MqttController {
         context = applicationContext;
     }
 
+
+
     public void connect(String broker, String clientId){
         client =  new MqttAndroidClient(context, broker, clientId);
 
@@ -75,8 +78,6 @@ public class MqttController {
                             for(MqttControllerMessageCallbackListener listener : messageListeners){
                                 listener.onMessageArrived(topic, message);
                             }
-
-
                         }
 
                         @Override
@@ -86,13 +87,10 @@ public class MqttController {
                     });
 
                     connectSucces = true;
-                    try {
-                        client.subscribe("HMWZRETURN/#", 0);
-                        client.subscribe("HMWZRETURN", 0);
-                        publish("HMWZ", "get-sensors");
-                    } catch (MqttException e) {
-                        e.printStackTrace();
-                    }
+                    subscribe("HYDRA/HMWZRETURN");
+                    subscribe("HYDRA/HMWZRETURN/#");
+                    subscribe("HYDRA/STATUS/results");
+                    publish("HYDRA/STATUS", "get-status");
                 }
 
                 @Override
@@ -114,14 +112,20 @@ public class MqttController {
         if(connectSucces){
             try {
                 client.publish(topic, message);
-                Toast toast = Toast.makeText(context, "MQTT message send", Toast.LENGTH_SHORT);
-                toast.show();
             } catch (MqttException e) {
                 e.printStackTrace();
             }
         }else{
             Toast toast = Toast.makeText(context, "Could not connect to broker", Toast.LENGTH_SHORT);
             toast.show();
+        }
+    }
+
+    public void subscribe(String topic){
+        try {
+            client.subscribe(topic, 0);
+        } catch (MqttException e) {
+            e.printStackTrace();
         }
     }
 }
