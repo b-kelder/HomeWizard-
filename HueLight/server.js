@@ -55,27 +55,28 @@ api.lights().then(function(result) {
 		} else if(property == 'sat') {
 			newState = state.sat(value);
 		} else if(property == 'rgb') {
-			if(identifier != 'all'){
+			if(identifier != 'all') {
 				rgb = value.split(',');
 				newState = state.rgb(rgb[0], rgb[1], rgb[2]);
-			}	
+			} else {
+				return;
+			}
 		} else if(property == 'hsb') {
-			if(identifier != 'all'){
+			if(identifier != 'all') {
 				hsb = value.split(',');
 				newState = state.hsb(hsb[0], hsb[1], hsb[2]);
+			} else {
+				return;
 			}
 		}
 		
-		try {
-			var regexInteger = new RegExp('^\\d+$');
-			if(identifier == "all") {
-				// Group 0 is always all lights
-				api.setGroupLightState(0, newState).done();
-			} else if(regexInteger.test(identifier)) {
-				api.setLightState(identifier, newState).done();
-			}
-		} catch(ex) {
-			//
+
+		var regexInteger = new RegExp('^\\d+$');
+		if(identifier == "all") {
+			// Group 0 is always all lights
+			api.setGroupLightState(0, newState).done();
+		} else if(regexInteger.test(identifier)) {
+			api.setLightState(identifier, newState).done();
 		}
         
     });
