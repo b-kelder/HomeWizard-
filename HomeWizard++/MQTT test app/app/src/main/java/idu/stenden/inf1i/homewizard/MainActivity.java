@@ -53,9 +53,12 @@ import java.util.logging.LogRecord;
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private MqttController mqttController;
+    private AppDataContainer appDataContainer;
 
     private ListView mainListView;
     private DeviceAdapter listAdapter;
+
+    boolean eventHandlersAdded = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,59 +68,65 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        appDataContainer = AppDataContainer.getInstance().getInstance();
+
         //MQTT
         mqttController = MqttController.getInstance();
         mqttController.setContext(getApplicationContext());
-        mqttController.connect("tcp://test.mosquitto.org:1883", "Homewizard++");
 
-        mqttController.addMessageListener(new MqttControllerMessageCallbackListener() {
-            @Override
-            public void onMessageArrived(String topic, MqttMessage message) {
-                try {
-                    JSONObject json = new JSONObject(message.toString());
-                    json = json.getJSONObject("request");
-                    String route = json.getString("route");
+        if(!mqttController.isConnected()){
+            mqttController.connect("tcp://test.mosquitto.org:1883", "Homewizard++");
+        }
 
-                    if (route.equals("hydrastatus")) {
-                        json = new JSONObject(message.toString());
-                        String serial = json.getString("serial");
+        if(!eventHandlersAdded) {
+            eventHandlersAdded = true;
+            mqttController.addMessageListener(new MqttControllerMessageCallbackListener() {
+                @Override
+                public void onMessageArrived(String topic, MqttMessage message) {
+                    try {
+                        JSONObject json = new JSONObject(message.toString());
+                        json = json.getJSONObject("request");
+                        String route = json.getString("route");
 
-                        JSONObject file = new JSONObject(readFile());
+                        if (route.equals("hydrastatus")) {
+                            json = new JSONObject(message.toString());
+                            String serial = json.getString("serial");
 
-                        if (serial.equals(file.getString("serial"))){
-                            mqttController.publish("HYDRA/HMWZ", "get-sensors");
-                        } else if (file.getString("email").length() > 1){
-                            mqttController.publish("HYDRA/AUTH", "{\"email\":\"" + file.getString("email") + "\", \"password\":\"" + file.getString("password") + "\", \"type\":\"login\"}");
-                            mqttController.publish("HYDRA/HMWZ", "get-sensors");
+                            JSONObject file = new JSONObject(readFile());
+
+                            if (serial.equals(file.getString("serial"))) {
+                                mqttController.publish("HYDRA/HMWZ", "get-sensors");
+                            } else if (file.getString("email").length() > 1) {
+                                mqttController.publish("HYDRA/AUTH", "{\"email\":\"" + file.getString("email") + "\", \"password\":\"" + file.getString("password") + "\", \"type\":\"login\"}");
+                                mqttController.publish("HYDRA/HMWZ", "get-sensors");
+                            }
                         }
-                    }
 
-                    if (route.equals("/get-sensors")) {
-                        listAdapter.clear();
-                        json = new JSONObject(message.toString());
-                        json = json.getJSONObject("response");
-                        JSONArray array = json.getJSONArray("switches");
-                        for (int i = 0; i < array.length(); i++) {
-                            JSONObject Swagtestsysteem = array.getJSONObject(i);
+                        if (route.equals("/get-sensors")) {
+                            listAdapter.clear();
+                            appDataContainer.clearArray();
+                            json = new JSONObject(message.toString());
+                            json = json.getJSONObject("response");
+                            JSONArray array = json.getJSONArray("switches");
+                            for (int i = 0; i < array.length(); i++) {
+                                JSONObject Swagtestsysteem = array.getJSONObject(i);
 
-                            String name = Swagtestsysteem.getString("name");
-                            String status = Swagtestsysteem.getString("status");
-                            String id = Swagtestsysteem.getString("id");
-                            listAdapter.add(new HomewizardSwitch(name, status, id));
+                                String name = Swagtestsysteem.getString("name");
+                                String status = Swagtestsysteem.getString("status");
+                                String id = Swagtestsysteem.getString("id");
+                                //listAdapter.add(new HomewizardSwitch(name, status, id));
+                                appDataContainer.add(new HomewizardSwitch(name, status, id));
+                            }
                         }
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();
                 }
-            }
-        });
-
+            });
+        }
         mainListView = (ListView) findViewById(R.id.mainListView);
 
-        // Create and populate a List of planet names.
-        ArrayList<HomewizardSwitch> itemsList = new ArrayList<HomewizardSwitch>();
-
-        listAdapter = new DeviceAdapter(this, R.layout.row, R.id.rowTextView, itemsList);
+        listAdapter = new DeviceAdapter(this, R.layout.row, R.id.rowTextView, appDataContainer.getArray());
 
         mainListView.setAdapter(listAdapter);
 
@@ -157,8 +166,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        if (id == R.id.action_refresh) {
+            mqttController.publish("HYDRA/HMWZ", "get-sensors");
         }
 
         return super.onOptionsItemSelected(item);
@@ -172,6 +181,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         if (id == R.id.nav_settings) {
             startActivity(new Intent(MainActivity.this, Settings.class));
+        } else if (id == R.id.nav_lights) {
+            startActivity(new Intent(MainActivity.this, Managelights.class));
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -193,10 +204,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 while ( (receiveString = bufferedReader.readLine()) != null ) {
                     stringBuilder.append(receiveString);
                 }
-
                 inputStream.close();
                 settings = stringBuilder.toString();
             }
+
         } catch (Exception e) {
             e.printStackTrace();
         }

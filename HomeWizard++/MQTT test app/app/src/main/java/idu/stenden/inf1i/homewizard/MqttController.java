@@ -56,7 +56,14 @@ public class MqttController {
         context = applicationContext;
     }
 
-
+    public boolean isConnected()
+    {
+        if(client != null){
+            return client.isConnected();
+        }else{
+            return false;
+        }
+    }
 
     public void connect(String broker, String clientId){
         client =  new MqttAndroidClient(context, broker, clientId);

@@ -26,7 +26,18 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Settings"></activity>
+        <activity android:name=".Settings" />
+        <activity
+            android:name=".Managelights"
+            android:label="@string/title_activity_managelights"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="idu.stenden.inf1i.homewizard.MainActivity" />
+        </activity>
+        <activity android:name=".AddChoise" />
+        <activity android:name=".AddHomewizardlight"></activity>
     </application>
 
 </manifest>
