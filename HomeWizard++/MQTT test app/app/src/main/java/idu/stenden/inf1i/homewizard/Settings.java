@@ -89,7 +89,6 @@ public class Settings extends AppCompatActivity{
                         Toast toaster = Toast.makeText(getApplicationContext(), "Connection failed", Toast.LENGTH_SHORT);
                         toaster.show();
                     }
-                    
                 } catch (JSONException e) {
                     Toast toaster = Toast.makeText(getApplicationContext(), "Unable to connect to broker", Toast.LENGTH_SHORT);
                     toaster.show();
