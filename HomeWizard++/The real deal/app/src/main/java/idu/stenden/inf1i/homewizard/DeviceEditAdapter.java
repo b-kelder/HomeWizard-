@@ -50,8 +50,8 @@ class DeviceEditAdapter extends DeviceAdapter {
             }
         };
 		
-		viewMessageCallbacks.add(callbackListener)
-		MqttController.getInstance().addMessageListener(callbackListener)
+		viewMessageCallbacks.add(callbackListener);
+		MqttController.getInstance().addMessageListener(callbackListener);
 
         btnName.setText(sw.getName());
 

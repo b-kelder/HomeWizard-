@@ -15,6 +15,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -65,8 +66,8 @@ class DeviceAdapter extends ArrayAdapter<HomewizardSwitch> {
             }
         };
 		
-		viewMessageCallbacks.add(callbackListener)
-		MqttController.getInstance().addMessageListener(callbackListener)
+		viewMessageCallbacks.add(callbackListener);
+		MqttController.getInstance().addMessageListener(callbackListener);
 
         swName.setText(sw.getName());
         swSwitch.setChecked(sw.getStatus());
@@ -94,8 +95,7 @@ class DeviceAdapter extends ArrayAdapter<HomewizardSwitch> {
 	@Override
 	public void clear() {
 		super.clear();
-		MqttControllerMessageCallbackListener[] array;
-		MqttController.getInstance().removeMessageListeners(viewMessageCallbacks.toArray(array));
+		MqttController.getInstance().removeMessageListeners((MqttControllerMessageCallbackListener[])viewMessageCallbacks.toArray());
 	}
 
 }
