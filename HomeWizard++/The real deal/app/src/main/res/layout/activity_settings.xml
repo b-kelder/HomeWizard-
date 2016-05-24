@@ -88,7 +88,7 @@
         android:hint="IP address"/>
 
     <EditText
-        android:layout_width="150px"
+        android:layout_width="200px"
         android:layout_height="wrap_content"
         android:id="@+id/brokerPort"
         android:layout_below="@+id/brokerIP"
@@ -100,7 +100,8 @@
         android:layout_height="wrap_content"
         android:text="Confirm"
         android:id="@+id/bkrConfirmBtn"
-        android:layout_below="@+id/brokerPort"
+        android:layout_below="@+id/brokerIP"
+        android:layout_alignStart="@+id/clearBtn"
         android:layout_alignEnd="@+id/brokerIP" />
 
 </RelativeLayout>

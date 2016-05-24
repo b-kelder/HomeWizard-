@@ -85,11 +85,6 @@ public class Settings extends AppCompatActivity{
                     JSONObject file = new JSONObject(readFile("broker.json"));
                     mqttController.connect("tcp://" + file.getString("ip") + ":" + file.getString("port"), "Homewizard++");
 
-                    if(!mqttController.isConnected())
-                    {
-                        Toast toaster = Toast.makeText(getApplicationContext(), "Connection failed", Toast.LENGTH_SHORT);
-                        toaster.show();
-                    }
                 } catch (JSONException e) {
                     Toast toaster = Toast.makeText(getApplicationContext(), "Unable to connect to broker", Toast.LENGTH_SHORT);
                     toaster.show();
