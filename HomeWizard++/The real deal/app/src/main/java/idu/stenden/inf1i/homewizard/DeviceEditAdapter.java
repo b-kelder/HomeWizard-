@@ -19,14 +19,14 @@ import java.util.List;
 /**
  * Created by Bram on 19/05/2016.
  */
-class DeviceEditAdapter extends ArrayAdapter<HomewizardSwitch> {
+class DeviceEditAdapter extends DeviceAdapter {
 
     public DeviceEditAdapter(Context context, int resource) {
         super(context, resource);
     }
 
     public DeviceEditAdapter(Context context, int resource, int textViewResourceId, List<?> objects) {
-        super(context, resource, textViewResourceId, (List<HomewizardSwitch>) objects);
+        super(context, resource, textViewResourceId, objects);
     }
 
     @Override
@@ -41,13 +41,17 @@ class DeviceEditAdapter extends ArrayAdapter<HomewizardSwitch> {
         final Button btnChange = (Button) convertView.findViewById(R.id.btnChange);
         final Button btnDelete = (Button) convertView.findViewById(R.id.btnDelete);
 
-        MqttController.getInstance().addMessageListener(new MqttControllerMessageCallbackListener() {
+		
+		MqttControllerMessageCallbackListener callbackListener = new MqttControllerMessageCallbackListener() {
             @Override
             public void onMessageArrived(String topic, MqttMessage message) {
                 int id = Integer.parseInt(topic.substring(topic.lastIndexOf("/")+1));
 
             }
-        });
+        };
+		
+		viewMessageCallbacks.add(callbackListener)
+		MqttController.getInstance().addMessageListener(callbackListener)
 
         btnName.setText(sw.getName());
 

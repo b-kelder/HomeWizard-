@@ -22,6 +22,8 @@ import java.util.List;
  */
 class DeviceAdapter extends ArrayAdapter<HomewizardSwitch> {
 
+	protected ArrayList<MqttControllerMessageCallbackListener> viewMessageCallbacks = new ArrayList<MqttControllerMessageCallbackListener>();
+
     public DeviceAdapter(Context context, int resource) {
         super(context, resource);
     }
@@ -40,8 +42,8 @@ class DeviceAdapter extends ArrayAdapter<HomewizardSwitch> {
 
         TextView swName = (TextView) convertView.findViewById(R.id.rowTextView);
         final Switch swSwitch = (Switch) convertView.findViewById(R.id.rowSwitch);
-
-        MqttController.getInstance().addMessageListener(new MqttControllerMessageCallbackListener() {
+		
+		MqttControllerMessageCallbackListener callbackListener = new MqttControllerMessageCallbackListener() {
             @Override
             public void onMessageArrived(String topic, MqttMessage message) {
 
@@ -61,7 +63,10 @@ class DeviceAdapter extends ArrayAdapter<HomewizardSwitch> {
                     }
                 }
             }
-        });
+        };
+		
+		viewMessageCallbacks.add(callbackListener)
+		MqttController.getInstance().addMessageListener(callbackListener)
 
         swName.setText(sw.getName());
         swSwitch.setChecked(sw.getStatus());
@@ -85,5 +90,12 @@ class DeviceAdapter extends ArrayAdapter<HomewizardSwitch> {
 
         return convertView;
     }
+	
+	@Override
+	public void clear() {
+		super.clear();
+		MqttControllerMessageCallbackListener[] array;
+		MqttController.getInstance().removeMessageListeners(viewMessageCallbacks.toArray(array));
+	}
 
 }

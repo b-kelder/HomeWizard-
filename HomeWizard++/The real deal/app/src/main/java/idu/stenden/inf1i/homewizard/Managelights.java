@@ -21,6 +21,8 @@ public class Managelights extends AppCompatActivity {
     private ListView mainListView;
     private DeviceEditAdapter listAdapter;
     private AppDataContainer appDataContainer;
+	
+	private boolean eventHandlersAdded = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,12 +36,17 @@ public class Managelights extends AppCompatActivity {
         //MQTT
         mqttController = MqttController.getInstance();
         mqttController.setContext(getApplicationContext());
-        mqttController.addMessageListener(new MqttControllerMessageCallbackListener() {
-            @Override
-            public void onMessageArrived(String topic, MqttMessage message) {
+		
+		if(!eventHandlersAdded) {
+			eventHandlersAdded = true;
+			mqttController.addMessageListener(new MqttControllerMessageCallbackListener() {
+				@Override
+				public void onMessageArrived(String topic, MqttMessage message) {
 
-            }
-        });
+				}
+			});
+		}
+        
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {

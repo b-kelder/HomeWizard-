@@ -51,6 +51,18 @@ public class MqttController {
     {
         messageListeners.add(listener);
     }
+	
+	public void removeMessageListener(MqttControllerMessageCallbackListener listener)
+	{
+		messageListeners.remove(listener);
+	}
+	
+	public void removeMessageListeners(MqttControllerMessageCallbackListener[] listeners)
+	{
+		for(MqttControllerMessageCallbackListener l:listeners) {
+			messageListeners.remove(l);
+		}
+	}
 
     public void setContext(Context applicationContext){
         context = applicationContext;
