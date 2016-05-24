@@ -23,9 +23,9 @@ public class AddHomewizardlight extends AppCompatActivity {
         mqttController = MqttController.getInstance();
         mqttController.setContext(getApplicationContext());
 
-        Button loginbutton = (Button) findViewById(R.id.HMWZlightadd);
+        Button addHMWZ = (Button) findViewById(R.id.HMWZlightadd);
 
-        loginbutton.setOnClickListener(new View.OnClickListener() {
+        addHMWZ.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 if (!HMWZlightname.getText().toString().isEmpty() && !HMWZlightcode.getText().toString().isEmpty()) {
                     mqttController.publish("HYDRA/HMWZ/sw/add/" + HMWZlightname.getText() + "/switch/" + HMWZlightcode.getText(), "/0");

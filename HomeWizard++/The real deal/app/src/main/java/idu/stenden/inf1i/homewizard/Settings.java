@@ -34,6 +34,7 @@ public class Settings extends AppCompatActivity{
     //fields
     private MqttController mqttController;
     private String loginsettings, serial, brokersettings;
+    private boolean eventHandlersAdded = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,6 +95,11 @@ public class Settings extends AppCompatActivity{
                     toaster.show();
                     e.printStackTrace();
                 }
+
+                if(!mqttController.isConnected()){
+                    Toast toaster = Toast.makeText(getApplicationContext(), "Connection failed", Toast.LENGTH_SHORT);
+                    toaster.show();
+                }
             }
         });
 
@@ -115,29 +121,32 @@ public class Settings extends AppCompatActivity{
             mqttController.subscribe("HYDRA/AUTH/results");
         }
 
-        //als er een bericht terug word ontvangen
-        mqttController.addMessageListener(new MqttControllerMessageCallbackListener() {
-            @Override
-            public void onMessageArrived(String topic, MqttMessage message) {
+        if(!eventHandlersAdded) {
+            eventHandlersAdded = true;
+            //als er een bericht terug word ontvangen
+            mqttController.addMessageListener(new MqttControllerMessageCallbackListener() {
+                @Override
+                public void onMessageArrived(String topic, MqttMessage message) {
 
-                if (topic.equals("HYDRA/AUTH/results")) {
-                    //haal serial code uit json bericht
-                    JSONObject json = null;
-                    try {
-                        json = new JSONObject(message.toString());
-                        if (json.getString("status").equals("ok")) {
-                            String serial = json.getString("serial");
-                            writeFile("login.json", "{\"email\":\"" + emailField.getText().toString() + "\", \"password\":\"" + passwordField.getText().toString() + "\", \"serial\":\"" + serial + "\"}");
-                        } else {
-                            Toast toast = Toast.makeText(getApplicationContext(), "Login failed", Toast.LENGTH_SHORT);
-                            toast.show();
+                    if (topic.equals("HYDRA/AUTH/results")) {
+                        //haal serial code uit json bericht
+                        JSONObject json = null;
+                        try {
+                            json = new JSONObject(message.toString());
+                            if (json.getString("status").equals("ok")) {
+                                String serial = json.getString("serial");
+                                writeFile("login.json", "{\"email\":\"" + emailField.getText().toString() + "\", \"password\":\"" + passwordField.getText().toString() + "\", \"serial\":\"" + serial + "\"}");
+                            } else {
+                                Toast toast = Toast.makeText(getApplicationContext(), "Login failed", Toast.LENGTH_SHORT);
+                                toast.show();
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
                         }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
                     }
                 }
-            }
-        });
+            });
+        }
     }
 
     public String getSerial(){
