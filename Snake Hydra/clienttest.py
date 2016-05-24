@@ -98,6 +98,7 @@ def on_message(client, userdata, msg):
     else:
         print(string)
 
+
 # Logs in to hydra/homewizard
 def login(email, password):
     data = {'type': 'login', 'email':email, 'password':password}
@@ -205,6 +206,6 @@ while inputstring.upper() != "EXIT":
     else:
         try:
             exec(inputstring)
-        except:
-            print("An error occured while parsing")
+        except Exception as e:
+            print(e)
 
