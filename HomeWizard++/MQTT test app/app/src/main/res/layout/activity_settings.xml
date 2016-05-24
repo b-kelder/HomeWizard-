@@ -82,7 +82,7 @@
     <EditText
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/editText"
+        android:id="@+id/brokerIP"
         android:layout_below="@+id/brokerSettings"
         android:layout_alignParentStart="true"
         android:hint="IP address"/>
@@ -90,8 +90,8 @@
     <EditText
         android:layout_width="150px"
         android:layout_height="wrap_content"
-        android:id="@+id/editText2"
-        android:layout_below="@+id/editText"
+        android:id="@+id/brokerPort"
+        android:layout_below="@+id/brokerIP"
         android:layout_alignParentStart="true"
         android:hint="Port"/>
 
@@ -100,7 +100,7 @@
         android:layout_height="wrap_content"
         android:text="Confirm"
         android:id="@+id/bkrConfirmBtn"
-        android:layout_below="@+id/editText2"
-        android:layout_alignEnd="@+id/editText" />
+        android:layout_below="@+id/brokerPort"
+        android:layout_alignEnd="@+id/brokerIP" />
 
 </RelativeLayout>

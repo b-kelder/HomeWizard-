@@ -73,6 +73,9 @@ public class MqttController {
                 @Override
                 public void onSuccess(IMqttToken asyncActionToken) {
 
+                    Toast toast = Toast.makeText(context, "Connected to broker", Toast.LENGTH_SHORT);
+                    toast.show();
+
                     client.setCallback(new MqttCallback() {
                         @Override
                         public void connectionLost(Throwable cause) {

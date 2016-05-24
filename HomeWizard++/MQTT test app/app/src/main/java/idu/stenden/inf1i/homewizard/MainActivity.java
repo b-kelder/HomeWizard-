@@ -74,8 +74,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mqttController = MqttController.getInstance();
         mqttController.setContext(getApplicationContext());
 
-        if(!mqttController.isConnected()){
-            mqttController.connect("tcp://test.mosquitto.org:1883", "Homewizard++");
+
+        try {
+            JSONObject file = new JSONObject(readFile("broker.json"));
+            if(!mqttController.isConnected()){
+                mqttController.connect("tcp://" + file.getString("ip") + ":" + file.getString("port"), "Homewizard++");
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
 
         if(!eventHandlersAdded) {
@@ -92,7 +98,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             json = new JSONObject(message.toString());
                             String serial = json.getString("serial");
 
-                            JSONObject file = new JSONObject(readFile());
+                            JSONObject file = new JSONObject(readFile("login.json"));
 
                             if (serial.equals(file.getString("serial"))) {
                                 mqttController.publish("HYDRA/HMWZ", "get-sensors");
@@ -190,10 +196,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
-    private String readFile(){
+    private String readFile(String file){
         String settings = "";
         try {
-            InputStream inputStream = openFileInput("config.json");
+            InputStream inputStream = openFileInput(file);
 
             if ( inputStream != null ) {
                 InputStreamReader inputStreamReader = new InputStreamReader(inputStream);

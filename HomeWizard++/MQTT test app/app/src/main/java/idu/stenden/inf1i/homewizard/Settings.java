@@ -33,8 +33,7 @@ public class Settings extends AppCompatActivity{
 
     //fields
     private MqttController mqttController;
-    private String settings;
-    private String serial;
+    private String loginsettings, serial, brokersettings;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,21 +43,23 @@ public class Settings extends AppCompatActivity{
         //geef text velden aan.
         final EditText emailField = (EditText) findViewById(R.id.emailField);
         final EditText passwordField = (EditText) findViewById(R.id.passwordField);
-
-        settings = readFile();
+        final EditText brokerIP = (EditText) findViewById(R.id.brokerIP);
+        final EditText brokerPort = (EditText) findViewById(R.id.brokerPort);
 
         try {
-            JSONObject settingsFile = new JSONObject(settings);
-            serial = settingsFile.getString("serial");
-            emailField.setText(settingsFile.getString("email"));
-            passwordField.setText(settingsFile.getString("password"));
+            loginsettings = readFile("login.json");
+            JSONObject loginSettingsFile = new JSONObject(loginsettings);
+            serial = loginSettingsFile.getString("serial");
+            emailField.setText(loginSettingsFile.getString("email"));
+            passwordField.setText(loginSettingsFile.getString("password"));
+
+            brokersettings = readFile("broker.json");
+            JSONObject brokerSettingsFile = new JSONObject(brokersettings);
+            brokerIP.setText(brokerSettingsFile.getString("ip"));
+            brokerPort.setText(brokerSettingsFile.getString("port"));
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
-        //subscribe op topic
-        mqttController = MqttController.getInstance();
-        mqttController.subscribe("HYDRA/AUTH/results");
 
         //set button functionaliteit
         Button loginbutton = (Button) findViewById(R.id.loginButton);
@@ -66,6 +67,27 @@ public class Settings extends AppCompatActivity{
             public void onClick(View v) {
                 //publish email/password
                 mqttController.publish("HYDRA/AUTH", "{\"email\":\"" + emailField.getText().toString() + "\", \"password\":\"" + passwordField.getText().toString() + "\", \"type\":\"login\"}");
+                Toast toast = Toast.makeText(getApplicationContext(), "Trying to log in", Toast.LENGTH_SHORT);
+                toast.show();
+            }
+        });
+
+        Button brokerSettings = (Button) findViewById(R.id.bkrConfirmBtn);
+        brokerSettings.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                //publish email/password
+                writeFile("broker.json", "{\"ip\":\"" + brokerIP.getText() + "\", \"port\":\"" + brokerPort.getText() + "\"}");
+                Toast toast = Toast.makeText(getApplicationContext(), "Trying to connect to broker", Toast.LENGTH_SHORT);
+                toast.show();
+
+                try {
+                    JSONObject file = new JSONObject(readFile("broker.json"));
+                    mqttController.connect("tcp://" + file.getString("ip") + ":" + file.getString("port"), "Homewizard++");
+                } catch (JSONException e) {
+                    Toast toaster = Toast.makeText(getApplicationContext(), "Unable to connect to broker", Toast.LENGTH_SHORT);
+                    toaster.show();
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -73,12 +95,19 @@ public class Settings extends AppCompatActivity{
         Button clearbutton = (Button) findViewById(R.id.clearBtn);
         clearbutton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                writeFile("{\"email\":\"\", \"password\":\"\"}");
+                writeFile("login.json", "{\"email\":\"\", \"password\":\"\"}");
                 emailField.setText("");
                 passwordField.setText("");
+                Toast toast = Toast.makeText(getApplicationContext(), "Cleared all login data", Toast.LENGTH_SHORT);
+                toast.show();
             }
         });
 
+        //subscribe op topic
+        mqttController = MqttController.getInstance();
+        if(mqttController.isConnected()){
+            mqttController.subscribe("HYDRA/AUTH/results");
+        }
 
         //als er een bericht terug word ontvangen
         mqttController.addMessageListener(new MqttControllerMessageCallbackListener() {
@@ -92,7 +121,7 @@ public class Settings extends AppCompatActivity{
                         json = new JSONObject(message.toString());
                         if (json.getString("status").equals("ok")) {
                             String serial = json.getString("serial");
-                            writeFile("{\"email\":\"" + emailField.getText().toString() + "\", \"password\":\"" + passwordField.getText().toString() + "\", \"serial\":\"" + serial + "\"}");
+                            writeFile("login.json", "{\"email\":\"" + emailField.getText().toString() + "\", \"password\":\"" + passwordField.getText().toString() + "\", \"serial\":\"" + serial + "\"}");
                         } else {
                             Toast toast = Toast.makeText(getApplicationContext(), "Login failed", Toast.LENGTH_SHORT);
                             toast.show();
@@ -109,10 +138,10 @@ public class Settings extends AppCompatActivity{
         return serial;
     }
 
-    private String readFile(){
+    private String readFile(String file){
         String settings = "";
         try {
-            InputStream inputStream = openFileInput("config.json");
+            InputStream inputStream = openFileInput(file);
 
             if ( inputStream != null ) {
                 InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
@@ -134,10 +163,10 @@ public class Settings extends AppCompatActivity{
         return settings;
     }
 
-    private void writeFile(String data){
+    private void writeFile(String file, String data){
         //write login info naar een file
         try {
-            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(openFileOutput("config.json", Context.MODE_PRIVATE));
+            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(openFileOutput(file, Context.MODE_PRIVATE));
             outputStreamWriter.write(data);
             outputStreamWriter.close();
         }
