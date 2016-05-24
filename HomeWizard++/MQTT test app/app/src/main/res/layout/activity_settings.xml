@@ -26,7 +26,8 @@
         android:id="@+id/emailField"
         android:layout_below="@+id/textView2"
         android:layout_alignParentStart="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentEnd="true"
+        android:hint="login@example.com"/>
 
     <EditText
         android:layout_width="wrap_content"
@@ -36,7 +37,8 @@
         android:id="@+id/passwordField"
         android:layout_below="@+id/emailField"
         android:layout_alignParentStart="true"
-        android:layout_alignEnd="@+id/emailField" />
+        android:layout_alignEnd="@+id/emailField"
+        android:hint="Password"/>
 
     <Button
         style="?android:attr/buttonStyleSmall"
@@ -55,5 +57,50 @@
         android:id="@+id/clearBtn"
         android:layout_alignTop="@+id/loginButton"
         android:layout_toStartOf="@+id/loginButton" />
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="2dip"
+        android:background="#715F5F"
+        android:layout_below="@+id/loginButton"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="25dp"
+        android:id="@+id/view" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Broker settings"
+        android:id="@+id/brokerSettings"
+        android:layout_below="@+id/view"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="false"
+        android:layout_alignParentLeft="false"
+        android:layout_marginTop="10dp" />
+
+    <EditText
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/editText"
+        android:layout_below="@+id/brokerSettings"
+        android:layout_alignParentStart="true"
+        android:hint="IP address"/>
+
+    <EditText
+        android:layout_width="150px"
+        android:layout_height="wrap_content"
+        android:id="@+id/editText2"
+        android:layout_below="@+id/editText"
+        android:layout_alignParentStart="true"
+        android:hint="Port"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Confirm"
+        android:id="@+id/bkrConfirmBtn"
+        android:layout_below="@+id/editText2"
+        android:layout_alignEnd="@+id/editText" />
 
 </RelativeLayout>
