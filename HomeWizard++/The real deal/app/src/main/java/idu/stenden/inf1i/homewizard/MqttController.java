@@ -117,9 +117,13 @@ public class MqttController {
 
                 @Override
                 public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
+					Throwable t = exception.getCause();
+					while(t != null) {
+						t = t.getCause();
+						Toast toast = Toast.makeText(context, t.toString(), Toast.LENGTH_SHORT);
+						toast.show();
+					}
                     connectSucces = false;
-					Toast toast = Toast.makeText(context, exception.toString(), Toast.LENGTH_SHORT);
-                    toast.show();
                 }
             });
         } catch (MqttException e) {
