@@ -1,15 +1,7 @@
 package idu.stenden.inf1i.homewizard;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Looper;
-import android.os.Message;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.RecyclerView.ViewHolder;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -18,37 +10,16 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.CompoundButton;
-import android.widget.ImageButton;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
-import android.widget.Switch;
-import android.widget.TextView;
-import android.widget.Toast;
 
-import org.eclipse.paho.android.service.MqttAndroidClient;
-import org.eclipse.paho.client.mqttv3.IMqttActionListener;
-import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
-import org.eclipse.paho.client.mqttv3.IMqttToken;
-import org.eclipse.paho.client.mqttv3.MqttCallback;
-import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.logging.Handler;
-import java.util.logging.LogRecord;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -109,7 +80,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         }
 
                         if (route.equals("/get-sensors")) {
-                            listAdapter.clear();
                             appDataContainer.clearArray();
                             json = new JSONObject(message.toString());
                             json = json.getJSONObject("response");
@@ -120,9 +90,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                 String name = Swagtestsysteem.getString("name");
                                 String status = Swagtestsysteem.getString("status");
                                 String id = Swagtestsysteem.getString("id");
-                                //listAdapter.add(new HomewizardSwitch(name, status, id));
                                 appDataContainer.add(new HomewizardSwitch(name, status, id));
                             }
+                            listAdapter.notifyDataSetChanged();
                         }
                     } catch (Exception e) {
                         e.printStackTrace();

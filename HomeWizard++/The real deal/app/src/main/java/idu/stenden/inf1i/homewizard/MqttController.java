@@ -11,6 +11,7 @@ import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
+import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -78,13 +79,13 @@ public class MqttController {
     }
 
     public void connect(String broker, String clientId){
-        client =  new MqttAndroidClient(context, broker, clientId);
+        MemoryPersistence persistence = new MemoryPersistence();
+        client =  new MqttAndroidClient(context, broker, clientId, persistence);
 
         try {
-            client.connect(null, new IMqttActionListener() {
+            client.connect(context, new IMqttActionListener() {
                 @Override
                 public void onSuccess(IMqttToken asyncActionToken) {
-
                     Toast toast = Toast.makeText(context, "Connected to broker", Toast.LENGTH_SHORT);
                     toast.show();
 
@@ -97,7 +98,7 @@ public class MqttController {
                         @Override
                         public void messageArrived(String topic, MqttMessage message) throws Exception {
 
-                            for(MqttControllerMessageCallbackListener listener : messageListeners){
+                            for (MqttControllerMessageCallbackListener listener : messageListeners) {
                                 listener.onMessageArrived(topic, message);
                             }
                         }
@@ -113,20 +114,16 @@ public class MqttController {
                     subscribe("HYDRA/HMWZRETURN/#");
                     subscribe("HYDRA/STATUS/results");
                     publish("HYDRA/STATUS", "get-status");
+
                 }
 
                 @Override
                 public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
-					Throwable t = exception.getCause();
-					while(t != null) {
-						t = t.getCause();
-						Toast toast = Toast.makeText(context, t.toString(), Toast.LENGTH_SHORT);
-						toast.show();
-					}
-                    connectSucces = false;
+                    Toast toast = Toast.makeText(context, "Failed to connect to broker", Toast.LENGTH_SHORT);
+                    toast.show();
                 }
             });
-        } catch (MqttException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

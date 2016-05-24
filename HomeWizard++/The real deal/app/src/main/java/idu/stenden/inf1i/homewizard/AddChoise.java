@@ -27,7 +27,7 @@ public class AddChoise extends AppCompatActivity {
             }
         });
 
-        Button customMQTT = (Button) findViewById(R.id.custombtnmqtt);
+        Button customMQTT = (Button) findViewById(R.id.BtnAddCustom);
         customMQTT.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 startActivity(new Intent(getApplicationContext(), AddCustomMqtt.class));

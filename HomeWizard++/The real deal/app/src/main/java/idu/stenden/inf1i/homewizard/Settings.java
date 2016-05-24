@@ -33,7 +33,7 @@ public class Settings extends AppCompatActivity{
 
     //fields
     private MqttController mqttController;
-    private String loginsettings, serial, brokersettings;
+    private String serial;
     private boolean eventHandlersAdded = false;
 
     @Override
@@ -48,17 +48,15 @@ public class Settings extends AppCompatActivity{
         final EditText brokerPort = (EditText) findViewById(R.id.brokerPort);
 
         try {
-            loginsettings = readFile("login.json");
-            JSONObject loginSettingsFile = new JSONObject(loginsettings);
+            JSONObject loginSettingsFile = new JSONObject(readFile("login.json"));
             serial = loginSettingsFile.getString("serial");
             emailField.setText(loginSettingsFile.getString("email"));
             passwordField.setText(loginSettingsFile.getString("password"));
 
-            brokersettings = readFile("broker.json");
-            JSONObject brokerSettingsFile = new JSONObject(brokersettings);
-            brokerIP.setText(brokerSettingsFile.getString("ip"));
-            brokerPort.setText(brokerSettingsFile.getString("port"));
-        } catch (JSONException e) {
+            JSONObject brokerSettings = new JSONObject(readFile("broker.json"));
+            brokerIP.setText(brokerSettings.getString("ip"));
+            brokerPort.setText(brokerSettings.getString("port"));
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -84,16 +82,10 @@ public class Settings extends AppCompatActivity{
                 try {
                     JSONObject file = new JSONObject(readFile("broker.json"));
                     mqttController.connect("tcp://" + file.getString("ip") + ":" + file.getString("port"), "Homewizard++");
-
                 } catch (JSONException e) {
                     Toast toaster = Toast.makeText(getApplicationContext(), "Unable to connect to broker", Toast.LENGTH_SHORT);
                     toaster.show();
                     e.printStackTrace();
-                }
-
-                if(!mqttController.isConnected()){
-                    Toast toaster = Toast.makeText(getApplicationContext(), "Connection failed", Toast.LENGTH_SHORT);
-                    toaster.show();
                 }
             }
         });
