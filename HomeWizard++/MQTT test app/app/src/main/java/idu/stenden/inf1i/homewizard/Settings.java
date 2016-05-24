@@ -86,8 +86,10 @@ public class Settings extends AppCompatActivity{
 
                     if(!mqttController.isConnected())
                     {
-                        Toast.makeText(getApplicationContext(), "Connection failed", Toast.LENGTH_SHORT);
+                        Toast toaster = Toast.makeText(getApplicationContext(), "Connection failed", Toast.LENGTH_SHORT);
+                        toaster.show();
                     }
+                    
                 } catch (JSONException e) {
                     Toast toaster = Toast.makeText(getApplicationContext(), "Unable to connect to broker", Toast.LENGTH_SHORT);
                     toaster.show();
