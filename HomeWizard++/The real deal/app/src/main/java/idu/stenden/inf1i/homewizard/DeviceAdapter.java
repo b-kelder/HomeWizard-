@@ -52,12 +52,15 @@ class DeviceAdapter extends ArrayAdapter<HomewizardSwitch> {
 
                 if(id == sw.getId()) {
                     try {
-                        JSONObject returnvalue = new JSONObject(message.toString());
-                        if (returnvalue.getString("status").equals("ok")) {
-                            swSwitch.setEnabled(true);
-                        } else {
-                            swSwitch.toggle();
-                            swSwitch.setEnabled(true);
+                        JSONObject returnValue = new JSONObject(message.toString());
+
+                        if(!swSwitch.isEnabled()) {
+                            if (returnValue.getString("status").equals("ok")) {
+                                swSwitch.setEnabled(true);
+                            } else {
+                                swSwitch.toggle();
+                                swSwitch.setEnabled(true);
+                            }
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -80,12 +83,10 @@ class DeviceAdapter extends ArrayAdapter<HomewizardSwitch> {
                 if (swSwitch.isEnabled()) {
                     if (isChecked) {
                         MqttController.getInstance().publish("HYDRA/HMWZ/sw/" + switchId, "on");
-                        swSwitch.setEnabled(false);
-
                     } else {
                         MqttController.getInstance().publish("HYDRA/HMWZ/sw/" + switchId, "off");
-                        swSwitch.setEnabled(false);
                     }
+                    swSwitch.setEnabled(false);
                 }
             }
         }));

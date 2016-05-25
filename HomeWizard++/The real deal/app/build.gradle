@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         applicationId "idu.stenden.inf1i.homewizard"
-        minSdkVersion 21
+        minSdkVersion 18
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"

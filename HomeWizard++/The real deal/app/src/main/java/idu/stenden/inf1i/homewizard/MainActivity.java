@@ -38,7 +38,7 @@ public class MainActivity extends BaseMqttEventActivity implements NavigationVie
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        appDataContainer = AppDataContainer.getInstance().getInstance();
+        appDataContainer = AppDataContainer.getInstance();
 
         //MQTT
         mqttController = MqttController.getInstance();
@@ -57,6 +57,7 @@ public class MainActivity extends BaseMqttEventActivity implements NavigationVie
         mainListView = (ListView) findViewById(R.id.mainListView);
 
         listAdapter = new DeviceAdapter(this, R.layout.row, R.id.rowTextView, appDataContainer.getArray());
+        listAdapter.setNotifyOnChange(true);
 
         mainListView.setAdapter(listAdapter);
 

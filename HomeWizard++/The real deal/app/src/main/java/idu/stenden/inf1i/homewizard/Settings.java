@@ -112,6 +112,8 @@ public class Settings extends BaseMqttEventActivity{
 	@Override
 	protected void addEventHandlers(){
 		//als er een bericht terug word ontvangen
+        final EditText emailField = (EditText) findViewById(R.id.emailField);
+        final EditText passwordField = (EditText) findViewById(R.id.passwordField);
 		mqttController = MqttController.getInstance();
 		mqttController.addMessageListener(new MqttControllerMessageCallbackListener() {
 			@Override
@@ -132,7 +134,13 @@ public class Settings extends BaseMqttEventActivity{
 					} catch (JSONException e) {
 						e.printStackTrace();
 					}
-				}
+				} else if(topic.equals("HYDRA/HMWZRETURN/sw/remove")) {
+                    // A light was removed, update everything
+                    mqttController.publish("HYDRA/HMWZ", "get-sensors");
+                } else if(topic.contains("HYDRA/HMWZRETURN/sw/add")) {
+                    // A light was added, update everything
+                    mqttController.publish("HYDRA/HMWZ", "get-sensors");
+                }
 			}
 		});
 	}

@@ -46,7 +46,16 @@ class DeviceEditAdapter extends DeviceAdapter {
             @Override
             public void onMessageArrived(String topic, MqttMessage message) {
                 int id = Integer.parseInt(topic.substring(topic.lastIndexOf("/")+1));
-
+                /*if(topic.contains("remove") && id == sw.getId()) {
+                    try {
+                        JSONObject returnValue = new JSONObject(message.toString());
+                        if(returnValue.getString("status").equals("ok")) {
+                            AppDataContainer.getInstance().getArray().remove(sw);
+                        }
+                    } catch(JSONException e) {
+                        e.printStackTrace();
+                    }
+                }*/
             }
         };
 		
@@ -60,13 +69,13 @@ class DeviceEditAdapter extends DeviceAdapter {
 
         btnChange.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                MqttController.getInstance().publish("", "");
+                //MqttController.getInstance().publish("", "");
             }
         });
 
         btnDelete.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                MqttController.getInstance().publish("HYDRA/HMWZ/sw/remove/", switchId);
+                MqttController.getInstance().publish("HYDRA/HMWZ/sw/remove", switchId);
             }
         });
 
