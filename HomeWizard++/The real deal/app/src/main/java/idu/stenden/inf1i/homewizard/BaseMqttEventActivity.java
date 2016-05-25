@@ -9,13 +9,13 @@ import java.util.ArrayList;
 
 public class BaseMqttEventActivity extends AppCompatActivity {
 
-    protected ArrayList<MqttControllerMessageCallbackListener> eventHandlers = new ArrayList<>();
+    protected ArrayList<MqttControllerMessageCallbackListener> listeners = new ArrayList<>();
     //protected boolean eventHandlersAdded = false;
 
     @Override
-    protected void onStart() {
+    protected void onCreate(Bundle savedInstanceState) {
 
-        super.onStart();
+        super.onCreate(savedInstanceState);
         
         //if(!eventHandlersAdded) {
 			//eventHandlersAdded = true;
@@ -28,7 +28,7 @@ public class BaseMqttEventActivity extends AppCompatActivity {
         if(MqttController.getInstance().hasMessageListener(listener)){
             MqttController.getInstance().removeMessageListener(listener);
         }
-        eventHandlers.add(listener);
+        listeners.add(listener);
         MqttController.getInstance().addMessageListener(listener);
     }
 	
@@ -39,14 +39,14 @@ public class BaseMqttEventActivity extends AppCompatActivity {
 
     /// Should remove all of those event handlers
     protected void removeEventHandlers(){
-        for(MqttControllerMessageCallbackListener m : eventHandlers){
+        for(MqttControllerMessageCallbackListener m : listeners){
             MqttController.getInstance().removeMessageListener(m);
         }
     }
 
     @Override
-    public void onStop(){
-        super.onStop();
+    public void onDestroy(){
+        super.onDestroy();
         removeEventHandlers();
     }
 }

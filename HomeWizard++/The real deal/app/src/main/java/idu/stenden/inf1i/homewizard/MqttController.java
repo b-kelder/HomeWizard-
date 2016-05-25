@@ -35,6 +35,7 @@ public class MqttController {
     private Context context;
     private MqttAndroidClient client;
 
+
     private List<MqttControllerMessageCallbackListener> messageListeners = new ArrayList<MqttControllerMessageCallbackListener>();
 
     private MqttController(){
@@ -61,15 +62,22 @@ public class MqttController {
 	
 	public void removeMessageListener(MqttControllerMessageCallbackListener listener)
 	{
-        Log.e("MQTT", "Removed MQTT listener, size " + messageListeners.size());
-		messageListeners.remove(listener);
+        if(messageListeners.remove(listener)){
+            Log.e("MQTT", "Removed MQTT listener, size " + messageListeners.size());
+        } else {
+            Log.e("MQTT", "Could not remove MQTT listener, size " + messageListeners.size());
+        }
 	}
 	
 	public void removeMessageListeners(MqttControllerMessageCallbackListener[] listeners)
 	{
 		for(MqttControllerMessageCallbackListener l:listeners) {
-            Log.e("MQTT", "Removed MQTT listener, size " + messageListeners.size());
-			messageListeners.remove(l);
+
+            if(messageListeners.remove(l)){
+                Log.e("MQTT", "Removed MQTT listener, size " + messageListeners.size());
+            } else {
+                Log.e("MQTT", "Could not remove MQTT listener, size " + messageListeners.size());
+            }
 		}
 	}
 
@@ -109,7 +117,11 @@ public class MqttController {
                             //toast.show();
                             Log.e("MQTT", "Recieved message on topic " + topic + " - " + message.toString());
                             for (MqttControllerMessageCallbackListener listener : messageListeners) {
-                                listener.onMessageArrived(topic, message);
+                                try {
+                                    listener.onMessageArrived(topic, message);
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
                             }
                         }
 

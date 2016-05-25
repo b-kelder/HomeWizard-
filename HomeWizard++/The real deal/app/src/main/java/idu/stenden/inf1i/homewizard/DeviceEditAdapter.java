@@ -58,10 +58,11 @@ class DeviceEditAdapter extends DeviceAdapter {
                 }*/
             }
         };
-		
-		viewMessageCallbacks.remove(callbackListener);		//If there's already an equivalent callbackListener
-		viewMessageCallbacks.add(callbackListener);
-		MqttController.getInstance().addMessageListener(callbackListener);
+
+        viewMessageCallbacks.remove(callbackListener);		//If there's already an equivalent callbackListener
+        MqttController.getInstance().removeMessageListener(callbackListener);
+        viewMessageCallbacks.add(callbackListener);
+        MqttController.getInstance().addMessageListener(callbackListener);
 
         btnName.setText(sw.getName());
 
