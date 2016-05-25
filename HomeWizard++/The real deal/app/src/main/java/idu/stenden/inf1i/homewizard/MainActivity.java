@@ -1,5 +1,6 @@
 package idu.stenden.inf1i.homewizard;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -29,9 +30,12 @@ public class MainActivity extends BaseMqttEventActivity implements NavigationVie
     private ListView mainListView;
     private DeviceAdapter listAdapter;
 
+    public static Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        context = this;
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -70,7 +74,8 @@ public class MainActivity extends BaseMqttEventActivity implements NavigationVie
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
     }
-	
+
+    //TODO: Move non-UI code to more persistent event listener, now it will be removed if MainActivity is destroyed for some reason
 	@Override
 	protected void addEventListeners() {
 		addEventListener(new MqttControllerMessageCallbackListener() {

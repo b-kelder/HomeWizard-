@@ -1,5 +1,6 @@
 package idu.stenden.inf1i.homewizard;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
@@ -35,11 +36,53 @@ public class MqttController {
     private Context context;
     private MqttAndroidClient client;
 
+    private ProgressDialog connectingDialog;
 
     private List<MqttControllerMessageCallbackListener> messageListeners = new ArrayList<MqttControllerMessageCallbackListener>();
 
     private MqttController(){
+        //Set up some default listeners
+        addMessageListener(new MqttControllerMessageCallbackListener() {
+            @Override
+            public void onMessageArrived(String topic, MqttMessage message) {
+                if(topic.equals("HYDRA/HMWZRETURN/sw/remove")) {
+                    // A light was removed, update everything
+                    publish("HYDRA/HMWZ", "get-sensors");
+                    Toast.makeText(context, "Removed device", Toast.LENGTH_SHORT).show();
+                } else if(topic.contains("HYDRA/HMWZRETURN/sw/add")) {
+                    // A light was added, update everything
+                    publish("HYDRA/HMWZ", "get-sensors");
+                    Toast.makeText(context, "Added device", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
 
+        addMessageListener(new MqttControllerMessageCallbackListener() {
+            @Override
+            public void onMessageArrived(String topic, MqttMessage message) {
+
+                //Toast.makeText(getApplicationContext(), "TRIGGERED SETTINGS EVENT LISTENER " + topic, Toast.LENGTH_SHORT).show();
+                if (topic.equals("HYDRA/AUTH/results")) {
+                    //haal serial code uit json bericht
+                    if(connectingDialog != null){
+                        connectingDialog.dismiss();
+                    }
+
+                    JSONObject json = null;
+                    try {
+                        json = new JSONObject(message.toString());
+                        if (json.getString("status").equals("ok")) {
+                            Toast.makeText(context, "Login success", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast toast = Toast.makeText(context, "Login failed", Toast.LENGTH_SHORT);
+                            toast.show();
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
     }
 
     public static MqttController getInstance(){
@@ -94,9 +137,26 @@ public class MqttController {
         }
     }
 
+    public void loginHomeWizard(String email, String password){
+        if(isConnected()){
+            connectingDialog = new ProgressDialog(MainActivity.context);
+            connectingDialog.setTitle("Connecting");
+            connectingDialog.setMessage("Connecting to HomeWizard...");
+            connectingDialog.setCancelable(false);
+            connectingDialog.show();
+            this.publish("HYDRA/AUTH", "{\"email\":\"" + email + "\", \"password\":\"" + password + "\", \"type\":\"login\"}");
+        }
+    }
+
     public void connect(String broker, String clientId){
         MemoryPersistence persistence = new MemoryPersistence();
         client =  new MqttAndroidClient(context, broker, clientId, persistence);
+
+        connectingDialog = new ProgressDialog(MainActivity.context);
+        connectingDialog.setTitle("Connecting");
+        connectingDialog.setMessage("Connecting to MQTT broker...");
+        connectingDialog.setCancelable(false);
+        connectingDialog.show();
 
         try {
             client.connect(context, new IMqttActionListener() {
@@ -135,14 +195,19 @@ public class MqttController {
                     subscribe("HYDRA/HMWZRETURN/#");
                     subscribe("HYDRA/STATUS/results");
                     subscribe("HYDRA/AUTH/results");
+
+
                     publish("HYDRA/STATUS", "get-status");
 
+                    connectingDialog.dismiss();
                 }
 
                 @Override
                 public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
                     Toast toast = Toast.makeText(context, "Failed to connect to broker", Toast.LENGTH_SHORT);
                     toast.show();
+
+                    connectingDialog.dismiss();
                 }
             });
         } catch (Exception e) {

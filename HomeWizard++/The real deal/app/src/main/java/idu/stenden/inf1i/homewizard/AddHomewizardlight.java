@@ -29,7 +29,10 @@ public class AddHomewizardlight extends AppCompatActivity {
             public void onClick(View v) {
                 if (!HMWZlightname.getText().toString().isEmpty() && !HMWZlightcode.getText().toString().isEmpty()) {
                     mqttController.publish("HYDRA/HMWZ/sw/add/" + HMWZlightname.getText() + "/switch/" + HMWZlightcode.getText(), "/0");
-                    startActivity(new Intent(getApplicationContext(), MainActivity.class));
+
+                    finish();
+                    //This just adds to the activity stack, we don't want that!
+                    //startActivity(new Intent(getApplicationContext(), MainActivity.class));
                 } else {
                     Toast toaster = Toast.makeText(getApplicationContext(), "Vul shit in", Toast.LENGTH_SHORT);
                     toaster.show();

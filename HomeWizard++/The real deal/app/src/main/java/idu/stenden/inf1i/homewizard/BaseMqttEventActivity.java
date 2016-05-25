@@ -20,6 +20,7 @@ public class BaseMqttEventActivity extends AppCompatActivity {
         //if(!eventHandlersAdded) {
 			//eventHandlersAdded = true;
             //Toast.makeText(getApplicationContext(), "Added event handlers", Toast.LENGTH_SHORT).show();
+            removeEventListeners();
             addEventListeners();
 		//}
     }
@@ -38,7 +39,7 @@ public class BaseMqttEventActivity extends AppCompatActivity {
 	}
 
     /// Should remove all of those event handlers
-    protected void removeEventHandlers(){
+    protected void removeEventListeners(){
         for(MqttControllerMessageCallbackListener m : listeners){
             MqttController.getInstance().removeMessageListener(m);
         }
@@ -47,6 +48,6 @@ public class BaseMqttEventActivity extends AppCompatActivity {
     @Override
     public void onDestroy(){
         super.onDestroy();
-        removeEventHandlers();
+        removeEventListeners();
     }
 }

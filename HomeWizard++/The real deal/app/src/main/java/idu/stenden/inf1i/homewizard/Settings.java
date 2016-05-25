@@ -118,6 +118,7 @@ public class Settings extends BaseMqttEventActivity{
 		//als er een bericht terug word ontvangen
         final EditText emailField = (EditText) findViewById(R.id.emailField);
         final EditText passwordField = (EditText) findViewById(R.id.passwordField);
+        //TODO: Move most of this code to something centralized. Currently login toasts are not displayed if Settings is not visible.
 		addEventListener(new MqttControllerMessageCallbackListener() {
             @Override
             public void onMessageArrived(String topic, MqttMessage message) {

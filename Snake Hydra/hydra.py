@@ -16,7 +16,7 @@ import queue
 # Launch param parsing
 import sys, getopt
 
-BASE_QOS = 1
+BASE_QOS = 2
 
 #
 # Updates the base urls, topics and subscriptions according to a HomeWizard cloud url

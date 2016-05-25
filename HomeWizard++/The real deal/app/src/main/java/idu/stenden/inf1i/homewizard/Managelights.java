@@ -49,21 +49,14 @@ public class Managelights extends BaseMqttEventActivity {
 
         mainListView.setAdapter(listAdapter);
     }
-	
+
+
 	@Override
 	protected void addEventListeners(){
 		addEventListener(new MqttControllerMessageCallbackListener() {
 			@Override
 			public void onMessageArrived(String topic, MqttMessage message) {
-                if(topic.equals("HYDRA/HMWZRETURN/sw/remove")) {
-                    // A light was removed, update everything
-                    mqttController.publish("HYDRA/HMWZ", "get-sensors");
-                    Toast.makeText(getApplicationContext(), "Removed device", Toast.LENGTH_SHORT).show();
-                } else if(topic.contains("HYDRA/HMWZRETURN/sw/add")) {
-                    // A light was added, update everything
-                    mqttController.publish("HYDRA/HMWZ", "get-sensors");
-                    Toast.makeText(getApplicationContext(), "Added device", Toast.LENGTH_SHORT).show();
-                } else {
+                if(topic.equals("HYDRA/HMWZRETURN")){
                     try {
                         JSONObject json = new JSONObject(message.toString());
                         json = json.getJSONObject("request");
