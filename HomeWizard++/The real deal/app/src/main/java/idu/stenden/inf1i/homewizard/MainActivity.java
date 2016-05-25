@@ -72,6 +72,7 @@ public class MainActivity extends BaseMqttEventActivity implements NavigationVie
 	
 	@Override
 	protected void addEventHandlers() {
+		mqttController = MqttController.getInstance();
 		mqttController.addMessageListener(new MqttControllerMessageCallbackListener() {
 			@Override
 			public void onMessageArrived(String topic, MqttMessage message) {
