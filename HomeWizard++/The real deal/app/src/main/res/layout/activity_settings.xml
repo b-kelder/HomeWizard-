@@ -116,7 +116,7 @@
     <Switch
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="New Switch"
+        android:text="Enable "
         android:id="@+id/adminEnabled"
         android:layout_alignTop="@+id/textView9"
         android:layout_alignEnd="@+id/view2" />
@@ -137,7 +137,7 @@
         android:inputType="textPassword"
         android:hint="Pin number"
         android:ems="10"
-        android:id="@+id/editText"
+        android:id="@+id/editAdminPin"
         android:layout_marginTop="29dp"
         android:layout_below="@+id/textView9"
         android:layout_alignParentStart="true" />
@@ -147,7 +147,7 @@
         android:layout_height="wrap_content"
         android:text="Apply"
         android:id="@+id/button"
-        android:layout_alignTop="@+id/editText"
+        android:layout_alignTop="@+id/editAdminPin"
         android:layout_toEndOf="@+id/clearBtn" />
 
 </RelativeLayout>

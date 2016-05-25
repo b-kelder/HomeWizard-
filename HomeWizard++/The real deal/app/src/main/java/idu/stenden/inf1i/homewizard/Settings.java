@@ -92,7 +92,22 @@ public class Settings extends BaseMqttEventActivity{
                 toast.show();
             }
         });
+
+        // handle adminpin buttons.
+        Button adminPinButton = (Button) findViewById(R.id.adminEnabled);
+        EditText adminPin = (EditText) findViewById(R.id.editAdminPin);
+        if(!adminPinButton.isEnabled()) // if adminpin is disabled, disable text input
+        {
+            adminPin.setEnabled(false);
+            adminPin.setFocusable(false);
+        }
+        else
+        {
+            adminPin.setEnabled(true);
+            adminPin.setFocusable(true);
+        }
     }
+
 	
 	@Override
 	protected void addEventListeners(){
