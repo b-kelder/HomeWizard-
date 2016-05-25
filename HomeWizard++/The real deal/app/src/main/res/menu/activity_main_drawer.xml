@@ -8,8 +8,13 @@
             android:title="Settings" />
         <item
             android:id="@+id/nav_lights"
-            android:icon="@drawable/ic_menu_manage"
+            android:icon="@drawable/ic_edit"
             android:title="Edit Devices" />
+
+        <item
+            android:id="@+id/nav_help"
+            android:icon="@drawable/ic_help"
+            android:title="Help" />
     </group>
 
 </menu>
