@@ -4,24 +4,6 @@
     android:id="@+id/Row"
     android:layout_height="match_parent">
 
-    <Button
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/btnDelete"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:text="Delete" />
-
-    <Button
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="change"
-        android:id="@+id/btnChange"
-        android:layout_alignParentTop="true"
-        android:layout_toStartOf="@+id/btnDelete" />
-
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -30,5 +12,20 @@
         android:layout_alignParentStart="true"
         android:layout_alignBottom="@+id/btnChange"
         android:layout_toStartOf="@+id/btnChange" />
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/btnChange"
+        android:layout_alignBottom="@+id/btnDelete"
+        android:layout_toStartOf="@+id/btnDelete"
+        android:layout_alignParentTop="true" />
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/btnDelete"
+        android:src="@drawable/ic_delete"
+        android:layout_alignParentEnd="true" />
 
 </RelativeLayout>

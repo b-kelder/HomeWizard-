@@ -5,7 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.CompoundButton;
 import android.widget.TextView;
 
@@ -38,8 +38,8 @@ class DeviceEditAdapter extends DeviceAdapter {
         }
 
         TextView btnName = (TextView) convertView.findViewById(R.id.manageTxt);
-        final Button btnChange = (Button) convertView.findViewById(R.id.btnChange);
-        final Button btnDelete = (Button) convertView.findViewById(R.id.btnDelete);
+        final ImageButton btnChange = (ImageButton) convertView.findViewById(R.id.btnChange);
+        final ImageButton btnDelete = (ImageButton) convertView.findViewById(R.id.btnDelete);
 
 		
 		MqttControllerMessageCallbackListener callbackListener = new MqttControllerMessageCallbackListener() {
