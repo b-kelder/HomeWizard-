@@ -68,6 +68,15 @@
         android:layout_marginTop="25dp"
         android:id="@+id/view" />
 
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="2dip"
+        android:background="#715F5F"
+        android:layout_marginTop="27dp"
+        android:id="@+id/view2"
+        android:layout_below="@+id/bkrConfirmBtn"
+        android:layout_alignParentEnd="true" />
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -103,5 +112,42 @@
         android:id="@+id/bkrConfirmBtn"
         android:layout_below="@+id/brokerIP"
         android:layout_alignEnd="@+id/brokerIP" />
+
+    <Switch
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="New Switch"
+        android:id="@+id/adminEnabled"
+        android:layout_alignTop="@+id/textView9"
+        android:layout_alignEnd="@+id/view2" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Admin pin"
+        android:id="@+id/textView9"
+        android:layout_alignTop="@+id/view2"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="10dp" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textPassword"
+        android:hint="Pin number"
+        android:ems="10"
+        android:id="@+id/editText"
+        android:layout_marginTop="29dp"
+        android:layout_below="@+id/textView9"
+        android:layout_alignParentStart="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Apply"
+        android:id="@+id/button"
+        android:layout_alignTop="@+id/editText"
+        android:layout_toEndOf="@+id/clearBtn" />
 
 </RelativeLayout>
