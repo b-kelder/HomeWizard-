@@ -2,29 +2,14 @@ package idu.stenden.inf1i.homewizard;
 
 // TODO: Clean up imports here
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.NavigationView;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.widget.ListView;
 
-import org.eclipse.paho.client.mqttv3.MqttMessage;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.util.ArrayList;
 
 public class BaseMqttEventActivity extends AppCompatActivity {
 
+    protected ArrayList<MqttControllerMessageCallbackListener> eventHandlers = new ArrayList<>();
     protected boolean eventHandlersAdded = false;
 
     @Override
@@ -34,12 +19,33 @@ public class BaseMqttEventActivity extends AppCompatActivity {
         
         if(!eventHandlersAdded) {
 			eventHandlersAdded = true;
-			addEventHandlers();
+            //Toast.makeText(getApplicationContext(), "Added event handlers", Toast.LENGTH_SHORT).show();
+            addEventListeners();
 		}
+    }
+
+    protected void addEventListener(MqttControllerMessageCallbackListener listener){
+        if(MqttController.getInstance().hasMessageListener(listener)){
+            MqttController.getInstance().removeMessageListener(listener);
+        }
+        eventHandlers.add(listener);
+        MqttController.getInstance().addMessageListener(listener);
     }
 	
 	/// Override this with your event handlers
-	protected void addEventHandlers(){
+	protected void addEventListeners(){
 		
 	}
+
+    /// Should remove all of those event handlers
+    protected void removeEventHandlers(){
+        for(MqttControllerMessageCallbackListener m : eventHandlers){
+            MqttController.getInstance().removeMessageListener(m);
+        }
+    }
+
+    @Override
+    public void finalize(){
+        removeEventHandlers();
+    }
 }

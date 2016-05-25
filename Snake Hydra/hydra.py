@@ -16,7 +16,7 @@ import queue
 # Launch param parsing
 import sys, getopt
 
-
+BASE_QOS = 1
 
 #
 # Updates the base urls, topics and subscriptions according to a HomeWizard cloud url
@@ -201,7 +201,7 @@ def publish_auth_fail_msg(client, error):
             'errorMessage': errorMsg[error],
             'request':{'route': 'hydralogin'}}
     string = json.dumps(data)
-    client.publish(hydraAuthTopic + "/results", string)
+    client.publish(hydraAuthTopic + "/results", string, BASE_QOS)
 
 
 #
@@ -221,7 +221,7 @@ def publish_fail_msg(client, msg, error):
             'errorMessage': errorMsg[error],
             'request':{'route':msg.topic.replace(homewizardBaseTopic, "")}}
     string = json.dumps(data)
-    client.publish(homewizardBaseReturnTopic + msg.topic.replace(homewizardBaseTopic, ""), string)
+    client.publish(homewizardBaseReturnTopic + msg.topic.replace(homewizardBaseTopic, ""), string, BASE_QOS)
 
 
 #
@@ -254,7 +254,7 @@ def process_auth_request(client, msg):
                     'request':{'route': 'hydralogin'},
                     'serial': get_serial(urlResult)}
                 string = json.dumps(data)
-                client.publish(hydraAuthTopic + "/results", string)
+                client.publish(hydraAuthTopic + "/results", string, BASE_QOS)
                 homewizardBaseUrl = urlResult
                 
         elif(loginData["type"] == "disconnect"):
@@ -321,7 +321,7 @@ def process_message(client, msg, attempt):
                 # We should publish the response anyway
                 # TODO: More testing
                 print(get_time_string(), "Failed request at", msg.topic, str(msg.payload), "with error", jsonData["error"])
-                client.publish(homewizardBaseReturnTopic + msg.topic.replace(homewizardBaseTopic, ""), result)
+                client.publish(homewizardBaseReturnTopic + msg.topic.replace(homewizardBaseTopic, ""), result, BASE_QOS)
             else:
                 # Probably a connection error, try to reconnect
                 print(get_time_string(), "Failed request at", msg.topic, str(msg.payload), "with error", jsonData["error"], jsonData["errorMessage"])
@@ -343,7 +343,7 @@ def process_message(client, msg, attempt):
                     print(get_time_string(), "Reconnected to HomeWizard at attempt", attempt, ", retrying message")
                     process_message(client, msg, attempt + 1)
         else:
-            client.publish(homewizardBaseReturnTopic + msg.topic.replace(homewizardBaseTopic, ""), result)
+            client.publish(homewizardBaseReturnTopic + msg.topic.replace(homewizardBaseTopic, ""), result, BASE_QOS)
 
 
 # ------------------------------------------------------#

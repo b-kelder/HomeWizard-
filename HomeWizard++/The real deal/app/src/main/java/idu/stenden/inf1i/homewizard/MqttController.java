@@ -1,6 +1,7 @@
 package idu.stenden.inf1i.homewizard;
 
 import android.content.Context;
+import android.util.Log;
 import android.widget.Toast;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
@@ -45,6 +46,11 @@ public class MqttController {
             instance = new MqttController();
         }
         return instance;
+    }
+
+    public boolean hasMessageListener(MqttControllerMessageCallbackListener listener)
+    {
+        return messageListeners.contains(listener);
     }
 
     public void addMessageListener(MqttControllerMessageCallbackListener listener)
@@ -96,7 +102,8 @@ public class MqttController {
 
                         @Override
                         public void messageArrived(String topic, MqttMessage message) throws Exception {
-
+                            //Toast toast = Toast.makeText(context, topic + " " + message.toString(), Toast.LENGTH_LONG);
+                            //toast.show();
                             for (MqttControllerMessageCallbackListener listener : messageListeners) {
                                 listener.onMessageArrived(topic, message);
                             }
@@ -111,6 +118,7 @@ public class MqttController {
                     subscribe("HYDRA/HMWZRETURN");
                     subscribe("HYDRA/HMWZRETURN/#");
                     subscribe("HYDRA/STATUS/results");
+                    subscribe("HYDRA/AUTH/results");
                     publish("HYDRA/STATUS", "get-status");
 
                 }
@@ -139,7 +147,7 @@ public class MqttController {
                 e.printStackTrace();
             }
         }else{
-            Toast toast = Toast.makeText(context, "Could not connect to broker", Toast.LENGTH_SHORT);
+            Toast toast = Toast.makeText(context, "Not connected to broker", Toast.LENGTH_SHORT);
             toast.show();
         }
     }

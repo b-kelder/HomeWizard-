@@ -3,17 +3,14 @@ package idu.stenden.inf1i.homewizard;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import org.eclipse.paho.client.mqttv3.MqttMessage;
-import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.ArrayList;
 
 public class Managelights extends BaseMqttEventActivity {
 
@@ -54,12 +51,31 @@ public class Managelights extends BaseMqttEventActivity {
     }
 	
 	@Override
-	protected void addEventHandlers(){
-		mqttController = MqttController.getInstance();
-		mqttController.addMessageListener(new MqttControllerMessageCallbackListener() {
+	protected void addEventListeners(){
+		addEventListener(new MqttControllerMessageCallbackListener() {
 			@Override
 			public void onMessageArrived(String topic, MqttMessage message) {
+                if(topic.equals("HYDRA/HMWZRETURN/sw/remove")) {
+                    // A light was removed, update everything
+                    mqttController.publish("HYDRA/HMWZ", "get-sensors");
+                    Toast.makeText(getApplicationContext(), "Removed device", Toast.LENGTH_SHORT).show();
+                } else if(topic.contains("HYDRA/HMWZRETURN/sw/add")) {
+                    // A light was added, update everything
+                    mqttController.publish("HYDRA/HMWZ", "get-sensors");
+                    Toast.makeText(getApplicationContext(), "Added device", Toast.LENGTH_SHORT).show();
+                } else {
+                    try {
+                        JSONObject json = new JSONObject(message.toString());
+                        json = json.getJSONObject("request");
+                        String route = json.getString("route");
 
+                        if (route.equals("/get-sensors")) {
+                            mainListView.invalidate();
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
 			}
 		});
 	}

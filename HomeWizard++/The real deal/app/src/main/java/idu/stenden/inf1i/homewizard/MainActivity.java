@@ -6,11 +6,11 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.json.JSONArray;
@@ -72,9 +72,8 @@ public class MainActivity extends BaseMqttEventActivity implements NavigationVie
     }
 	
 	@Override
-	protected void addEventHandlers() {
-		mqttController = MqttController.getInstance();
-		mqttController.addMessageListener(new MqttControllerMessageCallbackListener() {
+	protected void addEventListeners() {
+		addEventListener(new MqttControllerMessageCallbackListener() {
 			@Override
 			public void onMessageArrived(String topic, MqttMessage message) {
 				try {
@@ -110,6 +109,8 @@ public class MainActivity extends BaseMqttEventActivity implements NavigationVie
 							appDataContainer.add(new HomewizardSwitch(name, status, id));
 						}
 						listAdapter.notifyDataSetChanged();
+                        mainListView.invalidate();
+                        Toast.makeText(getApplicationContext(), "Device list refreshed", Toast.LENGTH_SHORT).show();
 					}
 				} catch (Exception e) {
 					e.printStackTrace();

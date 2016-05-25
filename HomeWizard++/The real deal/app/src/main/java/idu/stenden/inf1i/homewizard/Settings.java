@@ -1,30 +1,17 @@
 package idu.stenden.inf1i.homewizard;
 
 import android.content.Context;
-import android.content.Intent;
-import android.support.design.widget.NavigationView;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import org.eclipse.paho.client.mqttv3.MqttMessage;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -39,6 +26,9 @@ public class Settings extends BaseMqttEventActivity{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        mqttController = MqttController.getInstance();
+
         setContentView(R.layout.activity_settings);
 
         //geef text velden aan.
@@ -65,6 +55,7 @@ public class Settings extends BaseMqttEventActivity{
         loginbutton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 //publish email/password
+                writeFile("login.json", "{\"email\":\"" + emailField.getText().toString() + "\", \"password\":\"" + passwordField.getText().toString() + "\", \"serial\":\"\"}");
                 mqttController.publish("HYDRA/AUTH", "{\"email\":\"" + emailField.getText().toString() + "\", \"password\":\"" + passwordField.getText().toString() + "\", \"type\":\"login\"}");
                 Toast toast = Toast.makeText(getApplicationContext(), "Trying to log in", Toast.LENGTH_SHORT);
                 toast.show();
@@ -101,48 +92,37 @@ public class Settings extends BaseMqttEventActivity{
                 toast.show();
             }
         });
-
-        //subscribe op topic
-        mqttController = MqttController.getInstance();
-        if(mqttController.isConnected()){
-            mqttController.subscribe("HYDRA/AUTH/results");
-        }
     }
 	
 	@Override
-	protected void addEventHandlers(){
+	protected void addEventListeners(){
 		//als er een bericht terug word ontvangen
         final EditText emailField = (EditText) findViewById(R.id.emailField);
         final EditText passwordField = (EditText) findViewById(R.id.passwordField);
-		mqttController = MqttController.getInstance();
-		mqttController.addMessageListener(new MqttControllerMessageCallbackListener() {
-			@Override
-			public void onMessageArrived(String topic, MqttMessage message) {
+		addEventListener(new MqttControllerMessageCallbackListener() {
+            @Override
+            public void onMessageArrived(String topic, MqttMessage message) {
 
-				if (topic.equals("HYDRA/AUTH/results")) {
-					//haal serial code uit json bericht
-					JSONObject json = null;
-					try {
-						json = new JSONObject(message.toString());
-						if (json.getString("status").equals("ok")) {
-							String serial = json.getString("serial");
-							writeFile("login.json", "{\"email\":\"" + emailField.getText().toString() + "\", \"password\":\"" + passwordField.getText().toString() + "\", \"serial\":\"" + serial + "\"}");
-						} else {
-							Toast toast = Toast.makeText(getApplicationContext(), "Login failed", Toast.LENGTH_SHORT);
-							toast.show();
-						}
-					} catch (JSONException e) {
-						e.printStackTrace();
-					}
-				} else if(topic.equals("HYDRA/HMWZRETURN/sw/remove")) {
-                    // A light was removed, update everything
-                    mqttController.publish("HYDRA/HMWZ", "get-sensors");
-                } else if(topic.contains("HYDRA/HMWZRETURN/sw/add")) {
-                    // A light was added, update everything
-                    mqttController.publish("HYDRA/HMWZ", "get-sensors");
+                //Toast.makeText(getApplicationContext(), "TRIGGERED SETTINGS EVENT LISTENER " + topic, Toast.LENGTH_SHORT).show();
+                if (topic.equals("HYDRA/AUTH/results")) {
+                    //haal serial code uit json bericht
+                    JSONObject json = null;
+                    try {
+                        json = new JSONObject(message.toString());
+                        if (json.getString("status").equals("ok")) {
+                            String serial = json.getString("serial");
+                            writeFile("login.json", "{\"email\":\"" + emailField.getText().toString() + "\", \"password\":\"" + passwordField.getText().toString() + "\", \"serial\":\"" + serial + "\"}");
+                            Toast.makeText(getApplicationContext(), "Login success", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast toast = Toast.makeText(getApplicationContext(), "Login failed", Toast.LENGTH_SHORT);
+                            toast.show();
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
-			}
-		});
+            }
+        });
 	}
 
     public String getSerial(){
