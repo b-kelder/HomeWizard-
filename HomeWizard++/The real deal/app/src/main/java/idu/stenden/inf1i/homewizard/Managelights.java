@@ -15,18 +15,17 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-public class Managelights extends AppCompatActivity {
+public class Managelights extends BaseMqttEventActivity {
 
     private MqttController mqttController;
     private ListView mainListView;
     private DeviceEditAdapter listAdapter;
     private AppDataContainer appDataContainer;
 	
-	private boolean eventHandlersAdded = false;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+		
         setContentView(R.layout.activity_managelights);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -36,16 +35,6 @@ public class Managelights extends AppCompatActivity {
         //MQTT
         mqttController = MqttController.getInstance();
         mqttController.setContext(getApplicationContext());
-		
-		if(!eventHandlersAdded) {
-			eventHandlersAdded = true;
-			mqttController.addMessageListener(new MqttControllerMessageCallbackListener() {
-				@Override
-				public void onMessageArrived(String topic, MqttMessage message) {
-
-				}
-			});
-		}
         
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -63,5 +52,15 @@ public class Managelights extends AppCompatActivity {
 
         mainListView.setAdapter(listAdapter);
     }
+	
+	@Override
+	protected void addEventHandlers(){
+		mqttController = MqttController.getInstance();
+		mqttController.addMessageListener(new MqttControllerMessageCallbackListener() {
+			@Override
+			public void onMessageArrived(String topic, MqttMessage message) {
 
+			}
+		});
+	}
 }

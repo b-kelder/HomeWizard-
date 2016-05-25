@@ -29,12 +29,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 
-public class Settings extends AppCompatActivity{
+public class Settings extends BaseMqttEventActivity{
 
     //fields
     private MqttController mqttController;
     private String serial;
-    private boolean eventHandlersAdded = false;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,34 +107,35 @@ public class Settings extends AppCompatActivity{
         if(mqttController.isConnected()){
             mqttController.subscribe("HYDRA/AUTH/results");
         }
-
-        if(!eventHandlersAdded) {
-            eventHandlersAdded = true;
-            //als er een bericht terug word ontvangen
-            mqttController.addMessageListener(new MqttControllerMessageCallbackListener() {
-                @Override
-                public void onMessageArrived(String topic, MqttMessage message) {
-
-                    if (topic.equals("HYDRA/AUTH/results")) {
-                        //haal serial code uit json bericht
-                        JSONObject json = null;
-                        try {
-                            json = new JSONObject(message.toString());
-                            if (json.getString("status").equals("ok")) {
-                                String serial = json.getString("serial");
-                                writeFile("login.json", "{\"email\":\"" + emailField.getText().toString() + "\", \"password\":\"" + passwordField.getText().toString() + "\", \"serial\":\"" + serial + "\"}");
-                            } else {
-                                Toast toast = Toast.makeText(getApplicationContext(), "Login failed", Toast.LENGTH_SHORT);
-                                toast.show();
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-            });
-        }
     }
+	
+	@Override
+	protected void addEventHandlers(){
+		//als er een bericht terug word ontvangen
+		mqttController = MqttController.getInstance();
+		mqttController.addMessageListener(new MqttControllerMessageCallbackListener() {
+			@Override
+			public void onMessageArrived(String topic, MqttMessage message) {
+
+				if (topic.equals("HYDRA/AUTH/results")) {
+					//haal serial code uit json bericht
+					JSONObject json = null;
+					try {
+						json = new JSONObject(message.toString());
+						if (json.getString("status").equals("ok")) {
+							String serial = json.getString("serial");
+							writeFile("login.json", "{\"email\":\"" + emailField.getText().toString() + "\", \"password\":\"" + passwordField.getText().toString() + "\", \"serial\":\"" + serial + "\"}");
+						} else {
+							Toast toast = Toast.makeText(getApplicationContext(), "Login failed", Toast.LENGTH_SHORT);
+							toast.show();
+						}
+					} catch (JSONException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		});
+	}
 
     public String getSerial(){
         return serial;

@@ -21,7 +21,7 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends BaseMqttEventActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private MqttController mqttController;
     private AppDataContainer appDataContainer;
@@ -29,7 +29,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private ListView mainListView;
     private DeviceAdapter listAdapter;
 
-    boolean eventHandlersAdded = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,51 +54,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             e.printStackTrace();
         }
 
-        if(!eventHandlersAdded) {
-            eventHandlersAdded = true;
-            mqttController.addMessageListener(new MqttControllerMessageCallbackListener() {
-                @Override
-                public void onMessageArrived(String topic, MqttMessage message) {
-                    try {
-                        JSONObject json = new JSONObject(message.toString());
-                        json = json.getJSONObject("request");
-                        String route = json.getString("route");
-
-                        if (route.equals("hydrastatus")) {
-                            json = new JSONObject(message.toString());
-                            String serial = json.getString("serial");
-
-                            JSONObject file = new JSONObject(readFile("login.json"));
-
-                            if (serial.equals(file.getString("serial"))) {
-                                mqttController.publish("HYDRA/HMWZ", "get-sensors");
-                            } else if (file.getString("email").length() > 1) {
-                                mqttController.publish("HYDRA/AUTH", "{\"email\":\"" + file.getString("email") + "\", \"password\":\"" + file.getString("password") + "\", \"type\":\"login\"}");
-                                mqttController.publish("HYDRA/HMWZ", "get-sensors");
-                            }
-                        }
-
-                        if (route.equals("/get-sensors")) {
-                            appDataContainer.clearArray();
-                            json = new JSONObject(message.toString());
-                            json = json.getJSONObject("response");
-                            JSONArray array = json.getJSONArray("switches");
-                            for (int i = 0; i < array.length(); i++) {
-                                JSONObject Swagtestsysteem = array.getJSONObject(i);
-
-                                String name = Swagtestsysteem.getString("name");
-                                String status = Swagtestsysteem.getString("status");
-                                String id = Swagtestsysteem.getString("id");
-                                appDataContainer.add(new HomewizardSwitch(name, status, id));
-                            }
-                            listAdapter.notifyDataSetChanged();
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
-        }
         mainListView = (ListView) findViewById(R.id.mainListView);
 
         listAdapter = new DeviceAdapter(this, R.layout.row, R.id.rowTextView, appDataContainer.getArray());
@@ -115,7 +69,52 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
     }
+	
+	@Override
+	protected void addEventHandlers() {
+		mqttController.addMessageListener(new MqttControllerMessageCallbackListener() {
+			@Override
+			public void onMessageArrived(String topic, MqttMessage message) {
+				try {
+					JSONObject json = new JSONObject(message.toString());
+					json = json.getJSONObject("request");
+					String route = json.getString("route");
 
+					if (route.equals("hydrastatus")) {
+						json = new JSONObject(message.toString());
+						String serial = json.getString("serial");
+
+						JSONObject file = new JSONObject(readFile("login.json"));
+
+						if (serial.equals(file.getString("serial"))) {
+							mqttController.publish("HYDRA/HMWZ", "get-sensors");
+						} else if (file.getString("email").length() > 1) {
+							mqttController.publish("HYDRA/AUTH", "{\"email\":\"" + file.getString("email") + "\", \"password\":\"" + file.getString("password") + "\", \"type\":\"login\"}");
+							mqttController.publish("HYDRA/HMWZ", "get-sensors");
+						}
+					}
+
+					if (route.equals("/get-sensors")) {
+						appDataContainer.clearArray();
+						json = new JSONObject(message.toString());
+						json = json.getJSONObject("response");
+						JSONArray array = json.getJSONArray("switches");
+						for (int i = 0; i < array.length(); i++) {
+							JSONObject Swagtestsysteem = array.getJSONObject(i);
+
+							String name = Swagtestsysteem.getString("name");
+							String status = Swagtestsysteem.getString("status");
+							String id = Swagtestsysteem.getString("id");
+							appDataContainer.add(new HomewizardSwitch(name, status, id));
+						}
+						listAdapter.notifyDataSetChanged();
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
 
     @Override
     public void onBackPressed() {

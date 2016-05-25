@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by Bram on 19/05/2016.
+ * Created by Wouter on 19/05/2016.
  */
 
 interface MqttControllerMessageCallbackListener{
@@ -33,7 +33,6 @@ public class MqttController {
 
     private Context context;
     private MqttAndroidClient client;
-    private boolean connectSucces = false;
 
     private List<MqttControllerMessageCallbackListener> messageListeners = new ArrayList<MqttControllerMessageCallbackListener>();
 
@@ -109,7 +108,6 @@ public class MqttController {
                         }
                     });
 
-                    connectSucces = true;
                     subscribe("HYDRA/HMWZRETURN");
                     subscribe("HYDRA/HMWZRETURN/#");
                     subscribe("HYDRA/STATUS/results");
@@ -134,7 +132,7 @@ public class MqttController {
         message.setQos(2);
         message.setRetained(false);
 
-        if(connectSucces){
+        if(isConnected()){
             try {
                 client.publish(topic, message);
             } catch (MqttException e) {

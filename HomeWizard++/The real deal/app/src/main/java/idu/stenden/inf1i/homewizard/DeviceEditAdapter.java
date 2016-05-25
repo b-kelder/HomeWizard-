@@ -50,6 +50,7 @@ class DeviceEditAdapter extends DeviceAdapter {
             }
         };
 		
+		viewMessageCallbacks.remove(callbackListener);		//If there's already an equivalent callbackListener
 		viewMessageCallbacks.add(callbackListener);
 		MqttController.getInstance().addMessageListener(callbackListener);
 
