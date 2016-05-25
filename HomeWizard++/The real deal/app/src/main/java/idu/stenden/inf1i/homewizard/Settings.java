@@ -4,7 +4,9 @@ import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import org.eclipse.paho.client.mqttv3.MqttMessage;
@@ -94,18 +96,20 @@ public class Settings extends BaseMqttEventActivity{
         });
 
         // handle adminpin buttons.
-        Button adminPinButton = (Button) findViewById(R.id.adminEnabled);
-        EditText adminPin = (EditText) findViewById(R.id.editAdminPin);
-        if(!adminPinButton.isEnabled()) // if adminpin is disabled, disable text input
-        {
-            adminPin.setEnabled(false);
-            adminPin.setFocusable(false);
-        }
-        else
-        {
-            adminPin.setEnabled(true);
-            adminPin.setFocusable(true);
-        }
+        final Switch adminPinButton = (Switch) findViewById(R.id.adminEnabled);
+        final EditText adminPin = (EditText) findViewById(R.id.editAdminPin);
+        adminPinButton.setOnCheckedChangeListener((new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked){
+                    adminPin.setEnabled(true);
+                } else {
+                    adminPin.setEnabled(false);
+                }
+            }
+        }));
+        //Disable
+        adminPin.setEnabled(false);
+
     }
 
 	
