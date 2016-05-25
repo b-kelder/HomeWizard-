@@ -55,17 +55,20 @@ public class MqttController {
 
     public void addMessageListener(MqttControllerMessageCallbackListener listener)
     {
+        Log.e("MQTT", "Added MQTT listener, size " + messageListeners.size());
         messageListeners.add(listener);
     }
 	
 	public void removeMessageListener(MqttControllerMessageCallbackListener listener)
 	{
+        Log.e("MQTT", "Removed MQTT listener, size " + messageListeners.size());
 		messageListeners.remove(listener);
 	}
 	
 	public void removeMessageListeners(MqttControllerMessageCallbackListener[] listeners)
 	{
 		for(MqttControllerMessageCallbackListener l:listeners) {
+            Log.e("MQTT", "Removed MQTT listener, size " + messageListeners.size());
 			messageListeners.remove(l);
 		}
 	}
@@ -104,6 +107,7 @@ public class MqttController {
                         public void messageArrived(String topic, MqttMessage message) throws Exception {
                             //Toast toast = Toast.makeText(context, topic + " " + message.toString(), Toast.LENGTH_LONG);
                             //toast.show();
+                            Log.e("MQTT", "Recieved message on topic " + topic + " - " + message.toString());
                             for (MqttControllerMessageCallbackListener listener : messageListeners) {
                                 listener.onMessageArrived(topic, message);
                             }

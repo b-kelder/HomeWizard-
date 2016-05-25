@@ -10,18 +10,18 @@ import java.util.ArrayList;
 public class BaseMqttEventActivity extends AppCompatActivity {
 
     protected ArrayList<MqttControllerMessageCallbackListener> eventHandlers = new ArrayList<>();
-    protected boolean eventHandlersAdded = false;
+    //protected boolean eventHandlersAdded = false;
 
     @Override
     protected void onStart() {
 
         super.onStart();
         
-        if(!eventHandlersAdded) {
-			eventHandlersAdded = true;
+        //if(!eventHandlersAdded) {
+			//eventHandlersAdded = true;
             //Toast.makeText(getApplicationContext(), "Added event handlers", Toast.LENGTH_SHORT).show();
             addEventListeners();
-		}
+		//}
     }
 
     protected void addEventListener(MqttControllerMessageCallbackListener listener){
