@@ -13,9 +13,9 @@ public class BaseMqttEventActivity extends AppCompatActivity {
     protected boolean eventHandlersAdded = false;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onStart() {
 
-        super.onCreate(savedInstanceState);
+        super.onStart();
         
         if(!eventHandlersAdded) {
 			eventHandlersAdded = true;
@@ -45,7 +45,8 @@ public class BaseMqttEventActivity extends AppCompatActivity {
     }
 
     @Override
-    public void finalize(){
+    public void onStop(){
+        super.onStop();
         removeEventHandlers();
     }
 }
