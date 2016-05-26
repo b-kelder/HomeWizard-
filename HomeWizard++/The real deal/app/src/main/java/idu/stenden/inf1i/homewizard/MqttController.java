@@ -59,12 +59,13 @@ public class MqttController {
 
                         JSONObject file = Util.readLoginData(context);
 
-                        if (serial.equals(file.getString("serial"))) {
+                        /*if (!serial.isEmpty() && serial.equals(file.get("serial"))) {
                             publish("HYDRA/HMWZ", "get-sensors");
                         } else if (file.getString("email").length() > 1) {
                             //mqttController.publish("HYDRA/AUTH", "{\"email\":\"" + file.getString("email") + "\", \"password\":\"" + file.getString("password") + "\", \"type\":\"login\"}");
                             loginHomeWizard(file.getString("email"), file.getString("password"), context);
-                        }
+                        }*/
+                        loginHomeWizard(file.getString("email"), file.getString("password"), context);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();

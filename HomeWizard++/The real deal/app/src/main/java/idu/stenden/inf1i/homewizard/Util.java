@@ -31,6 +31,12 @@ public class Util {
         try {
             object = new JSONObject(readFile(context, "broker.json"));
         } catch (JSONException e) {
+            saveBrokerData(context, "", "");
+            try {
+                object = new JSONObject(readFile(context, "broker.json"));
+            } catch (JSONException e1) {
+                e1.printStackTrace();
+            }
             e.printStackTrace();
         }
         return object;
@@ -53,6 +59,12 @@ public class Util {
         try {
             object = new JSONObject(readFile(context, "login.json"));
         } catch (JSONException e) {
+            saveLoginData(context, "", "", JSONObject.NULL);
+            try {
+                object = new JSONObject(readFile(context, "login.json"));
+            } catch (JSONException e1) {
+                e1.printStackTrace();
+            }
             e.printStackTrace();
         }
         return object;

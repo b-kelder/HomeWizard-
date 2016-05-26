@@ -89,7 +89,7 @@ public class Settings extends BaseMqttEventActivity{
         Button clearbutton = (Button) findViewById(R.id.clearBtn);
         clearbutton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                Util.saveLoginData(Settings.context, emailField.getText().toString(), passwordField.getText().toString(), serial);
+                Util.saveLoginData(Settings.context, emailField.getText().toString(), passwordField.getText().toString(), JSONObject.NULL);
                 emailField.setText("");
                 passwordField.setText("");
                 Toast toast = Toast.makeText(getApplicationContext(), "Cleared all login data", Toast.LENGTH_SHORT);
