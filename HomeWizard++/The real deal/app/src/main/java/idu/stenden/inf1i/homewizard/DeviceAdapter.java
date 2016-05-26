@@ -137,6 +137,8 @@ class DeviceAdapter extends ArrayAdapter<HomewizardSwitch> {
                                     }
                                     swSwitch.setEnabled(true);
                                 }
+                                //Update data
+                                sw.setStatus(swSwitch.isChecked());
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
