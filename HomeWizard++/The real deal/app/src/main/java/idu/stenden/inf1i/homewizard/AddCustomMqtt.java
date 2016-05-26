@@ -25,10 +25,7 @@ public class AddCustomMqtt extends AppCompatActivity {
         addHMWZ.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 if (!customName.getText().toString().isEmpty() && !customTopic.getText().toString().isEmpty() && !payloadOff.getText().toString().isEmpty() && !payloadOn.getText().toString().isEmpty()) {
-
-                    
-
-                    //startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                    //TODO: Add support for non-homewizard MQTT devices
                 } else {
                     Toast toaster = Toast.makeText(getApplicationContext(), "Vul shit in", Toast.LENGTH_SHORT);
                     toaster.show();
