@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -9,145 +9,149 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="idu.stenden.inf1i.homewizard.Settings">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="HomeWizard login"
-        android:id="@+id/textView2"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true" />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:inputType="textEmailAddress"
-        android:ems="10"
-        android:id="@+id/emailField"
-        android:layout_below="@+id/textView2"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentEnd="true"
-        android:hint="login@example.com"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="HomeWizard login"
+            android:id="@+id/textView2"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentStart="true" />
 
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:inputType="textPassword"
-        android:ems="10"
-        android:id="@+id/passwordField"
-        android:layout_below="@+id/emailField"
-        android:layout_alignParentStart="true"
-        android:layout_alignEnd="@+id/emailField"
-        android:hint="Password"/>
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:inputType="textEmailAddress"
+            android:ems="10"
+            android:id="@+id/emailField"
+            android:layout_below="@+id/textView2"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentEnd="true"
+            android:hint="login@example.com"/>
 
-    <Button
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Login"
-        android:id="@+id/loginButton"
-        android:layout_below="@+id/passwordField"
-        android:layout_alignEnd="@+id/passwordField"
-        android:layout_alignStart="@+id/bkrConfirmBtn" />
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:inputType="textPassword"
+            android:ems="10"
+            android:id="@+id/passwordField"
+            android:layout_below="@+id/emailField"
+            android:layout_alignParentStart="true"
+            android:layout_alignEnd="@+id/emailField"
+            android:hint="Password"/>
 
-    <Button
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Clear"
-        android:id="@+id/clearBtn"
-        android:layout_above="@+id/view"
-        android:layout_toStartOf="@+id/loginButton" />
+        <Button
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Login"
+            android:id="@+id/loginButton"
+            android:layout_below="@+id/passwordField"
+            android:layout_alignEnd="@+id/passwordField"
+            android:layout_alignStart="@+id/bkrConfirmBtn" />
 
-    <View
-        android:layout_width="fill_parent"
-        android:layout_height="2dip"
-        android:background="#715F5F"
-        android:layout_below="@+id/loginButton"
-        android:layout_alignParentEnd="true"
-        android:layout_marginTop="25dp"
-        android:id="@+id/view" />
+        <Button
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Clear"
+            android:id="@+id/clearBtn"
+            android:layout_above="@+id/view"
+            android:layout_toStartOf="@+id/loginButton" />
 
-    <View
-        android:layout_width="fill_parent"
-        android:layout_height="2dip"
-        android:background="#715F5F"
-        android:layout_marginTop="27dp"
-        android:id="@+id/view2"
-        android:layout_below="@+id/bkrConfirmBtn"
-        android:layout_alignParentEnd="true" />
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="2dip"
+            android:background="#715F5F"
+            android:layout_below="@+id/loginButton"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="25dp"
+            android:id="@+id/view" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Broker settings"
-        android:id="@+id/brokerSettings"
-        android:layout_below="@+id/view"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentBottom="false"
-        android:layout_alignParentLeft="false"
-        android:layout_marginTop="10dp" />
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="2dip"
+            android:background="#715F5F"
+            android:layout_marginTop="27dp"
+            android:id="@+id/view2"
+            android:layout_below="@+id/bkrConfirmBtn"
+            android:layout_alignParentEnd="true" />
 
-    <EditText
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/brokerIP"
-        android:layout_below="@+id/brokerSettings"
-        android:layout_alignParentStart="true"
-        android:hint="IP address"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="Broker settings"
+            android:id="@+id/brokerSettings"
+            android:layout_below="@+id/view"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentBottom="false"
+            android:layout_alignParentLeft="false"
+            android:layout_marginTop="10dp" />
 
-    <EditText
-        android:layout_width="150px"
-        android:layout_height="wrap_content"
-        android:id="@+id/brokerPort"
-        android:layout_below="@+id/brokerIP"
-        android:layout_alignParentStart="true"
-        android:hint="Port"/>
+        <EditText
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/brokerIP"
+            android:layout_below="@+id/brokerSettings"
+            android:layout_alignParentStart="true"
+            android:hint="IP address"/>
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Apply"
-        android:id="@+id/bkrConfirmBtn"
-        android:layout_below="@+id/brokerIP"
-        android:layout_alignEnd="@+id/brokerIP" />
+        <EditText
+            android:layout_width="150px"
+            android:layout_height="wrap_content"
+            android:id="@+id/brokerPort"
+            android:layout_below="@+id/brokerIP"
+            android:layout_alignParentStart="true"
+            android:hint="Port"/>
 
-    <Switch
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Enable "
-        android:id="@+id/adminEnabled"
-        android:layout_alignTop="@+id/textView9"
-        android:layout_alignEnd="@+id/view2" />
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Apply"
+            android:id="@+id/bkrConfirmBtn"
+            android:layout_below="@+id/brokerIP"
+            android:layout_alignEnd="@+id/brokerIP" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Admin pin"
-        android:id="@+id/textView9"
-        android:layout_alignTop="@+id/view2"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="10dp" />
+        <Switch
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Enable "
+            android:id="@+id/adminEnabled"
+            android:layout_alignTop="@+id/textView9"
+            android:layout_alignEnd="@+id/view2" />
 
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:inputType="textPassword"
-        android:hint="Pin number"
-        android:ems="10"
-        android:id="@+id/editAdminPin"
-        android:layout_marginTop="29dp"
-        android:layout_below="@+id/textView9"
-        android:layout_alignParentStart="true" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="Admin pin"
+            android:id="@+id/textView9"
+            android:layout_alignTop="@+id/view2"
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="10dp" />
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Apply"
-        android:id="@+id/button"
-        android:layout_alignTop="@+id/editAdminPin"
-        android:layout_toEndOf="@+id/clearBtn" />
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:inputType="textPassword"
+            android:hint="Pin number"
+            android:ems="10"
+            android:id="@+id/editAdminPin"
+            android:layout_marginTop="29dp"
+            android:layout_below="@+id/textView9"
+            android:layout_alignParentStart="true" />
 
-</RelativeLayout>
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Apply"
+            android:id="@+id/button"
+            android:layout_alignTop="@+id/editAdminPin"
+            android:layout_toEndOf="@+id/clearBtn" />
+    </RelativeLayout>
+</ScrollView>
