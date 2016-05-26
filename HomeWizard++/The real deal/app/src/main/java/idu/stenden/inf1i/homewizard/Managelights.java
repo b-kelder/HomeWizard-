@@ -61,7 +61,10 @@ public class Managelights extends BaseMqttEventActivity {
                         json = json.getJSONObject("request");
                         String route = json.getString("route");
 
+                        // Since MainActivity SHOULD have added their event listener first this SHOULD be called after that
+                        // so we can assume the lights array is updated
                         if (route.equals("/get-sensors")) {
+                            listAdapter.notifyDataSetChanged();
                             mainListView.invalidate();
                         }
                     } catch (JSONException e) {

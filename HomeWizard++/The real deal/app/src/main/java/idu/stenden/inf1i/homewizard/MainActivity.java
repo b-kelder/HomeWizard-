@@ -161,29 +161,4 @@ public class MainActivity extends BaseMqttEventActivity implements NavigationVie
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
-
-    /*private String readFile(String file){
-        String settings = "";
-        try {
-            InputStream inputStream = openFileInput(file);
-
-            if ( inputStream != null ) {
-                InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
-                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-                String receiveString = "";
-                StringBuilder stringBuilder = new StringBuilder();
-
-                while ( (receiveString = bufferedReader.readLine()) != null ) {
-                    stringBuilder.append(receiveString);
-                }
-                inputStream.close();
-                settings = stringBuilder.toString();
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return settings;
-    }*/
 }

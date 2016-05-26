@@ -22,6 +22,8 @@ import java.util.List;
  */
 class DeviceEditAdapter extends ArrayAdapter<HomewizardSwitch> {
 
+    //TODO: Add support for non-Homewizard items
+
     public DeviceEditAdapter(Context context, int resource) {
         super(context, resource);
     }
@@ -44,7 +46,6 @@ class DeviceEditAdapter extends ArrayAdapter<HomewizardSwitch> {
         final ImageButton btnChange = (ImageButton) convertView.findViewById(R.id.btnChange);
         final ImageButton btnDelete = (ImageButton) convertView.findViewById(R.id.btnDelete);
 
-		
 		MqttControllerMessageCallbackListener callbackListener = new MqttControllerMessageCallbackListener() {
             @Override
             public void onMessageArrived(String topic, MqttMessage message) {
@@ -74,6 +75,7 @@ class DeviceEditAdapter extends ArrayAdapter<HomewizardSwitch> {
         btnChange.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 //MqttController.getInstance().publish("", "");
+                //TODO: Popup dialog with options for name and code change
             }
         });
 
