@@ -39,8 +39,7 @@
         <activity android:name=".AddChoice" />
         <activity android:name=".AddHomewizardlight" />
         <activity android:name=".AddCustomMqtt" />
-        <activity android:name=".HelpPage" />
-        <activity android:name=".AdminLogin"></activity>
+        <activity android:name=".HelpPage"></activity>
     </application>
 
 </manifest>
