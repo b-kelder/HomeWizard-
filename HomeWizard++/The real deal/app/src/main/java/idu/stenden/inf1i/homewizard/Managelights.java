@@ -6,7 +6,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.json.JSONException;
@@ -38,7 +37,7 @@ public class Managelights extends BaseMqttEventActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(getApplicationContext(), AddChoise.class));
+                startActivity(new Intent(getApplicationContext(), AddChoice.class));
             }
         });
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);

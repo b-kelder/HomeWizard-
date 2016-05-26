@@ -17,6 +17,7 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.util.Set;
 
 public class Settings extends BaseMqttEventActivity{
 
@@ -24,9 +25,13 @@ public class Settings extends BaseMqttEventActivity{
     private MqttController mqttController;
     private String serial;
 
+    public static Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        context = this;
+
         super.onCreate(savedInstanceState);
 
         mqttController = MqttController.getInstance();
@@ -40,12 +45,12 @@ public class Settings extends BaseMqttEventActivity{
         final EditText brokerPort = (EditText) findViewById(R.id.brokerPort);
 
         try {
-            JSONObject loginSettingsFile = new JSONObject(readFile("login.json"));
+            JSONObject loginSettingsFile = Util.readLoginData(this);
             serial = loginSettingsFile.getString("serial");
             emailField.setText(loginSettingsFile.getString("email"));
             passwordField.setText(loginSettingsFile.getString("password"));
 
-            JSONObject brokerSettings = new JSONObject(readFile("broker.json"));
+            JSONObject brokerSettings = Util.readBrokerData(Settings.context);
             brokerIP.setText(brokerSettings.getString("ip"));
             brokerPort.setText(brokerSettings.getString("port"));
         } catch (Exception e) {
@@ -57,10 +62,7 @@ public class Settings extends BaseMqttEventActivity{
         loginbutton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 //publish email/password
-                writeFile("login.json", "{\"email\":\"" + emailField.getText().toString() + "\", \"password\":\"" + passwordField.getText().toString() + "\", \"serial\":\"\"}");
-                mqttController.publish("HYDRA/AUTH", "{\"email\":\"" + emailField.getText().toString() + "\", \"password\":\"" + passwordField.getText().toString() + "\", \"type\":\"login\"}");
-                Toast toast = Toast.makeText(getApplicationContext(), "Trying to log in", Toast.LENGTH_SHORT);
-                toast.show();
+                mqttController.loginHomeWizard(emailField.getText().toString(), passwordField.getText().toString(), Settings.context);
             }
         });
 
@@ -68,13 +70,13 @@ public class Settings extends BaseMqttEventActivity{
         brokerSettings.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 //publish email/password
-                writeFile("broker.json", "{\"ip\":\"" + brokerIP.getText() + "\", \"port\":\"" + brokerPort.getText() + "\"}");
+                Util.saveBrokerData(Settings.context, brokerIP.getText().toString(), brokerPort.getText().toString());
                 Toast toast = Toast.makeText(getApplicationContext(), "Trying to connect to broker", Toast.LENGTH_SHORT);
                 toast.show();
 
                 try {
-                    JSONObject file = new JSONObject(readFile("broker.json"));
-                    mqttController.connect("tcp://" + file.getString("ip") + ":" + file.getString("port"), "Homewizard++");
+                    JSONObject file =Util.readBrokerData(Settings.context);
+                    mqttController.connect("tcp://" + file.getString("ip") + ":" + file.getString("port"), "Homewizard++", Settings.context);
                 } catch (JSONException e) {
                     Toast toaster = Toast.makeText(getApplicationContext(), "Unable to connect to broker", Toast.LENGTH_SHORT);
                     toaster.show();
@@ -87,7 +89,7 @@ public class Settings extends BaseMqttEventActivity{
         Button clearbutton = (Button) findViewById(R.id.clearBtn);
         clearbutton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                writeFile("login.json", "{\"email\":\"\", \"password\":\"\"}");
+                Util.saveLoginData(Settings.context, emailField.getText().toString(), passwordField.getText().toString(), serial);
                 emailField.setText("");
                 passwordField.setText("");
                 Toast toast = Toast.makeText(getApplicationContext(), "Cleared all login data", Toast.LENGTH_SHORT);
@@ -118,9 +120,10 @@ public class Settings extends BaseMqttEventActivity{
 		//als er een bericht terug word ontvangen
         final EditText emailField = (EditText) findViewById(R.id.emailField);
         final EditText passwordField = (EditText) findViewById(R.id.passwordField);
-        //TODO: Move most of this code to something centralized. Currently login toasts are not displayed if Settings is not visible.
+
 		addEventListener(new MqttControllerMessageCallbackListener() {
             @Override
+            /// Stores last successful login data and serial
             public void onMessageArrived(String topic, MqttMessage message) {
 
                 //Toast.makeText(getApplicationContext(), "TRIGGERED SETTINGS EVENT LISTENER " + topic, Toast.LENGTH_SHORT).show();
@@ -131,11 +134,7 @@ public class Settings extends BaseMqttEventActivity{
                         json = new JSONObject(message.toString());
                         if (json.getString("status").equals("ok")) {
                             String serial = json.getString("serial");
-                            writeFile("login.json", "{\"email\":\"" + emailField.getText().toString() + "\", \"password\":\"" + passwordField.getText().toString() + "\", \"serial\":\"" + serial + "\"}");
-                            Toast.makeText(getApplicationContext(), "Login success", Toast.LENGTH_SHORT).show();
-                        } else {
-                            Toast toast = Toast.makeText(getApplicationContext(), "Login failed", Toast.LENGTH_SHORT);
-                            toast.show();
+                            Util.saveLoginData(Settings.context, emailField.getText().toString(), passwordField.getText().toString(), serial);
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -144,45 +143,4 @@ public class Settings extends BaseMqttEventActivity{
             }
         });
 	}
-
-    public String getSerial(){
-        return serial;
-    }
-
-    private String readFile(String file){
-        String settings = "";
-        try {
-            InputStream inputStream = openFileInput(file);
-
-            if ( inputStream != null ) {
-                InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
-                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-                String receiveString = "";
-                StringBuilder stringBuilder = new StringBuilder();
-
-                while ( (receiveString = bufferedReader.readLine()) != null ) {
-                    stringBuilder.append(receiveString);
-                }
-
-                inputStream.close();
-                settings = stringBuilder.toString();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return settings;
-    }
-
-    private void writeFile(String file, String data){
-        //write login info naar een file
-        try {
-            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(openFileOutput(file, Context.MODE_PRIVATE));
-            outputStreamWriter.write(data);
-            outputStreamWriter.close();
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 }

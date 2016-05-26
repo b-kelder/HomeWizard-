@@ -2,6 +2,7 @@ package idu.stenden.inf1i.homewizard;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.os.CountDownTimer;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -37,11 +38,42 @@ public class MqttController {
     private MqttAndroidClient client;
 
     private ProgressDialog connectingDialog;
+    private CountDownTimer connectingDialogTimeoutTimer;
 
     private List<MqttControllerMessageCallbackListener> messageListeners = new ArrayList<MqttControllerMessageCallbackListener>();
 
     private MqttController(){
         //Set up some default listeners
+
+        /// Handles initial login
+        addMessageListener(new MqttControllerMessageCallbackListener() {
+            @Override
+            public void onMessageArrived(String topic, MqttMessage message) {
+                try {
+                    JSONObject json = new JSONObject(message.toString());
+                    json = json.getJSONObject("request");
+                    String route = json.getString("route");
+
+                    if (route.equals("hydrastatus")) {
+                        json = new JSONObject(message.toString());
+                        String serial = json.getString("serial");
+
+                        JSONObject file = Util.readLoginData(context);
+
+                        if (serial.equals(file.getString("serial"))) {
+                            publish("HYDRA/HMWZ", "get-sensors");
+                        } else if (file.getString("email").length() > 1) {
+                            //mqttController.publish("HYDRA/AUTH", "{\"email\":\"" + file.getString("email") + "\", \"password\":\"" + file.getString("password") + "\", \"type\":\"login\"}");
+                            loginHomeWizard(file.getString("email"), file.getString("password"), context);
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        /// Displays device edit toasts
         addMessageListener(new MqttControllerMessageCallbackListener() {
             @Override
             public void onMessageArrived(String topic, MqttMessage message) {
@@ -57,6 +89,7 @@ public class MqttController {
             }
         });
 
+        /// Displays login result toasts and refresh
         addMessageListener(new MqttControllerMessageCallbackListener() {
             @Override
             public void onMessageArrived(String topic, MqttMessage message) {
@@ -64,15 +97,14 @@ public class MqttController {
                 //Toast.makeText(getApplicationContext(), "TRIGGERED SETTINGS EVENT LISTENER " + topic, Toast.LENGTH_SHORT).show();
                 if (topic.equals("HYDRA/AUTH/results")) {
                     //haal serial code uit json bericht
-                    if(connectingDialog != null){
-                        connectingDialog.dismiss();
-                    }
+                    dismissConnectingDialog();
 
                     JSONObject json = null;
                     try {
                         json = new JSONObject(message.toString());
                         if (json.getString("status").equals("ok")) {
                             Toast.makeText(context, "Login success", Toast.LENGTH_SHORT).show();
+                            publish("HYDRA/HMWZ", "get-sensors");
                         } else {
                             Toast toast = Toast.makeText(context, "Login failed", Toast.LENGTH_SHORT);
                             toast.show();
@@ -137,26 +169,60 @@ public class MqttController {
         }
     }
 
-    public void loginHomeWizard(String email, String password){
-        if(isConnected()){
-            connectingDialog = new ProgressDialog(MainActivity.context);
-            connectingDialog.setTitle("Connecting");
-            connectingDialog.setMessage("Connecting to HomeWizard...");
-            connectingDialog.setCancelable(false);
-            connectingDialog.show();
-            this.publish("HYDRA/AUTH", "{\"email\":\"" + email + "\", \"password\":\"" + password + "\", \"type\":\"login\"}");
+    private void showConnectingDialog(Context context, String title, String message, long timeoutmillis){
+        if(connectingDialog != null){
+            connectingDialog.dismiss();
+            connectingDialogTimeoutTimer.cancel();
+        }
+        connectingDialog = new ProgressDialog(context);
+        connectingDialog.setTitle(title);
+        connectingDialog.setMessage(message);
+        connectingDialog.setCancelable(false);
+        connectingDialog.show();
+
+        connectingDialogTimeoutTimer = new CountDownTimer(timeoutmillis, timeoutmillis) {
+            @Override
+            public void onTick(long l){
+
+            }
+            @Override
+            public void onFinish() {
+                connectingDialog.dismiss();
+            }
+        };
+        connectingDialogTimeoutTimer.start();
+    }
+
+    private void dismissConnectingDialog(){
+        if(connectingDialog != null){
+            connectingDialog.dismiss();
+            connectingDialogTimeoutTimer.cancel();
         }
     }
 
-    public void connect(String broker, String clientId){
+    public void loginHomeWizard(String email, String password, Context context){
+        if(isConnected()){
+            setContext(context);
+
+            showConnectingDialog(context, "Connecting", "Connecting to HomeWizard...", 10000);
+
+            Util.saveLoginData(context, email, password, JSONObject.NULL);
+            this.publish("HYDRA/AUTH", "{\"email\":\"" + email + "\", \"password\":\"" + password + "\", \"type\":\"login\"}");
+            Toast toast = Toast.makeText(context, "Trying to log in", Toast.LENGTH_SHORT);
+            toast.show();
+        }
+    }
+
+    public void connect(String broker, String clientId, Context context){
+        setContext(context);
+        connect(broker, clientId);
+    }
+
+    private void connect(String broker, String clientId){
         MemoryPersistence persistence = new MemoryPersistence();
         client =  new MqttAndroidClient(context, broker, clientId, persistence);
 
-        connectingDialog = new ProgressDialog(MainActivity.context);
-        connectingDialog.setTitle("Connecting");
-        connectingDialog.setMessage("Connecting to MQTT broker...");
-        connectingDialog.setCancelable(false);
-        connectingDialog.show();
+        showConnectingDialog(context, "Connecting", "Connecting to MQTT broker...", 10000);
 
         try {
             client.connect(context, new IMqttActionListener() {
@@ -196,10 +262,10 @@ public class MqttController {
                     subscribe("HYDRA/STATUS/results");
                     subscribe("HYDRA/AUTH/results");
 
-
+                    // Does this actually happen?
                     publish("HYDRA/STATUS", "get-status");
 
-                    connectingDialog.dismiss();
+                    dismissConnectingDialog();
                 }
 
                 @Override
@@ -207,7 +273,7 @@ public class MqttController {
                     Toast toast = Toast.makeText(context, "Failed to connect to broker", Toast.LENGTH_SHORT);
                     toast.show();
 
-                    connectingDialog.dismiss();
+                    dismissConnectingDialog();
                 }
             });
         } catch (Exception e) {

@@ -36,7 +36,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="idu.stenden.inf1i.homewizard.MainActivity" />
         </activity>
-        <activity android:name=".AddChoise" />
+        <activity android:name=".AddChoice" />
         <activity android:name=".AddHomewizardlight" />
         <activity android:name=".AddCustomMqtt" />
         <activity android:name=".HelpPage"></activity>

@@ -50,9 +50,9 @@ public class MainActivity extends BaseMqttEventActivity implements NavigationVie
 
 
         try {
-            JSONObject file = new JSONObject(readFile("broker.json"));
+            JSONObject file = Util.readBrokerData(this);
             if(!mqttController.isConnected()){
-                mqttController.connect("tcp://" + file.getString("ip") + ":" + file.getString("port"), "Homewizard++");
+                mqttController.connect("tcp://" + file.getString("ip") + ":" + file.getString("port"), "Homewizard++", this);
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -75,30 +75,17 @@ public class MainActivity extends BaseMqttEventActivity implements NavigationVie
         navigationView.setNavigationItemSelectedListener(this);
     }
 
-    //TODO: Move non-UI code to more persistent event listener, now it will be removed if MainActivity is destroyed for some reason
+
 	@Override
 	protected void addEventListeners() {
 		addEventListener(new MqttControllerMessageCallbackListener() {
 			@Override
+            /// Updates the array adapter and the listview
 			public void onMessageArrived(String topic, MqttMessage message) {
 				try {
 					JSONObject json = new JSONObject(message.toString());
 					json = json.getJSONObject("request");
 					String route = json.getString("route");
-
-					if (route.equals("hydrastatus")) {
-						json = new JSONObject(message.toString());
-						String serial = json.getString("serial");
-
-						JSONObject file = new JSONObject(readFile("login.json"));
-
-						if (serial.equals(file.getString("serial"))) {
-							mqttController.publish("HYDRA/HMWZ", "get-sensors");
-						} else if (file.getString("email").length() > 1) {
-							mqttController.publish("HYDRA/AUTH", "{\"email\":\"" + file.getString("email") + "\", \"password\":\"" + file.getString("password") + "\", \"type\":\"login\"}");
-							mqttController.publish("HYDRA/HMWZ", "get-sensors");
-						}
-					}
 
 					if (route.equals("/get-sensors")) {
 						appDataContainer.clearArray();
@@ -175,7 +162,7 @@ public class MainActivity extends BaseMqttEventActivity implements NavigationVie
         return true;
     }
 
-    private String readFile(String file){
+    /*private String readFile(String file){
         String settings = "";
         try {
             InputStream inputStream = openFileInput(file);
@@ -198,5 +185,5 @@ public class MainActivity extends BaseMqttEventActivity implements NavigationVie
         }
 
         return settings;
-    }
+    }*/
 }
