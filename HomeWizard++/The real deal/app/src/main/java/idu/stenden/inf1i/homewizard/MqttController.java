@@ -15,7 +15,6 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -37,8 +36,8 @@ public class MqttController {
     private Context context;
     private MqttAndroidClient client;
 
-    private ProgressDialog connectingDialog;
-    private CountDownTimer connectingDialogTimeoutTimer;
+    private ProgressDialog progressDialog;
+    private CountDownTimer progressDialogTimeoutTimer;
 
     private List<MqttControllerMessageCallbackListener> messageListeners = new ArrayList<MqttControllerMessageCallbackListener>();
 
@@ -169,34 +168,34 @@ public class MqttController {
         }
     }
 
-    private void showConnectingDialog(Context context, String title, String message, long timeoutmillis){
-        if(connectingDialog != null){
-            connectingDialog.dismiss();
-            connectingDialogTimeoutTimer.cancel();
+    private void showDialog(Context context, String title, String message, long timeoutmillis){
+        if(progressDialog != null){
+            progressDialog.dismiss();
+            progressDialogTimeoutTimer.cancel();
         }
-        connectingDialog = new ProgressDialog(context);
-        connectingDialog.setTitle(title);
-        connectingDialog.setMessage(message);
-        connectingDialog.setCancelable(false);
-        connectingDialog.show();
+        progressDialog = new ProgressDialog(context);
+        progressDialog.setTitle(title);
+        progressDialog.setMessage(message);
+        progressDialog.setCancelable(false);
+        progressDialog.show();
 
-        connectingDialogTimeoutTimer = new CountDownTimer(timeoutmillis, timeoutmillis) {
+        progressDialogTimeoutTimer = new CountDownTimer(timeoutmillis, timeoutmillis) {
             @Override
             public void onTick(long l){
 
             }
             @Override
             public void onFinish() {
-                connectingDialog.dismiss();
+                progressDialog.dismiss();
             }
         };
-        connectingDialogTimeoutTimer.start();
+        progressDialogTimeoutTimer.start();
     }
 
     private void dismissConnectingDialog(){
-        if(connectingDialog != null){
-            connectingDialog.dismiss();
-            connectingDialogTimeoutTimer.cancel();
+        if(progressDialog != null){
+            progressDialog.dismiss();
+            progressDialogTimeoutTimer.cancel();
         }
     }
 
@@ -204,7 +203,7 @@ public class MqttController {
         if(isConnected()){
             setContext(context);
 
-            showConnectingDialog(context, "Connecting", "Connecting to HomeWizard...", 10000);
+            showDialog(context, "Connecting", "Connecting to HomeWizard...", 10000);
 
             Util.saveLoginData(context, email, password, JSONObject.NULL);
             this.publish("HYDRA/AUTH", "{\"email\":\"" + email + "\", \"password\":\"" + password + "\", \"type\":\"login\"}");
@@ -222,7 +221,7 @@ public class MqttController {
         MemoryPersistence persistence = new MemoryPersistence();
         client =  new MqttAndroidClient(context, broker, clientId, persistence);
 
-        showConnectingDialog(context, "Connecting", "Connecting to MQTT broker...", 10000);
+        showDialog(context, "Connecting", "Connecting to MQTT broker...", 10000);
 
         try {
             client.connect(context, new IMqttActionListener() {
