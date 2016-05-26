@@ -13,17 +13,10 @@
     tools:showIn="@layout/app_bar_main"
     android:id="@+id/test">
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:orientation="vertical"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:weightSum="1">
-
-        <ListView android:layout_width="match_parent"
-            android:layout_height="495dp"
-            android:id="@+id/mainListView">
-        </ListView>
-
-    </LinearLayout>
+    <ListView android:layout_width="match_parent"
+        android:layout_height="495dp"
+        android:id="@+id/mainListView"
+        android:stackFromBottom="false">
+    </ListView>
 
 </RelativeLayout>

@@ -44,6 +44,28 @@ public class MqttController {
     private MqttController(){
         //Set up some default listeners
 
+        //TODO: Merge these together for performance reasons
+
+        /// Looks for not-logged-in-to-homewizard messages and tries to login
+        addMessageListener(new MqttControllerMessageCallbackListener() {
+            @Override
+            public void onMessageArrived(String topic, MqttMessage message) {
+                try{
+                    JSONObject json = new JSONObject(message.toString());
+                    String status = json.getString("status");
+                    if(status.equals("failed_hydra")) {
+                        if(json.getInt("error") == 4) {
+                            //Not logged in, try again
+                            JSONObject file = Util.readLoginData(context);
+                            loginHomeWizard(file.getString("email"), file.getString("password"), context);
+                        }
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
         /// Handles initial login
         addMessageListener(new MqttControllerMessageCallbackListener() {
             @Override

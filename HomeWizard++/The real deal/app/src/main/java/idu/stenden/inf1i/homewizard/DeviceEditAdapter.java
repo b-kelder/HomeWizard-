@@ -14,19 +14,22 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by Bram on 19/05/2016.
  */
-class DeviceEditAdapter extends DeviceAdapter {
+class DeviceEditAdapter extends ArrayAdapter<HomewizardSwitch> {
 
     public DeviceEditAdapter(Context context, int resource) {
         super(context, resource);
     }
 
+    protected ArrayList<MqttControllerMessageCallbackListener> viewMessageCallbacks = new ArrayList<MqttControllerMessageCallbackListener>();
+
     public DeviceEditAdapter(Context context, int resource, int textViewResourceId, List<?> objects) {
-        super(context, resource, textViewResourceId, objects);
+        super(context, resource, textViewResourceId, (List<HomewizardSwitch>) objects);
     }
 
     @Override
@@ -81,6 +84,12 @@ class DeviceEditAdapter extends DeviceAdapter {
         });
 
         return convertView;
+    }
+
+    @Override
+    public void clear() {
+        super.clear();
+        MqttController.getInstance().removeMessageListeners((MqttControllerMessageCallbackListener[])viewMessageCallbacks.toArray());
     }
 
 }

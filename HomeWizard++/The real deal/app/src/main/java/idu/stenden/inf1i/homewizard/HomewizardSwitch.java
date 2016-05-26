@@ -11,6 +11,7 @@ public class HomewizardSwitch {
     private boolean status;
     private int id;
     private int dimmer;
+    private boolean waitingForResponse;
 
     public HomewizardSwitch(String name, String type, String status, String id){
         this.name = name;
@@ -61,5 +62,13 @@ public class HomewizardSwitch {
 
     public void setDimmer(String dimmer) {
         this.dimmer = Integer.parseInt(dimmer);
+    }
+
+    public boolean isWaitingForResponse() {
+        return waitingForResponse;
+    }
+
+    public void setWaitingForResponse(boolean waitingForResponse) {
+        this.waitingForResponse = waitingForResponse;
     }
 }
