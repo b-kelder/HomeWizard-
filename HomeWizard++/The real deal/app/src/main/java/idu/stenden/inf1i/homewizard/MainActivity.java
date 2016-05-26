@@ -18,10 +18,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-
 public class MainActivity extends BaseMqttEventActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private MqttController mqttController;
@@ -59,10 +55,8 @@ public class MainActivity extends BaseMqttEventActivity implements NavigationVie
         }
 
         mainListView = (ListView) findViewById(R.id.mainListView);
-
-        listAdapter = new DeviceAdapter(this, R.layout.row, R.id.rowTextView, appDataContainer.getArray());
+        listAdapter = new DeviceAdapter(this, R.layout.row, R.id.rowTextView, appDataContainer.getHomewizardSwitches());
         listAdapter.setNotifyOnChange(true);
-
         mainListView.setAdapter(listAdapter);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -88,7 +82,7 @@ public class MainActivity extends BaseMqttEventActivity implements NavigationVie
 					String route = json.getString("route");
 
 					if (route.equals("/get-sensors")) {
-						appDataContainer.clearArray();
+						appDataContainer.clearHomewizardSwitches();
 						json = new JSONObject(message.toString());
 						json = json.getJSONObject("response");
 						JSONArray array = json.getJSONArray("switches");
@@ -98,10 +92,11 @@ public class MainActivity extends BaseMqttEventActivity implements NavigationVie
 							String name = Swagtestsysteem.getString("name");
 							String status = Swagtestsysteem.getString("status");
 							String id = Swagtestsysteem.getString("id");
-							appDataContainer.add(new HomewizardSwitch(name, status, id));
+							appDataContainer.addHomewizardSwitch(new HomewizardSwitch(name, status, id));
 						}
 						listAdapter.notifyDataSetChanged();
                         mainListView.invalidate();
+
                         Toast.makeText(getApplicationContext(), "Device list refreshed", Toast.LENGTH_SHORT).show();
 					}
 				} catch (Exception e) {

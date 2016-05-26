@@ -20,14 +20,14 @@ public class AddCustomMqtt extends AppCompatActivity {
         final EditText payloadOff = (EditText) findViewById(R.id.payloadStateoff);
         final EditText payloadOn = (EditText) findViewById(R.id.payloadStateon);
 
-        Button addHMWZ = (Button) findViewById(R.id.HMWZlightadd);
+        Button addHMWZ = (Button) findViewById(R.id.customAddBtn);
 
         addHMWZ.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 if (!customName.getText().toString().isEmpty() && !customTopic.getText().toString().isEmpty() && !payloadOff.getText().toString().isEmpty() && !payloadOn.getText().toString().isEmpty()) {
                     //TODO: Add support for non-homewizard MQTT devices
                 } else {
-                    Toast toaster = Toast.makeText(getApplicationContext(), "Vul shit in", Toast.LENGTH_SHORT);
+                    Toast toaster = Toast.makeText(getApplicationContext(), "Vul velden in", Toast.LENGTH_SHORT);
                     toaster.show();
                 }
             }

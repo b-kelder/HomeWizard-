@@ -119,6 +119,7 @@ public class MqttController {
 
     public static MqttController getInstance(){
         if(instance == null){
+            Log.d("MQTT", "CREATED MQTTCONTROLLER");
             instance = new MqttController();
         }
         return instance;
@@ -131,28 +132,29 @@ public class MqttController {
 
     public void addMessageListener(MqttControllerMessageCallbackListener listener)
     {
-        Log.e("MQTT", "Added MQTT listener, size " + messageListeners.size());
+        //Log.e("MQTT", "Added MQTT listener, size " + messageListeners.size());
         messageListeners.add(listener);
     }
 	
 	public void removeMessageListener(MqttControllerMessageCallbackListener listener)
 	{
-        if(messageListeners.remove(listener)){
+        messageListeners.remove(listener);
+        /*if(messageListeners.remove(listener)){
             Log.e("MQTT", "Removed MQTT listener, size " + messageListeners.size());
         } else {
             Log.e("MQTT", "Could not remove MQTT listener, size " + messageListeners.size());
-        }
+        }*/
 	}
 	
 	public void removeMessageListeners(MqttControllerMessageCallbackListener[] listeners)
 	{
 		for(MqttControllerMessageCallbackListener l:listeners) {
-
-            if(messageListeners.remove(l)){
+            messageListeners.remove(l);
+            /*if(messageListeners.remove(l)){
                 Log.e("MQTT", "Removed MQTT listener, size " + messageListeners.size());
             } else {
                 Log.e("MQTT", "Could not remove MQTT listener, size " + messageListeners.size());
-            }
+            }*/
 		}
 	}
 
@@ -208,18 +210,37 @@ public class MqttController {
 
             Util.saveLoginData(context, email, password, JSONObject.NULL);
             this.publish("HYDRA/AUTH", "{\"email\":\"" + email + "\", \"password\":\"" + password + "\", \"type\":\"login\"}");
-            Toast toast = Toast.makeText(context, "Trying to log in", Toast.LENGTH_SHORT);
-            toast.show();
+            //Toast toast = Toast.makeText(context, "Trying to log in", Toast.LENGTH_SHORT);
+            //toast.show();
         }
     }
 
     public void connect(String broker, String clientId, Context context){
         setContext(context);
-        connect(broker, clientId);
+        connect(broker, "HMwzPluSplUS");
     }
 
     private void connect(String broker, String clientId){
         MemoryPersistence persistence = new MemoryPersistence();
+        if(client != null){
+            try {
+                // Reset the old client's callback to prevent it from doing anything if the disconnect doesn't work out somehow.
+                client.setCallback(new MqttCallback() {
+                    @Override
+                    public void connectionLost(Throwable cause) {
+                    }
+                    @Override
+                    public void messageArrived(String topic, MqttMessage message) throws Exception {
+                    }
+                    @Override
+                    public void deliveryComplete(IMqttDeliveryToken token) {
+                    }
+                });
+                client.disconnect(1000);
+            } catch (Exception e) {
+                Log.e("MQTT", e.toString());
+            }
+        }
         client =  new MqttAndroidClient(context, broker, clientId, persistence);
 
         showDialog(context, "Connecting", "Connecting to MQTT broker...", 10000);

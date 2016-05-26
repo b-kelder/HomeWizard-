@@ -50,7 +50,7 @@ class DeviceEditAdapter extends DeviceAdapter {
                     try {
                         JSONObject returnValue = new JSONObject(message.toString());
                         if(returnValue.getString("status").equals("ok")) {
-                            AppDataContainer.getInstance().getArray().remove(sw);
+                            AppDataContainer.getInstance().getHomewizardSwitches().remove(sw);
                         }
                     } catch(JSONException e) {
                         e.printStackTrace();

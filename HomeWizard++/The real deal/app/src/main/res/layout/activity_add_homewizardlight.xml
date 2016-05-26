@@ -41,7 +41,15 @@
         android:id="@+id/HMWZlightcode"
         android:layout_below="@+id/textView4"
         android:layout_alignParentStart="true"
-        android:layout_alignEnd="@+id/HMWZlightname" />
+        android:layout_toStartOf="@+id/HMWZlightgenerate" />
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Generate"
+        android:id="@+id/HMWZlightgenerate"
+        android:layout_alignBottom="@+id/HMWZlightcode"
+        android:layout_alignParentEnd="true" />
 
     <Button
         style="?android:attr/buttonStyleSmall"
@@ -51,5 +59,6 @@
         android:id="@+id/HMWZlightadd"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true" />
+
 
 </RelativeLayout>

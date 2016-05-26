@@ -14,7 +14,8 @@ public class AppDataContainer {
 
     static AppDataContainer instance;
 
-    private ArrayList<HomewizardSwitch> itemsList = new ArrayList<HomewizardSwitch>();
+    private ArrayList<HomewizardSwitch> homewizardSwitches = new ArrayList<HomewizardSwitch>();
+    private ArrayList<CustomSwitch> customSwitches = new ArrayList<>();
 
     private AppDataContainer(){
 
@@ -27,15 +28,37 @@ public class AppDataContainer {
         return instance;
     }
 
-    public ArrayList<HomewizardSwitch> getArray(){
-        return itemsList;
+    public void save() {
+
     }
 
-    public void add(HomewizardSwitch homewizardSwitch){
-        itemsList.add(homewizardSwitch);
+    public void load() {
+
     }
 
-    public void clearArray(){
-        itemsList.clear();
+    public ArrayList<CustomSwitch> getCustomSwitches() {
+        return customSwitches;
     }
+
+    public void addCustomSwitch(CustomSwitch customSwitch) {
+        customSwitches.add(customSwitch);
+    }
+
+    public void clearCustomSwitches() {
+        customSwitches.clear();
+    }
+
+    public ArrayList<HomewizardSwitch> getHomewizardSwitches(){
+        return homewizardSwitches;
+    }
+
+    public void addHomewizardSwitch(HomewizardSwitch homewizardSwitch){
+        homewizardSwitches.add(homewizardSwitch);
+    }
+
+    public void clearHomewizardSwitches(){
+        homewizardSwitches.clear();
+    }
+
+
 }
