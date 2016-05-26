@@ -107,7 +107,8 @@
             android:id="@+id/brokerPort"
             android:layout_below="@+id/brokerIP"
             android:layout_alignParentStart="true"
-            android:hint="Port"/>
+            android:hint="Port"
+            android:layout_alignEnd="@+id/brokerSettings" />
 
         <Button
             android:layout_width="wrap_content"
