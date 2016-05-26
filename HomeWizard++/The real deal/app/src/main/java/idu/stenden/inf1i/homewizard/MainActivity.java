@@ -166,6 +166,8 @@ public class MainActivity extends BaseMqttEventActivity implements NavigationVie
             startActivity(new Intent(MainActivity.this, Settings.class));
         } else if (id == R.id.nav_lights) {
             startActivity(new Intent(MainActivity.this, Managelights.class));
+        }else if(id == R.id.nav_help){
+            startActivity(new Intent(MainActivity.this, HelpPage.class));
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
