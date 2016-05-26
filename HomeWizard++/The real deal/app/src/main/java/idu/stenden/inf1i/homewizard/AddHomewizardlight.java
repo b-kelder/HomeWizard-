@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -23,6 +24,7 @@ public class AddHomewizardlight extends BaseMqttEventActivity {
 
         final EditText HMWZlightname = (EditText) findViewById(R.id.HMWZlightname);
         final EditText HMWZlightcode = (EditText) findViewById(R.id.HMWZlightcode);
+        final CheckBox HMWZlightdimmer = (CheckBox) findViewById(R.id.HMWZlightdimmer);
 
         mqttController = MqttController.getInstance();
         mqttController.setContext(getApplicationContext());
@@ -42,7 +44,14 @@ public class AddHomewizardlight extends BaseMqttEventActivity {
         addHMWZ.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 if (!HMWZlightname.getText().toString().isEmpty() && !HMWZlightcode.getText().toString().isEmpty()) {
-                    mqttController.publish("HYDRA/HMWZ/sw/add/" + HMWZlightname.getText() + "/switch/" + HMWZlightcode.getText(), "/0");
+                    String name = HMWZlightname.getText().toString().trim().replace(" ", "+");
+                    String code = HMWZlightcode.getText().toString().trim().replace(" ", "+");
+                    if(HMWZlightdimmer.isChecked()) {
+                        mqttController.publish("HYDRA/HMWZ/sw/add", name + "/dimmer/" + code + "/0");
+                    } else {
+                        mqttController.publish("HYDRA/HMWZ/sw/add", name + "/switch/" + code + "/0");
+                    }
+
 
                     finish();
                     //This just adds to the activity stack, we don't want that!

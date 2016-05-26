@@ -87,12 +87,17 @@ public class MainActivity extends BaseMqttEventActivity implements NavigationVie
 						json = json.getJSONObject("response");
 						JSONArray array = json.getJSONArray("switches");
 						for (int i = 0; i < array.length(); i++) {
-							JSONObject Swagtestsysteem = array.getJSONObject(i);
+							JSONObject switches = array.getJSONObject(i);
 
-							String name = Swagtestsysteem.getString("name");
-							String status = Swagtestsysteem.getString("status");
-							String id = Swagtestsysteem.getString("id");
-							appDataContainer.addHomewizardSwitch(new HomewizardSwitch(name, status, id));
+							String name = switches.getString("name");
+                            String type = switches.getString("type");
+							String status = switches.getString("status");
+							String id = switches.getString("id");
+                            HomewizardSwitch hmwzSwitch = new HomewizardSwitch(name, type, status, id);
+                            if(type.equals("dimmer")){
+                                hmwzSwitch.setDimmer(switches.getString("dimlevel"));
+                            }
+							appDataContainer.addHomewizardSwitch(hmwzSwitch);
 						}
 						listAdapter.notifyDataSetChanged();
                         mainListView.invalidate();

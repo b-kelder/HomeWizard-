@@ -60,5 +60,13 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true" />
 
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Is dimmer"
+        android:id="@+id/HMWZlightdimmer"
+        android:layout_below="@+id/HMWZlightgenerate"
+        android:layout_alignParentStart="true" />
+
 
 </RelativeLayout>

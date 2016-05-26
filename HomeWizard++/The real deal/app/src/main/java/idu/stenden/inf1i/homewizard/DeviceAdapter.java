@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
+import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -38,59 +39,135 @@ class DeviceAdapter extends ArrayAdapter<HomewizardSwitch> {
 
         final HomewizardSwitch sw = getItem(position);
         if(convertView == null){
-            convertView = LayoutInflater.from(getContext()).inflate(R.layout.row, parent, false);
+            if(sw.getType().equals("dimmer")) {
+                convertView = LayoutInflater.from(getContext()).inflate(R.layout.row_dim, parent, false);
+            } else {
+                convertView = LayoutInflater.from(getContext()).inflate(R.layout.row, parent, false);
+            }
         }
 
-        TextView swName = (TextView) convertView.findViewById(R.id.rowTextView);
-        final Switch swSwitch = (Switch) convertView.findViewById(R.id.rowSwitch);
-		
-		MqttControllerMessageCallbackListener callbackListener = new MqttControllerMessageCallbackListener() {
-            @Override
-            public void onMessageArrived(String topic, MqttMessage message) {
+        TextView swName;// = (TextView) convertView.findViewById(R.id.rowTextView);
+        final Switch swSwitch;// = (Switch) convertView.findViewById(R.id.rowSwitch);
+        final SeekBar swBar;
+        final String switchId = String.valueOf(sw.getId());
 
-                int id = Integer.parseInt(topic.substring(topic.lastIndexOf("/")+1));
+        MqttControllerMessageCallbackListener callbackListener;
 
-                if(id == sw.getId()) {
-                    try {
-                        JSONObject returnValue = new JSONObject(message.toString());
+        if(sw.getType().equals("dimmer")) {
+            //Treat it as a dimmer
+            swName = (TextView) convertView.findViewById(R.id.rowDimTextView);
+            swBar = (SeekBar) convertView.findViewById(R.id.rowDimSeekBar);
+            swBar.setMax(100);
+            swBar.setProgress(sw.getDimmer());
 
-                        if(!swSwitch.isEnabled()) {
-                            if (returnValue.getString("status").equals("ok")) {
-                                swSwitch.setEnabled(true);
+            callbackListener = new MqttControllerMessageCallbackListener() {
+                @Override
+                public void onMessageArrived(String topic, MqttMessage message) {
+
+                    int id = Integer.parseInt(topic.substring(topic.lastIndexOf("/")+1));
+
+                    if(id == sw.getId()) {
+                        try {
+                            JSONObject returnValue = new JSONObject(message.toString());
+                            //Unlock the bar
+                            if(!swBar.isEnabled() && returnValue.getJSONObject("request").getString("route").equals("/sw/dim")) {
+                                if (returnValue.getString("status").equals("ok")) {
+                                    sw.setDimmer(swBar.getProgress());
+                                    swBar.setEnabled(true);
+                                } else {
+                                    swBar.setProgress(sw.getDimmer());
+                                    swBar.setEnabled(true);
+                                }
                             } else {
-                                swSwitch.toggle();
-                                swSwitch.setEnabled(true);
+                                //This was an on/off toggle, don't do anything
                             }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
                         }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
                     }
                 }
-            }
-        };
-		
+            };
+
+            //Bar change
+            swBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                @Override
+                public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                    //Not relevant
+                }
+
+                @Override
+                public void onStartTrackingTouch(SeekBar seekBar) {
+                    //Not relevant
+                }
+
+                @Override
+                public void onStopTrackingTouch(SeekBar seekBar) {
+                    //User stopped touching, set correct dim level
+                    int dimValue = seekBar.getProgress();
+                    if(dimValue == 0) {
+                        MqttController.getInstance().publish("HYDRA/HMWZ/sw/" + switchId, "off");
+                    } else {
+                        MqttController.getInstance().publish("HYDRA/HMWZ/sw/" + switchId, "on");
+                    }
+                    MqttController.getInstance().publish("HYDRA/HMWZ/sw/dim/" + switchId, dimValue + "");
+                    swBar.setEnabled(false);
+                }
+            });
+        } else {
+            //Treat it as a normal switch
+            swName = (TextView) convertView.findViewById(R.id.rowTextView);
+            swSwitch = (Switch) convertView.findViewById(R.id.rowSwitch);
+
+            callbackListener = new MqttControllerMessageCallbackListener() {
+                @Override
+                public void onMessageArrived(String topic, MqttMessage message) {
+
+                    int id = Integer.parseInt(topic.substring(topic.lastIndexOf("/")+1));
+
+                    if(id == sw.getId()) {
+                        try {
+                            JSONObject returnValue = new JSONObject(message.toString());
+
+                            if(!swSwitch.isEnabled()) {
+                                if (returnValue.getString("status").equals("ok")) {
+                                    swSwitch.setEnabled(true);
+                                } else {
+                                    if(!returnValue.getJSONObject("request").get("route").equals("/sw/dim")){
+                                        swSwitch.toggle();
+                                    }
+                                    swSwitch.setEnabled(true);
+                                }
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            };
+
+            swSwitch.setChecked(sw.getStatus());
+
+            swSwitch.setOnCheckedChangeListener((new CompoundButton.OnCheckedChangeListener() {
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    if (swSwitch.isEnabled()) {
+                        if (isChecked) {
+                            MqttController.getInstance().publish("HYDRA/HMWZ/sw/" + switchId, "on");
+                        } else {
+                            MqttController.getInstance().publish("HYDRA/HMWZ/sw/" + switchId, "off");
+                        }
+                        swSwitch.setEnabled(false);
+                    }
+                }
+            }));
+        }
+
+        swName.setText(sw.getName());
+
 		viewMessageCallbacks.remove(callbackListener);		//If there's already an equivalent callbackListener
         MqttController.getInstance().removeMessageListener(callbackListener);
 		viewMessageCallbacks.add(callbackListener);
 		MqttController.getInstance().addMessageListener(callbackListener);
 
-        swName.setText(sw.getName());
-        swSwitch.setChecked(sw.getStatus());
-
-        final String switchId = String.valueOf(sw.getId());
-
-        swSwitch.setOnCheckedChangeListener((new CompoundButton.OnCheckedChangeListener() {
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (swSwitch.isEnabled()) {
-                    if (isChecked) {
-                        MqttController.getInstance().publish("HYDRA/HMWZ/sw/" + switchId, "on");
-                    } else {
-                        MqttController.getInstance().publish("HYDRA/HMWZ/sw/" + switchId, "off");
-                    }
-                    swSwitch.setEnabled(false);
-                }
-            }
-        }));
 
         return convertView;
     }

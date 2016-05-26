@@ -7,19 +7,16 @@ package idu.stenden.inf1i.homewizard;
 
 public class HomewizardSwitch {
     private String name;
+    private String type;
     private boolean status;
     private int id;
+    private int dimmer;
 
-    public HomewizardSwitch(String name, String status, String id){
+    public HomewizardSwitch(String name, String type, String status, String id){
         this.name = name;
+        this.type = type;
         this.status = (status.equals("on")) ? true : false;
         this.id = Integer.parseInt(id);
-    }
-
-    public HomewizardSwitch(String name, boolean status, int id){
-        this.name = name;
-        this.status = status;
-        this.id = id;
     }
 
     public String getName(){
@@ -46,4 +43,23 @@ public class HomewizardSwitch {
         this.id = id;
     }
 
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public int getDimmer() {
+        return dimmer;
+    }
+
+    public void setDimmer(int dimmer) {
+        this.dimmer = dimmer;
+    }
+
+    public void setDimmer(String dimmer) {
+        this.dimmer = Integer.parseInt(dimmer);
+    }
 }
