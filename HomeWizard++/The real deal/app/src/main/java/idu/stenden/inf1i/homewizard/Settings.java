@@ -19,6 +19,11 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.Set;
 
+import android.app.Activity;
+import android.app.Dialog;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+
 public class Settings extends BaseMqttEventActivity{
 
     //fields
@@ -113,6 +118,8 @@ public class Settings extends BaseMqttEventActivity{
         adminPin.setEnabled(false);
 
     }
+
+
 
 	
 	@Override
