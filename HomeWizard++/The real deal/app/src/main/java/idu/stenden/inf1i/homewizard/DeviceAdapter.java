@@ -76,6 +76,7 @@ class DeviceAdapter extends ArrayAdapter<HomewizardSwitch> {
             }
         }
 
+        //Sub-views
         final TextView swName;
         final Switch swSwitch;
         final SeekBar swBar;
@@ -85,6 +86,7 @@ class DeviceAdapter extends ArrayAdapter<HomewizardSwitch> {
 
         switch(viewType) {
             case VIEWTYPE_DIMMER: {
+                //TODO: Fix this after fixing normal switches
                 //Treat it as a dimmer
                 swName = (TextView) convertView.findViewById(R.id.rowDimTextView);
                 swBar = (SeekBar) convertView.findViewById(R.id.rowDimSeekBar);
@@ -160,12 +162,14 @@ class DeviceAdapter extends ArrayAdapter<HomewizardSwitch> {
 
             } break;
             case VIEWTYPE_SWITCH: {
+                //Treat it as a switch
                 swName = (TextView) convertView.findViewById(R.id.rowTextView);
                 swSwitch = (Switch) convertView.findViewById(R.id.rowSwitch);
 
-                //Prevent 'old' listener from messing things up...
+                //Prevent 'old' click listener from messing things up
                 swSwitch.setOnClickListener(null);
 
+                //Set switch to correct position
                 swSwitch.setChecked(sw.getStatus());
                 if(sw.isWaitingForResponse()){
                     swSwitch.setEnabled(false);
@@ -178,12 +182,14 @@ class DeviceAdapter extends ArrayAdapter<HomewizardSwitch> {
                     @Override
                     public void onMessageArrived(String topic, MqttMessage message) {
 
+                        //TODO: The switch/button referenced here might be in use for another item
                         int id = Integer.parseInt(topic.substring(topic.lastIndexOf("/")+1));
 
                         if(id == sw.getId()) {
                             try {
                                 JSONObject returnValue = new JSONObject(message.toString());
 
+                                // Re-enable switch
                                 if(sw.isWaitingForResponse()) {
                                     if (returnValue.getString("status").equals("ok")) {
                                         swSwitch.setEnabled(true);
@@ -216,12 +222,13 @@ class DeviceAdapter extends ArrayAdapter<HomewizardSwitch> {
                             sw.setWaitingForResponse(true);
                             swSwitch.setEnabled(false);
                         } else {
-                            Log.e("DeviceAdapter", "Toggled switch that should be disabled!");
+                            Log.e("DeviceAdapter", "Toggled switch that should be disabled! " + sw.toString());
                         }
                     }
                 }));
             } break;
             default: {
+                // Shouldn't ever happen but stops the compiler from complaining
                 callbackListener = null;
                 swName = null;
             }
@@ -229,17 +236,26 @@ class DeviceAdapter extends ArrayAdapter<HomewizardSwitch> {
 
         swName.setText(sw.getName() + "(" + sw.getId() + ")");
 
-		viewMessageCallbacks.remove(callbackListener);		//If there's already an equivalent callbackListener
+        // Set MQTT callback
+		viewMessageCallbacks.remove(callbackListener);		//Prevents exact duplicates?
+        // Remove OLD listener
+        MqttControllerMessageCallbackListener previousListener = (MqttControllerMessageCallbackListener)convertView.getTag();
+        if(previousListener != null) {
+            MqttController.getInstance().removeMessageListener(previousListener);
+        }
         MqttController.getInstance().removeMessageListener(callbackListener);
 		viewMessageCallbacks.add(callbackListener);
 		MqttController.getInstance().addMessageListener(callbackListener);
 
+        // Store callback as view tag so we can remove it when it's recycled!
+        convertView.setTag(callbackListener);
 
         return convertView;
     }
 	
 	@Override
 	public void clear() {
+        Log.i("DeviceAdapter", "Clearing DeviceAdapter");
 		super.clear();
 		MqttController.getInstance().removeMessageListeners((MqttControllerMessageCallbackListener[])viewMessageCallbacks.toArray());
 	}
