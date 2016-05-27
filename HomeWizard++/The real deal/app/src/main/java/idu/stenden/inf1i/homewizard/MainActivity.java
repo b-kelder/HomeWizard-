@@ -24,7 +24,6 @@ public class MainActivity extends BaseMqttEventActivity implements NavigationVie
     private AppDataContainer appDataContainer;
 
     private ListView mainListView;
-    private DeviceAdapter listAdapter;
 
     public static Context context;
 
@@ -55,9 +54,10 @@ public class MainActivity extends BaseMqttEventActivity implements NavigationVie
         }
 
         mainListView = (ListView) findViewById(R.id.mainListView);
-        listAdapter = new DeviceAdapter(this, R.layout.row, R.id.rowTextView, appDataContainer.getHomewizardSwitches());
-        listAdapter.setNotifyOnChange(true);
-        mainListView.setAdapter(listAdapter);
+        DeviceAdapter deviceAdapter = new DeviceAdapter(this, R.layout.row, R.id.rowTextView, appDataContainer.getHomewizardSwitches());
+        deviceAdapter.setNotifyOnChange(true);
+        appDataContainer.setDeviceAdapter(deviceAdapter);
+        mainListView.setAdapter(deviceAdapter);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -83,6 +83,7 @@ public class MainActivity extends BaseMqttEventActivity implements NavigationVie
 
 					if (route.equals("/get-sensors")) {
 						appDataContainer.clearHomewizardSwitches();
+                        appDataContainer.getDeviceAdapter().clear();
 						json = new JSONObject(message.toString());
 						json = json.getJSONObject("response");
 						JSONArray array = json.getJSONArray("switches");
@@ -99,7 +100,7 @@ public class MainActivity extends BaseMqttEventActivity implements NavigationVie
                             }
 							appDataContainer.addHomewizardSwitch(hmwzSwitch);
 						}
-						listAdapter.notifyDataSetChanged();
+						appDataContainer.getDeviceAdapter().notifyDataSetChanged();
                         mainListView.invalidate();
 
                         Toast.makeText(getApplicationContext(), "Device list refreshed", Toast.LENGTH_SHORT).show();

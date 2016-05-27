@@ -2,6 +2,7 @@ package idu.stenden.inf1i.homewizard;
 
 import android.app.Application;
 import android.content.Context;
+import android.inputmethodservice.Keyboard;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,8 +32,6 @@ class DeviceAdapter extends ArrayAdapter<HomewizardSwitch> {
     private static final int VIEWTYPE_SWITCH = 0;
     private static final int VIEWTYPE_DIMMER = 1;
     private static final int VIEWTYPE_COUNT = VIEWTYPE_DIMMER + 1;
-
-	protected ArrayList<MqttControllerMessageCallbackListener> viewMessageCallbacks = new ArrayList<MqttControllerMessageCallbackListener>();
 
     public DeviceAdapter(Context context, int resource) {
         super(context, resource);
@@ -65,6 +64,7 @@ class DeviceAdapter extends ArrayAdapter<HomewizardSwitch> {
 
         Log.i("DeviceAdapter", "getView " + position + " " + convertView + " type = " + viewType + " switch " + sw.getId());
 
+
         if(convertView == null) {
             switch(viewType) {
                 case VIEWTYPE_DIMMER:
@@ -80,9 +80,6 @@ class DeviceAdapter extends ArrayAdapter<HomewizardSwitch> {
         final TextView swName;
         final Switch swSwitch;
         final SeekBar swBar;
-        final String switchId = String.valueOf(sw.getId());
-
-        MqttControllerMessageCallbackListener callbackListener;
 
         switch(viewType) {
             case VIEWTYPE_DIMMER: {
@@ -90,49 +87,7 @@ class DeviceAdapter extends ArrayAdapter<HomewizardSwitch> {
                 //Treat it as a dimmer
                 swName = (TextView) convertView.findViewById(R.id.rowDimTextView);
                 swBar = (SeekBar) convertView.findViewById(R.id.rowDimSeekBar);
-                swBar.setMax(100);
 
-                //Prevent old listener from doing bad things
-                swBar.setOnSeekBarChangeListener(null);
-
-                swBar.setProgress(sw.getDimmer());
-                if(sw.isWaitingForResponse()){
-                    swBar.setEnabled(false);
-                } else {
-                    swBar.setEnabled(true);
-                }
-
-                // Event listeners from this point down
-                callbackListener = new MqttControllerMessageCallbackListener() {
-                    @Override
-                    public void onMessageArrived(String topic, MqttMessage message) {
-
-                        int id = Integer.parseInt(topic.substring(topic.lastIndexOf("/")+1));
-
-                        if(id == sw.getId()) {
-                            try {
-                                JSONObject returnValue = new JSONObject(message.toString());
-                                //Unlock the bar
-                                if(sw.isWaitingForResponse() && returnValue.getJSONObject("request").getString("route").equals("/sw/dim")) {
-                                    if (returnValue.getString("status").equals("ok")) {
-                                        sw.setDimmer(swBar.getProgress());
-                                        swBar.setEnabled(true);
-                                    } else {
-                                        swBar.setProgress(sw.getDimmer());
-                                        swBar.setEnabled(true);
-                                    }
-                                    sw.setWaitingForResponse(false);
-                                } else {
-                                    //This was an on/off toggle, don't do anything
-                                }
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }
-                };
-
-                //Bar change
                 swBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                     @Override
                     public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
@@ -147,18 +102,34 @@ class DeviceAdapter extends ArrayAdapter<HomewizardSwitch> {
                     @Override
                     public void onStopTrackingTouch(SeekBar seekBar) {
                         //User stopped touching, set correct dim level
-                        int dimValue = seekBar.getProgress();
-                        if(dimValue == 0) {
-                            MqttController.getInstance().publish("HYDRA/HMWZ/sw/" + switchId, "off");
-                        } else {
-                            MqttController.getInstance().publish("HYDRA/HMWZ/sw/" + switchId, "on");
+                        if(!sw.isUpdating()) {
+                            int dimValue = seekBar.getProgress();
+
+                            seekBar.setEnabled(false);
+
+                            sw.setDimmer(dimValue);
+                            sw.setStatus(dimValue > 0);
+                            sw.sendStatus();
+                            sw.sendDimmer();
+                            sw.setUpdating(true);
                         }
-                        MqttController.getInstance().publish("HYDRA/HMWZ/sw/dim/" + switchId, dimValue + "");
-                        sw.setWaitingForResponse(true);
-                        swBar.setEnabled(false);
                     }
                 });
 
+
+                if(!sw.isUpdating()) {
+                    sw.setUpdating(true);
+                    swBar.setMax(100);
+                    swBar.setProgress(sw.getDimmer());
+                    sw.setUpdating(false);
+                } else {
+                    swBar.setMax(100);
+                    swBar.setProgress(sw.getDimmer());
+                }
+
+
+
+                swBar.setEnabled(!sw.isUpdating());
 
             } break;
             case VIEWTYPE_SWITCH: {
@@ -166,89 +137,38 @@ class DeviceAdapter extends ArrayAdapter<HomewizardSwitch> {
                 swName = (TextView) convertView.findViewById(R.id.rowTextView);
                 swSwitch = (Switch) convertView.findViewById(R.id.rowSwitch);
 
-                //Prevent 'old' click listener from messing things up
-                swSwitch.setOnClickListener(null);
-
-                //Set switch to correct position
-                swSwitch.setChecked(sw.getStatus());
-                if(sw.isWaitingForResponse()){
-                    swSwitch.setEnabled(false);
-                } else {
-                    swSwitch.setEnabled(true);
-                }
-
-                // Event listeners from this point down
-                callbackListener = new MqttControllerMessageCallbackListener() {
-                    @Override
-                    public void onMessageArrived(String topic, MqttMessage message) {
-
-                        //TODO: The switch/button referenced here might be in use for another item
-                        int id = Integer.parseInt(topic.substring(topic.lastIndexOf("/")+1));
-
-                        if(id == sw.getId()) {
-                            try {
-                                JSONObject returnValue = new JSONObject(message.toString());
-
-                                // Re-enable switch
-                                if(sw.isWaitingForResponse()) {
-                                    if (returnValue.getString("status").equals("ok")) {
-                                        swSwitch.setEnabled(true);
-                                    } else {
-                                        if(!returnValue.getJSONObject("request").get("route").equals("/sw/dim")){
-                                            swSwitch.toggle();
-                                        }
-                                        swSwitch.setEnabled(true);
-                                    }
-                                    //Update data
-                                    sw.setStatus(swSwitch.isChecked());
-                                    sw.setWaitingForResponse(false);
-                                }
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }
-                };
-
                 swSwitch.setOnCheckedChangeListener((new CompoundButton.OnCheckedChangeListener() {
                     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                         //If we're not still waiting for a response from a previous toggle
-                        if (!sw.isWaitingForResponse()) {
-                            if (isChecked) {
-                                MqttController.getInstance().publish("HYDRA/HMWZ/sw/" + switchId, "on");
-                            } else {
-                                MqttController.getInstance().publish("HYDRA/HMWZ/sw/" + switchId, "off");
-                            }
-                            sw.setWaitingForResponse(true);
-                            swSwitch.setEnabled(false);
+                        if (!sw.isUpdating()) {
+                            buttonView.setEnabled(false);
+
+                            sw.setStatus(isChecked);
+                            sw.sendStatus();
+                            sw.setUpdating(true);
                         } else {
                             Log.e("DeviceAdapter", "Toggled switch that should be disabled! " + sw.toString());
                         }
                     }
                 }));
+
+                if(!sw.isUpdating()) {
+                    sw.setUpdating(true);
+                    swSwitch.setChecked(sw.getStatus());
+                    sw.setUpdating(false);
+                } else {
+                    swSwitch.setChecked(sw.getStatus());
+                }
+
+                swSwitch.setEnabled(!sw.isUpdating());
             } break;
             default: {
                 // Shouldn't ever happen but stops the compiler from complaining
-                callbackListener = null;
                 swName = null;
             }
         } //switch
 
-        swName.setText(sw.getName() + "(" + sw.getId() + ")");
-
-        // Set MQTT callback
-		viewMessageCallbacks.remove(callbackListener);		//Prevents exact duplicates?
-        // Remove OLD listener
-        MqttControllerMessageCallbackListener previousListener = (MqttControllerMessageCallbackListener)convertView.getTag();
-        if(previousListener != null) {
-            MqttController.getInstance().removeMessageListener(previousListener);
-        }
-        MqttController.getInstance().removeMessageListener(callbackListener);
-		viewMessageCallbacks.add(callbackListener);
-		MqttController.getInstance().addMessageListener(callbackListener);
-
-        // Store callback as view tag so we can remove it when it's recycled!
-        convertView.setTag(callbackListener);
+        swName.setText(sw.getName());
 
         return convertView;
     }
@@ -257,7 +177,7 @@ class DeviceAdapter extends ArrayAdapter<HomewizardSwitch> {
 	public void clear() {
         Log.i("DeviceAdapter", "Clearing DeviceAdapter");
 		super.clear();
-		MqttController.getInstance().removeMessageListeners((MqttControllerMessageCallbackListener[])viewMessageCallbacks.toArray());
+		//MqttController.getInstance().removeMessageListeners((MqttControllerMessageCallbackListener[])viewMessageCallbacks.toArray());
 	}
 
 }

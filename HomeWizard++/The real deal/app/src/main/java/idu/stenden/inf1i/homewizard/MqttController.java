@@ -25,6 +25,7 @@ import java.util.List;
  * Created by Wouter on 19/05/2016.
  */
 
+//TODO: Pass JSONObject of payload with onMessageArrived?
 interface MqttControllerMessageCallbackListener{
     void onMessageArrived(String topic, MqttMessage message);
 }
@@ -76,19 +77,10 @@ public class MqttController {
                     String route = json.getString("route");
 
                     if (route.equals("hydrastatus")) {
-                        json = new JSONObject(message.toString());
-                        String serial = json.getString("serial");
-
                         JSONObject file = Util.readLoginData(context);
-
-                        /*if (!serial.isEmpty() && serial.equals(file.get("serial"))) {
-                            publish("HYDRA/HMWZ", "get-sensors");
-                        } else if (file.getString("email").length() > 1) {
-                            //mqttController.publish("HYDRA/AUTH", "{\"email\":\"" + file.getString("email") + "\", \"password\":\"" + file.getString("password") + "\", \"type\":\"login\"}");
-                            loginHomeWizard(file.getString("email"), file.getString("password"), context);
-                        }*/
                         loginHomeWizard(file.getString("email"), file.getString("password"), context);
                     }
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -99,14 +91,32 @@ public class MqttController {
         addMessageListener(new MqttControllerMessageCallbackListener() {
             @Override
             public void onMessageArrived(String topic, MqttMessage message) {
-                if(topic.equals("HYDRA/HMWZRETURN/sw/remove")) {
+                if(topic.contains("HYDRA/HMWZRETURN/sw/remove")) {
                     // A light was removed, update everything
-                    publish("HYDRA/HMWZ", "get-sensors");
-                    Toast.makeText(context, "Removed device", Toast.LENGTH_SHORT).show();
+                    try {
+                        JSONObject jsonObject = new JSONObject(message.toString());
+                        if(jsonObject.getString("status").equals("ok")) {
+                            publish("HYDRA/HMWZ", "get-sensors");
+                            Toast.makeText(context, "Removed device", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(context, "Error removing device", Toast.LENGTH_SHORT).show();
+                        }
+
+                    } catch (JSONException e) {
+                    }
                 } else if(topic.contains("HYDRA/HMWZRETURN/sw/add")) {
                     // A light was added, update everything
-                    publish("HYDRA/HMWZ", "get-sensors");
-                    Toast.makeText(context, "Added device", Toast.LENGTH_SHORT).show();
+                    try {
+                        JSONObject jsonObject = new JSONObject(message.toString());
+                        if(jsonObject.getString("status").equals("ok")) {
+                            publish("HYDRA/HMWZ", "get-sensors");
+                            Toast.makeText(context, "Added device", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(context, "Error adding device", Toast.LENGTH_SHORT).show();
+                        }
+
+                    } catch (JSONException e) {
+                    }
                 }
             }
         });
@@ -289,7 +299,7 @@ public class MqttController {
                                 try {
                                     listener.onMessageArrived(topic, message);
                                 } catch (Exception e) {
-                                    e.printStackTrace();
+                                    Log.e("MqttController", e.toString());
                                 }
                             }
                         }

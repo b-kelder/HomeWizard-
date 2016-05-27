@@ -15,7 +15,6 @@ public class Managelights extends BaseMqttEventActivity {
 
     private MqttController mqttController;
     private ListView mainListView;
-    private DeviceEditAdapter listAdapter;
     private AppDataContainer appDataContainer;
 	
     @Override
@@ -26,7 +25,7 @@ public class Managelights extends BaseMqttEventActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        appDataContainer = AppDataContainer.getInstance().getInstance();
+        appDataContainer = AppDataContainer.getInstance();
 
         //MQTT
         mqttController = MqttController.getInstance();
@@ -44,9 +43,9 @@ public class Managelights extends BaseMqttEventActivity {
 
         mainListView = (ListView) findViewById(R.id.listViewManageLights);
 
-        listAdapter = new DeviceEditAdapter(this, R.layout.row_manage, R.id.manageTxt, appDataContainer.getHomewizardSwitches());
-
-        mainListView.setAdapter(listAdapter);
+        DeviceEditAdapter deviceEditAdapter = new DeviceEditAdapter(this, R.layout.row_manage, R.id.manageTxt, appDataContainer.getHomewizardSwitches());
+        appDataContainer.setDeviceEditAdapter(deviceEditAdapter);
+        mainListView.setAdapter(deviceEditAdapter);
     }
 
 
@@ -64,7 +63,7 @@ public class Managelights extends BaseMqttEventActivity {
                         // Since MainActivity SHOULD have added their event listener first this SHOULD be called after that
                         // so we can assume the lights array is updated
                         if (route.equals("/get-sensors")) {
-                            listAdapter.notifyDataSetChanged();
+                            AppDataContainer.getInstance().getDeviceEditAdapter().notifyDataSetChanged();
                             mainListView.invalidate();
                         }
                     } catch (JSONException e) {

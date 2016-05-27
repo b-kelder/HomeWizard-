@@ -13,7 +13,7 @@ public class HomewizardSwitch {
     private boolean status;
     private int id;
     private int dimmer;
-    private boolean waitingForResponse;
+    private boolean updating;       //Used to check if this switch is waiting for a state change response
 
     public HomewizardSwitch(String name, String type, String status, String id){
         this.name = name;
@@ -30,9 +30,17 @@ public class HomewizardSwitch {
         sb.append(", status=").append(status);
         sb.append(", id=").append(id);
         sb.append(", dimmer=").append(dimmer);
-        sb.append(", waitingForResponse=").append(waitingForResponse);
+        sb.append(", updating=").append(updating);
         sb.append('}');
         return sb.toString();
+    }
+
+    public void sendStatus() {
+        MqttController.getInstance().publish("HYDRA/HMWZ/sw/" + id, status ? "on" : "off");
+    }
+
+    public void sendDimmer() {
+        MqttController.getInstance().publish("HYDRA/HMWZ/sw/dim/" + id, "" + dimmer);
     }
 
     public String getName(){
@@ -79,11 +87,11 @@ public class HomewizardSwitch {
         this.dimmer = Integer.parseInt(dimmer);
     }
 
-    public boolean isWaitingForResponse() {
-        return waitingForResponse;
+    public boolean isUpdating() {
+        return updating;
     }
 
-    public void setWaitingForResponse(boolean waitingForResponse) {
-        this.waitingForResponse = waitingForResponse;
+    public void setUpdating(boolean updating) {
+        this.updating = updating;
     }
 }
