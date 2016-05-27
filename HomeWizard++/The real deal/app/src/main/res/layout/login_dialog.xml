@@ -5,19 +5,36 @@
     android:background="#fff" android:layout_width="300dp"
     android:paddingTop="10dp">
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Admin Verification"
+        android:id="@+id/textView18"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="10dp" />
+
     <EditText android:layout_height="wrap_content"
-        android:inputType="textPassword" android:id="@+id/txtPassword"
+        android:inputType="numberPassword" android:id="@+id/txtPassword"
         android:layout_width="match_parent"
-        android:hint="Pin code"></EditText>
+        android:hint="Pin code"
+        android:layout_marginTop="10dp">
+        <requestFocus></requestFocus>
+    </EditText>
 
     <LinearLayout android:layout_width="match_parent"
         android:layout_height="wrap_content" android:id="@+id/linearLayout1">
         <Button android:layout_width="wrap_content"
             android:layout_height="wrap_content" android:layout_weight="0.5"
-            android:id="@+id/btnLogin" android:text="Login"></Button>
+            android:id="@+id/btnLogin" android:text="Login"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="5dp"></Button>
+
         <Button android:layout_width="wrap_content"
             android:layout_height="wrap_content" android:layout_weight="0.5"
-            android:id="@+id/btnCancel" android:text="Cancel"></Button>
+            android:id="@+id/btnCancel" android:text="Cancel"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="5dp"></Button>
 
     </LinearLayout>
 </LinearLayout>
