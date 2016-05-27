@@ -115,6 +115,8 @@ public class AppDataContainer implements MqttControllerMessageCallbackListener {
                                 if(jsonObject.getString("status").equals("ok")) {
                                     //Success
                                 } else {
+                                    //Resetting to 0 to indicate something went wrong
+                                    sw.setDimmer(0);
                                 }
                                 sw.setUpdating(false);
                                 //Notify adapter to update ui
@@ -134,6 +136,9 @@ public class AppDataContainer implements MqttControllerMessageCallbackListener {
                     //Try normal switch on/off
                     for (HomewizardSwitch sw : homewizardSwitches) {
                         if(sw.getId() == id) {
+                            if(sw.getType().equals("dimmer")) {
+                                continue;
+                            }
                             if(sw.isUpdating()) {
                                 if(jsonObject.getString("status").equals("ok")) {
                                     //Success
