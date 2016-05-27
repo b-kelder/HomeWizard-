@@ -43,6 +43,32 @@ public class Util {
         return object;
     }
 
+    public static void saveAdminPin(Context context, String pin){
+        JSONObject object = new JSONObject();
+        try{
+            object.put("pin", pin);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        writeFile(context, "admin.json", object.toString());
+    }
+
+    public static JSONObject readAdminPin(Context context){
+        JSONObject object = null;
+        try {
+            object = new JSONObject(readFile(context, "admin.json"));
+        } catch (JSONException e) {
+            saveAdminPin(context, "0000");
+            try {
+                object = new JSONObject(readFile(context, "admin.json"));
+            } catch (JSONException e1) {
+                e1.printStackTrace();
+            }
+            e.printStackTrace();
+        }
+        return object;
+    }
+
     public static void saveLoginData(Context context, String email, String password, Object serial){
         JSONObject object = new JSONObject();
         try{
