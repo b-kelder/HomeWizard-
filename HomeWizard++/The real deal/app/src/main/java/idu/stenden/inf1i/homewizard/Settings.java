@@ -29,6 +29,7 @@ public class Settings extends BaseMqttEventActivity{
     //fields
     private MqttController mqttController;
     private String serial;
+    private boolean adminVerified = false;
 
     public static Context context;
 
@@ -38,6 +39,42 @@ public class Settings extends BaseMqttEventActivity{
         context = this;
 
         super.onCreate(savedInstanceState);
+
+        // Login dialog settings
+        final Dialog login = new Dialog(this);
+
+        login.setContentView(R.layout.login_dialog);
+        login.setTitle("Admin verification");
+
+        Button btnLogin = (Button) login.findViewById(R.id.btnLogin);
+        Button btnCancel = (Button) login.findViewById(R.id.btnCancel);
+        final EditText txtPassword = (EditText)login.findViewById(R.id.txtPassword);
+
+        btnLogin.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(txtPassword.getText().toString().trim().length() > 0)
+                {
+                    // TODO: verify login
+
+                    Toast.makeText(Settings.this, "Login Successful", Toast.LENGTH_LONG).show();
+                    login.dismiss(); // close dialog
+                }
+                else
+                {
+                    Toast.makeText(Settings.this, "Please enter a pin code", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+        btnCancel.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                login.dismiss();
+            }
+        });
+
+        login.show();
+
 
         mqttController = MqttController.getInstance();
 
