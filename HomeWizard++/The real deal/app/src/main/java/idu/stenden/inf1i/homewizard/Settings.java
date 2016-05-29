@@ -57,12 +57,13 @@ public class Settings extends BaseMqttEventActivity{
             e.printStackTrace();
         }
 
+        //  if adminpin is enabled and pin is not empty, show dialog
         if(adminPinEnabled && !adminPin.isEmpty()) {
             final Dialog login = new Dialog(this);
 
             login.setContentView(R.layout.login_dialog);
-            login.setTitle("Admin verification");
-            login.setCanceledOnTouchOutside(false);
+            login.setTitle("Admin verification"); 
+            login.setCanceledOnTouchOutside(false); // makes sure you can not cancel dialog by clicking outside of it
 
             Button btnLogin = (Button) login.findViewById(R.id.btnLogin);
             Button btnCancel = (Button) login.findViewById(R.id.btnCancel);
@@ -74,7 +75,7 @@ public class Settings extends BaseMqttEventActivity{
                     if (txtPassword.getText().toString().trim().length() > 0) {
                         if(txtPassword.getText().toString().equals(adminPin)) {
                             Toast.makeText(Settings.this, "Login Successful", Toast.LENGTH_LONG).show();
-                            login.dismiss(); // close dialog
+                            login.dismiss();
                         }
                         else
                         {
@@ -96,6 +97,7 @@ public class Settings extends BaseMqttEventActivity{
             login.show();
         }
 
+        // this will control the saving and removing of the admin pin-code.
         final Switch adminPinButton = (Switch) findViewById(R.id.adminEnabled);
         final EditText adminPinTxt = (EditText) findViewById(R.id.editAdminPin);
         final Button applyPin = (Button) findViewById(R.id.applyAdminPin);
@@ -129,29 +131,30 @@ public class Settings extends BaseMqttEventActivity{
             }
         });
 
-        // handle adminpin buttons.
+        // this will disable inputs and buttons when they shouldn't be used. Triggered when enable switch is clicked.
         adminPinButton.setOnCheckedChangeListener((new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if(isChecked){
-                    adminPinTxt.setEnabled(true);
-                    applyPin.setEnabled(true);
+                    adminPinTxt.setEnabled(true); // enable pin text input
+                    applyPin.setEnabled(true); // enable apply pin button
                 } else {
-                    adminPinTxt.setEnabled(false);
+                    adminPinTxt.setEnabled(false); // disable pin text input
                 }
             }
         }));
 
+        // this will disable inputs and buttons when it shouldn't be used based on config from json file
         if(adminPinEnabled)
         {
-            adminPinTxt.setEnabled(true);
-            applyPin.setEnabled(true);
-            adminPinButton.setChecked(true);
+            adminPinTxt.setEnabled(true);       // enable pin text input
+            applyPin.setEnabled(true);          // enable apply pin button
+            adminPinButton.setChecked(true);    // enable the "enable" switch
         }
         else
         {
-            adminPinTxt.setEnabled(false);
-            adminPinButton.setChecked(false);
-            applyPin.setEnabled(false);
+            adminPinTxt.setEnabled(false);      // disable pin text input
+            applyPin.setEnabled(false);         // disable apply pin button
+            adminPinButton.setChecked(false);   // disable the "enable" switch
         }
 
         // -- end admin pin functionality --
