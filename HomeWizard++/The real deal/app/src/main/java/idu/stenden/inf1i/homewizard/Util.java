@@ -43,10 +43,11 @@ public class Util {
         return object;
     }
 
-    public static void saveAdminPin(Context context, String pin){
+    public static void saveAdminPin(Context context, String pin, boolean isEnabled){
         JSONObject object = new JSONObject();
         try{
             object.put("pin", pin);
+            object.put("enabled", isEnabled);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -58,7 +59,7 @@ public class Util {
         try {
             object = new JSONObject(readFile(context, "admin.json"));
         } catch (JSONException e) {
-            saveAdminPin(context, "0000");
+            saveAdminPin(context, "0000", false);
             try {
                 object = new JSONObject(readFile(context, "admin.json"));
             } catch (JSONException e1) {

@@ -139,7 +139,7 @@
         <EditText
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:inputType="textPassword"
+            android:inputType="numberPassword"
             android:hint="Pin number"
             android:ems="10"
             android:id="@+id/editAdminPin"
@@ -151,7 +151,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Apply"
-            android:id="@+id/button"
+            android:id="@+id/applyAdminPin"
             android:layout_alignTop="@+id/editAdminPin"
             android:layout_toEndOf="@+id/clearBtn" />
     </RelativeLayout>

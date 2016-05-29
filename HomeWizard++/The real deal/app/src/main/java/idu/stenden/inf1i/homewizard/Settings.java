@@ -1,6 +1,7 @@
 package idu.stenden.inf1i.homewizard;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -29,7 +30,8 @@ public class Settings extends BaseMqttEventActivity{
     //fields
     private MqttController mqttController;
     private String serial;
-    private boolean adminVerified = false;
+    private boolean adminPinEnabled;
+    private String adminPin;
 
     public static Context context;
 
@@ -39,46 +41,113 @@ public class Settings extends BaseMqttEventActivity{
         context = this;
 
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_settings);
 
-        // Login dialog settings
-        final Dialog login = new Dialog(this);
+        // -- Start admin pin functionality --
 
-        login.setContentView(R.layout.login_dialog);
-        login.setTitle("Admin verification");
+        try
+        {
+            JSONObject adminPinSettings = Util.readAdminPin(Settings.context);
+            adminPinEnabled = adminPinSettings.getBoolean("enabled");
+            adminPin = adminPinSettings.getString("pin");
+        }
+        catch(Exception e)
+        {
+            adminPinEnabled = false;
+            e.printStackTrace();
+        }
 
-        Button btnLogin = (Button) login.findViewById(R.id.btnLogin);
-        Button btnCancel = (Button) login.findViewById(R.id.btnCancel);
-        final EditText txtPassword = (EditText)login.findViewById(R.id.txtPassword);
+        if(adminPinEnabled && !adminPin.isEmpty()) {
+            final Dialog login = new Dialog(this);
 
-        btnLogin.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(txtPassword.getText().toString().trim().length() > 0)
-                {
-                    // TODO: verify login
+            login.setContentView(R.layout.login_dialog);
+            login.setTitle("Admin verification");
+            login.setCanceledOnTouchOutside(false);
 
-                    Toast.makeText(Settings.this, "Login Successful", Toast.LENGTH_LONG).show();
-                    login.dismiss(); // close dialog
+            Button btnLogin = (Button) login.findViewById(R.id.btnLogin);
+            Button btnCancel = (Button) login.findViewById(R.id.btnCancel);
+            final EditText txtPassword = (EditText) login.findViewById(R.id.txtPassword);
+
+            btnLogin.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (txtPassword.getText().toString().trim().length() > 0) {
+                        if(txtPassword.getText().toString().equals(adminPin)) {
+                            Toast.makeText(Settings.this, "Login Successful", Toast.LENGTH_LONG).show();
+                            login.dismiss(); // close dialog
+                        }
+                        else
+                        {
+                            Toast.makeText(Settings.this, "Incorrect pin", Toast.LENGTH_LONG).show();
+                        }
+                    } else {
+                        Toast.makeText(Settings.this, "Please enter a pin code", Toast.LENGTH_LONG).show();
+                    }
                 }
-                else
+            });
+            btnCancel.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    login.dismiss();
+                    Intent homepage = new Intent(Settings.this, MainActivity.class);
+                    startActivity(homepage);
+                }
+            });
+            login.show();
+        }
+
+        final EditText adminPinTxt = (EditText) findViewById(R.id.editAdminPin);
+        final Button applyPin = (Button) findViewById(R.id.applyAdminPin);
+        applyPin.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v)
+            {
+                try
                 {
-                    Toast.makeText(Settings.this, "Please enter a pin code", Toast.LENGTH_LONG).show();
+                    if(!adminPinTxt.getText().toString().isEmpty())
+                    {
+                        Util.saveAdminPin(Settings.context, adminPinTxt.getText().toString(), true);
+                    }
+                    else
+                    {
+                        Util.saveAdminPin(Settings.context, "", false);
+                    }
+                }
+                catch(Exception e)
+                {
+                    e.printStackTrace();
                 }
             }
         });
-        btnCancel.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                login.dismiss();
+
+        // handle adminpin buttons.
+        final Switch adminPinButton = (Switch) findViewById(R.id.adminEnabled);
+        adminPinButton.setOnCheckedChangeListener((new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked){
+                    adminPinTxt.setEnabled(true);
+                    applyPin.setEnabled(true);
+                } else {
+                    adminPinTxt.setEnabled(false);
+                }
             }
-        });
+        }));
 
-        login.show();
+        if(adminPinEnabled)
+        {
+            adminPinTxt.setEnabled(true);
+            applyPin.setEnabled(true);
+            adminPinButton.setChecked(true);
+        }
+        else
+        {
+            adminPinTxt.setEnabled(false);
+            adminPinButton.setChecked(false);
+            applyPin.setEnabled(false);
+        }
 
+        // -- end admin pin functionality --
 
         mqttController = MqttController.getInstance();
-
-        setContentView(R.layout.activity_settings);
 
         //geef text velden aan.
         final EditText emailField = (EditText) findViewById(R.id.emailField);
@@ -139,27 +208,8 @@ public class Settings extends BaseMqttEventActivity{
                 toast.show();
             }
         });
-
-        // handle adminpin buttons.
-        final Switch adminPinButton = (Switch) findViewById(R.id.adminEnabled);
-        final EditText adminPin = (EditText) findViewById(R.id.editAdminPin);
-        adminPinButton.setOnCheckedChangeListener((new CompoundButton.OnCheckedChangeListener() {
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked){
-                    adminPin.setEnabled(true);
-                } else {
-                    adminPin.setEnabled(false);
-                }
-            }
-        }));
-        //Disable
-        adminPin.setEnabled(false);
-
     }
 
-
-
-	
 	@Override
 	protected void addEventListeners(){
 		//als er een bericht terug word ontvangen

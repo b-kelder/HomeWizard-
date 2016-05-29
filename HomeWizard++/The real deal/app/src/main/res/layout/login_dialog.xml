@@ -5,15 +5,6 @@
     android:background="#fff" android:layout_width="300dp"
     android:paddingTop="10dp">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Admin Verification"
-        android:id="@+id/textView18"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="10dp" />
-
     <EditText android:layout_height="wrap_content"
         android:inputType="numberPassword" android:id="@+id/txtPassword"
         android:layout_width="match_parent"
