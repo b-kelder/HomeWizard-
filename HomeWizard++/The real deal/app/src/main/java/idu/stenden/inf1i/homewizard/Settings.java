@@ -96,6 +96,7 @@ public class Settings extends BaseMqttEventActivity{
             login.show();
         }
 
+        final Switch adminPinButton = (Switch) findViewById(R.id.adminEnabled);
         final EditText adminPinTxt = (EditText) findViewById(R.id.editAdminPin);
         final Button applyPin = (Button) findViewById(R.id.applyAdminPin);
         applyPin.setOnClickListener(new View.OnClickListener() {
@@ -110,8 +111,15 @@ public class Settings extends BaseMqttEventActivity{
                     }
                     else
                     {
-                        Util.saveAdminPin(Settings.context, "", false);
-                        Toast.makeText(Settings.this, "Pin code removed", Toast.LENGTH_LONG).show();
+                        if(!adminPin.isEmpty() && !adminPinButton.isChecked())
+                        {
+                            Util.saveAdminPin(Settings.context, "", false);
+                            Toast.makeText(Settings.this, "Pin code removed", Toast.LENGTH_LONG).show();
+                        }
+                        else
+                        {
+                            Toast.makeText(Settings.this, "Please enter a code", Toast.LENGTH_LONG).show();
+                        }
                     }
                 }
                 catch(Exception e)
@@ -122,7 +130,6 @@ public class Settings extends BaseMqttEventActivity{
         });
 
         // handle adminpin buttons.
-        final Switch adminPinButton = (Switch) findViewById(R.id.adminEnabled);
         adminPinButton.setOnCheckedChangeListener((new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if(isChecked){
