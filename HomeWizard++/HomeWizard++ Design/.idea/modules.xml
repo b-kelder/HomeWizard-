@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/HomeWizard++.iml" filepath="$PROJECT_DIR$/HomeWizard++.iml" />
+      <module fileurl="file://$PROJECT_DIR$/HomeWizard++ Design.iml" filepath="$PROJECT_DIR$/HomeWizard++ Design.iml" />
       <module fileurl="file://$PROJECT_DIR$/mobile/mobile.iml" filepath="$PROJECT_DIR$/mobile/mobile.iml" />
       <module fileurl="file://$PROJECT_DIR$/wear/wear.iml" filepath="$PROJECT_DIR$/wear/wear.iml" />
     </modules>

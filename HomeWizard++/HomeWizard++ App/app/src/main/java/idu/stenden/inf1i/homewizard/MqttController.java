@@ -11,6 +11,7 @@ import org.eclipse.paho.client.mqttv3.IMqttActionListener;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.IMqttToken;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
+import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
@@ -247,12 +248,12 @@ public class MqttController {
         }
     }
 
-    public void connect(String broker, String clientId, Context context){
+    public void connect(String broker, String clientId, String username, String password, Context context){
         setContext(context);
-        connect(broker, "HMwzPluSplUS");
+        connect(broker, "HMwzPluSplUS", username, password);
     }
 
-    private void connect(String broker, String clientId){
+    private void connect(String broker, String clientId, String username, String password){
         MemoryPersistence persistence = new MemoryPersistence();
         if(client != null){
             try {
@@ -278,7 +279,14 @@ public class MqttController {
         showDialog(context, "Connecting", "Connecting to MQTT broker...", 10000);
 
         try {
-            client.connect(context, new IMqttActionListener() {
+            MqttConnectOptions options = new MqttConnectOptions();
+
+            if(!username.isEmpty()) {
+                options.setPassword(password.toCharArray());
+                options.setUserName(username);
+            }
+
+            client.connect(options, context, new IMqttActionListener() {
                 @Override
                 public void onSuccess(IMqttToken asyncActionToken) {
                     Toast toast = Toast.makeText(context, "Connected to broker", Toast.LENGTH_SHORT);

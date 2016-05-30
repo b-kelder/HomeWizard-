@@ -47,7 +47,7 @@ public class MainActivity extends BaseMqttEventActivity implements NavigationVie
         try {
             JSONObject file = Util.readBrokerData(this);
             if(!mqttController.isConnected()){
-                mqttController.connect("tcp://" + file.getString("ip") + ":" + file.getString("port"), "Homewizard++", this);
+                mqttController.connect("tcp://" + file.getString("ip") + ":" + file.getString("port"), "Homewizard++", file.getString("username"), file.getString("password"), this);
             }
         } catch (JSONException e) {
             e.printStackTrace();

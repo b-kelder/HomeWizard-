@@ -16,11 +16,13 @@ import java.io.OutputStreamWriter;
 public class Util {
 
 
-    public static void saveBrokerData(Context context, String ip, String port){
+    public static void saveBrokerData(Context context, String ip, String port, String username, String password){
         JSONObject object = new JSONObject();
         try{
             object.put("ip", ip);
             object.put("port", port);
+            object.put("username", username);
+            object.put("password", password);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -32,7 +34,7 @@ public class Util {
         try {
             object = new JSONObject(readFile(context, "broker.json"));
         } catch (JSONException e) {
-            saveBrokerData(context, "", "");
+            saveBrokerData(context, "", "", "", "");
             try {
                 object = new JSONObject(readFile(context, "broker.json"));
             } catch (JSONException e1) {
