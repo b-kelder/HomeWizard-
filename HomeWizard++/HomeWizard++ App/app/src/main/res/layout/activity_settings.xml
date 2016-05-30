@@ -121,10 +121,9 @@
         <Switch
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Enable "
             android:id="@+id/adminEnabled"
-            android:layout_alignTop="@+id/textView9"
-            android:layout_alignEnd="@+id/view2" />
+            android:layout_alignBottom="@+id/textView9"
+            android:layout_alignEnd="@+id/applyAdminPin" />
 
         <TextView
             android:layout_width="wrap_content"
