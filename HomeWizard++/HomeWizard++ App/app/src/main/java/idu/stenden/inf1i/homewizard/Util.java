@@ -9,12 +9,38 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.util.List;
 
 /**
  * Created by Wouter on 26-05-16.
  */
 public class Util {
 
+    public static void saveCustomSwitch(Context context, List<CustomSwitch> switchList){
+        JSONObject object = new JSONObject();
+        try{
+            object.put("list", switchList);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        writeFile(context, "customSwitch.json", object.toString());
+    }
+
+    public static JSONObject readCustomSwitch(Context context){
+        JSONObject object = null;
+        try {
+            object = new JSONObject(readFile(context, "customSwitch.json"));
+        } catch (JSONException e) {
+            saveBrokerData(context, "", "", "", "");
+            try {
+                object = new JSONObject(readFile(context, "customSwitch.json"));
+            } catch (JSONException e1) {
+                e1.printStackTrace();
+            }
+            e.printStackTrace();
+        }
+        return object;
+    }
 
     public static void saveBrokerData(Context context, String ip, String port, String username, String password){
         JSONObject object = new JSONObject();
