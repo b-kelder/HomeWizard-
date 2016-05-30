@@ -76,10 +76,10 @@
             android:layout_width="fill_parent"
             android:layout_height="2dip"
             android:background="#715F5F"
-            android:layout_marginTop="27dp"
             android:id="@+id/view2"
             android:layout_below="@+id/bkrConfirmBtn"
-            android:layout_alignParentEnd="true" />
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="10dp" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -97,9 +97,9 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:id="@+id/brokerIP"
-            android:layout_below="@+id/brokerSettings"
-            android:layout_alignParentStart="true"
-            android:hint="IP address"/>
+            android:hint="IP address"
+            android:layout_below="@+id/brkPassword"
+            android:layout_alignParentStart="true" />
 
         <EditText
             android:layout_width="150px"
@@ -116,7 +116,7 @@
             android:text="Apply"
             android:id="@+id/bkrConfirmBtn"
             android:layout_below="@+id/brokerIP"
-            android:layout_alignEnd="@+id/brokerIP" />
+            android:layout_alignParentEnd="true" />
 
         <Switch
             android:layout_width="wrap_content"
@@ -166,5 +166,25 @@
             android:layout_alignParentBottom="true"
             android:textSize="12dp"
             android:layout_marginTop="10dp" />
+
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/brkUsername"
+            android:hint="Username"
+            android:layout_below="@+id/brokerSettings"
+            android:layout_alignEnd="@+id/bkrConfirmBtn"
+            android:layout_alignParentStart="true" />
+
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:inputType="textPassword"
+            android:ems="10"
+            android:id="@+id/brkPassword"
+            android:hint="Password"
+            android:layout_below="@+id/brkUsername"
+            android:layout_alignParentStart="true"
+            android:layout_alignEnd="@+id/bkrConfirmBtn" />
     </RelativeLayout>
 </ScrollView>
