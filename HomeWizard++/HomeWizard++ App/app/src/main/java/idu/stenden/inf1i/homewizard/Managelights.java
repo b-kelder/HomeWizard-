@@ -38,7 +38,11 @@ public class Managelights extends BaseMqttEventActivity {
 
         try
         {
+<<<<<<< HEAD
             JSONObject adminPinSettings = Util.readAdminPin(Managelights.context);
+=======
+            JSONObject adminPinSettings = Util.readAdminPin(this);
+>>>>>>> origin/master
             adminPinEnabled = adminPinSettings.getBoolean("enabled");
             adminPin = adminPinSettings.getString("pin");
         }
