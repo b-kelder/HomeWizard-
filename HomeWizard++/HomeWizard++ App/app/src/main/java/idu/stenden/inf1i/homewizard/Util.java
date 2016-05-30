@@ -31,7 +31,7 @@ public class Util {
         try {
             object = new JSONObject(readFile(context, "customSwitch.json"));
         } catch (JSONException e) {
-            saveBrokerData(context, "", "", "", "");
+            saveCustomSwitch(context, new ArrayList<CustomSwitch>());
             try {
                 object = new JSONObject(readFile(context, "customSwitch.json"));
             } catch (JSONException e1) {
