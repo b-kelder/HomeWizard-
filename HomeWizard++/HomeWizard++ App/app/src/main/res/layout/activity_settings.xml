@@ -154,5 +154,17 @@
             android:id="@+id/applyAdminPin"
             android:layout_alignTop="@+id/editAdminPin"
             android:layout_toEndOf="@+id/clearBtn" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="Write this down. Once set, you will need it to access settings."
+            android:id="@+id/textView18"
+            android:layout_below="@+id/applyAdminPin"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentBottom="true"
+            android:textSize="12dp"
+            android:layout_marginTop="10dp" />
     </RelativeLayout>
 </ScrollView>
