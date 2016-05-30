@@ -26,8 +26,8 @@ public class AddCustomMqtt extends AppCompatActivity {
             public void onClick(View v) {
                 if (!customName.getText().toString().isEmpty() && !customTopic.getText().toString().isEmpty() && !payloadOff.getText().toString().isEmpty() && !payloadOn.getText().toString().isEmpty()) {
                     //TODO: Add support for non-homewizard MQTT devices
-					appDataContainer.add(new CustomSwitch(customName.getText().toString(), customTopic.getText().toString(), payloadOn.getText().toString(), payloadOff.getText().toString()));
-					appDataContainer.save();
+					AppDataContainer.getInstance().addCustomSwitch(new CustomSwitch(customName.getText().toString(), customTopic.getText().toString(), payloadOn.getText().toString(), payloadOff.getText().toString()));
+					AppDataContainer.getInstance().save();
                 } else {
                     Toast toaster = Toast.makeText(getApplicationContext(), "Vul velden in", Toast.LENGTH_SHORT);
                     toaster.show();
