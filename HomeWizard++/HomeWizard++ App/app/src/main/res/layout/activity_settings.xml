@@ -79,7 +79,7 @@
             android:id="@+id/view2"
             android:layout_below="@+id/bkrConfirmBtn"
             android:layout_alignParentStart="true"
-            android:layout_marginTop="10dp" />
+            android:layout_marginTop="25dp" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -143,7 +143,7 @@
             android:hint="Pin number"
             android:ems="10"
             android:id="@+id/editAdminPin"
-            android:layout_marginTop="29dp"
+            android:layout_marginTop="20dp"
             android:layout_below="@+id/textView9"
             android:layout_alignParentStart="true" />
 

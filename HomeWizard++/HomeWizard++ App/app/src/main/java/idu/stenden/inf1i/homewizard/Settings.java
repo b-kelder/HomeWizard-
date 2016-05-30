@@ -63,6 +63,7 @@ public class Settings extends BaseMqttEventActivity{
             login.setContentView(R.layout.login_dialog);
             login.setTitle("Admin verification");
             login.setCanceledOnTouchOutside(false); // makes sure you can not cancel dialog by clicking outside of it
+            login.setCancelable(false);
 
             Button btnLogin = (Button) login.findViewById(R.id.btnLogin);
             Button btnCancel = (Button) login.findViewById(R.id.btnCancel);
@@ -73,7 +74,6 @@ public class Settings extends BaseMqttEventActivity{
                 public void onClick(View v) {
                     if (txtPassword.getText().toString().trim().length() > 0) {
                         if(txtPassword.getText().toString().equals(adminPin)) {
-                            Toast.makeText(Settings.this, "Login Successful", Toast.LENGTH_LONG).show();
                             login.dismiss();
                         }
                         else

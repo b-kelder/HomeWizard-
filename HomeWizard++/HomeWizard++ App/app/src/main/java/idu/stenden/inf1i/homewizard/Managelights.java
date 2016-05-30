@@ -22,18 +22,18 @@ public class Managelights extends BaseMqttEventActivity {
     private AppDataContainer appDataContainer;
     private boolean adminPinEnabled;
     private String adminPin;
-	
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-		
+
         setContentView(R.layout.activity_managelights);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         try
         {
-            JSONObject adminPinSettings = Util.readAdminPin(Settings.context);
+            JSONObject adminPinSettings = Util.readAdminPin(this);
             adminPinEnabled = adminPinSettings.getBoolean("enabled");
             adminPin = adminPinSettings.getString("pin");
         }
@@ -50,6 +50,7 @@ public class Managelights extends BaseMqttEventActivity {
             login.setContentView(R.layout.login_dialog);
             login.setTitle("Admin verification");
             login.setCanceledOnTouchOutside(false); // makes sure you can not cancel dialog by clicking outside of it
+            login.setCancelable(false);
 
             Button btnLogin = (Button) login.findViewById(R.id.btnLogin);
             Button btnCancel = (Button) login.findViewById(R.id.btnCancel);
@@ -60,7 +61,6 @@ public class Managelights extends BaseMqttEventActivity {
                 public void onClick(View v) {
                     if (txtPassword.getText().toString().trim().length() > 0) {
                         if(txtPassword.getText().toString().equals(adminPin)) {
-                            Toast.makeText(Managelights.this, "Login Successful", Toast.LENGTH_LONG).show();
                             login.dismiss();
                         }
                         else
