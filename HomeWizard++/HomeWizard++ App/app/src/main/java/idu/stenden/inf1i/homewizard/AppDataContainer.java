@@ -24,6 +24,8 @@ public class AppDataContainer implements MqttControllerMessageCallbackListener {
 
     private DeviceAdapter deviceAdapter;
     private DeviceEditAdapter deviceEditAdapter;
+	
+	private Context saveContext;
 
 
     private AppDataContainer(){
@@ -36,6 +38,10 @@ public class AppDataContainer implements MqttControllerMessageCallbackListener {
         }
         return instance;
     }
+	
+	public void setSaveContext(Context context) {
+		saveContext = context;
+	}
 
 
     //TODO: Save/load of non-homewizard data?
