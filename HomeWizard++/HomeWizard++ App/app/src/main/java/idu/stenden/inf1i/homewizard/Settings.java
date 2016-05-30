@@ -164,6 +164,8 @@ public class Settings extends BaseMqttEventActivity{
         final EditText passwordField = (EditText) findViewById(R.id.passwordField);
         final EditText brokerIP = (EditText) findViewById(R.id.brokerIP);
         final EditText brokerPort = (EditText) findViewById(R.id.brokerPort);
+        final EditText brokerUser = (EditText) findViewById(R.id.brkUsername);
+        final EditText brokerPass = (EditText) findViewById(R.id.brkPassword);
 
         try {
             JSONObject loginSettingsFile = Util.readLoginData(this);
@@ -191,7 +193,7 @@ public class Settings extends BaseMqttEventActivity{
         brokerSettings.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 //publish email/password
-                Util.saveBrokerData(Settings.context, brokerIP.getText().toString(), brokerPort.getText().toString());
+                Util.saveBrokerData(Settings.context, brokerIP.getText().toString(), brokerPort.getText().toString(), brokerUser.getText().toString(), brokerPass.getText().toString());
                 Toast toast = Toast.makeText(getApplicationContext(), "Trying to connect to broker", Toast.LENGTH_SHORT);
                 toast.show();
 
