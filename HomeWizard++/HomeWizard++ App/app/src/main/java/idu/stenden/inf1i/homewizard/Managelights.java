@@ -60,7 +60,6 @@ public class Managelights extends BaseMqttEventActivity {
                 public void onClick(View v) {
                     if (txtPassword.getText().toString().trim().length() > 0) {
                         if(txtPassword.getText().toString().equals(adminPin)) {
-                            Toast.makeText(Managelights.this, "Login Successful", Toast.LENGTH_LONG).show();
                             login.dismiss();
                         }
                         else
