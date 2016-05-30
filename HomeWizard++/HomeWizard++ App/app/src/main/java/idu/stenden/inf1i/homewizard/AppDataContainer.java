@@ -46,11 +46,22 @@ public class AppDataContainer implements MqttControllerMessageCallbackListener {
 
     //TODO: Save/load of non-homewizard data?
     public void save() {
-
+		Util.saveCustomSwitch(saveContext, customSwitches);
     }
 
     public void load() {
-
+		try {
+			customSwitches.clear();
+			JSONObject jsonObject = Util.readCustomSwitch(saveContext);
+			JSONArray list = jsonObject.getJSONArray("list");
+			for(int i = 0; i < list.length(); i++) {
+				JSONObject entry = list.getJSONObject(i);
+				CustomSwitch sw = new CustomSwitch(entry.getString("name"), entry.getString("topic"), entry.getString("payloadOn"), entry.getString("payloadOff"));
+				customSwitches.add(sw);
+			}
+		} catch (JSONException e1) {
+			Log.e("AppDataContainer", e1.toString());
+		}
     }
 
     public ArrayList<CustomSwitch> getCustomSwitches() {

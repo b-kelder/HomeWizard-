@@ -38,6 +38,7 @@ public class MainActivity extends BaseMqttEventActivity implements NavigationVie
         setSupportActionBar(toolbar);
 
         appDataContainer = AppDataContainer.getInstance();
+		appDataContainer.setSaveContext(this);
 
         //MQTT
         mqttController = MqttController.getInstance();
