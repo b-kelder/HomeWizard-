@@ -1,6 +1,7 @@
 package idu.stenden.inf1i.homewizard;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -22,18 +23,22 @@ public class Managelights extends BaseMqttEventActivity {
     private AppDataContainer appDataContainer;
     private boolean adminPinEnabled;
     private String adminPin;
+
+    public static Context context;
 	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-		
+
+        context = this;
+
         setContentView(R.layout.activity_managelights);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         try
         {
-            JSONObject adminPinSettings = Util.readAdminPin(Settings.context);
+            JSONObject adminPinSettings = Util.readAdminPin(Managelights.context);
             adminPinEnabled = adminPinSettings.getBoolean("enabled");
             adminPin = adminPinSettings.getString("pin");
         }
@@ -50,6 +55,7 @@ public class Managelights extends BaseMqttEventActivity {
             login.setContentView(R.layout.login_dialog);
             login.setTitle("Admin verification");
             login.setCanceledOnTouchOutside(false); // makes sure you can not cancel dialog by clicking outside of it
+            login.setCancelable(false);
 
             Button btnLogin = (Button) login.findViewById(R.id.btnLogin);
             Button btnCancel = (Button) login.findViewById(R.id.btnCancel);
