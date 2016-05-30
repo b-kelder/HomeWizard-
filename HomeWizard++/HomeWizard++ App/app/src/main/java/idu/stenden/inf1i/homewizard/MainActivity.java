@@ -39,6 +39,8 @@ public class MainActivity extends BaseMqttEventActivity implements NavigationVie
 
         appDataContainer = AppDataContainer.getInstance();
 		appDataContainer.setSaveContext(this);
+		//Load data on app startup
+		appDataContainer.load();
 
         //MQTT
         mqttController = MqttController.getInstance();
