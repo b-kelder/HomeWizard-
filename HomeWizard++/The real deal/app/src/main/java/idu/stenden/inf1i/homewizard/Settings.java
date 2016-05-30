@@ -1,7 +1,6 @@
 package idu.stenden.inf1i.homewizard;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -62,7 +61,7 @@ public class Settings extends BaseMqttEventActivity{
             final Dialog login = new Dialog(this);
 
             login.setContentView(R.layout.login_dialog);
-            login.setTitle("Admin verification"); 
+            login.setTitle("Admin verification");
             login.setCanceledOnTouchOutside(false); // makes sure you can not cancel dialog by clicking outside of it
 
             Button btnLogin = (Button) login.findViewById(R.id.btnLogin);
@@ -90,8 +89,7 @@ public class Settings extends BaseMqttEventActivity{
                 @Override
                 public void onClick(View v) {
                     login.dismiss();
-                    Intent homepage = new Intent(Settings.this, MainActivity.class);
-                    startActivity(homepage);
+                    finish();
                 }
             });
             login.show();
