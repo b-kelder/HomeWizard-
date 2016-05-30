@@ -17,6 +17,8 @@ import queue
 import sys, getopt
 
 BASE_QOS = 2
+# TODO: Remove this
+HARDCODED_CONNECT = True
 
 #
 # Updates the base urls, topics and subscriptions according to a HomeWizard cloud url
@@ -114,6 +116,9 @@ def homewizard_logon(username, password):
 # Returns None on failure
 #
 def homewizard_connect(username, password, local=False):
+    if(HARDCODED_CONNECT):
+        return "http://192.168.0.104/1234567890"
+    
     if(local):
         try:
             response = urllib.request.urlopen("http://gateway.homewizard.nl/discovery.php")
