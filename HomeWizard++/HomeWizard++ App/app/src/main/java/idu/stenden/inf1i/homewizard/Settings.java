@@ -176,6 +176,9 @@ public class Settings extends BaseMqttEventActivity{
             JSONObject brokerSettings = Util.readBrokerData(Settings.context);
             brokerIP.setText(brokerSettings.getString("ip"));
             brokerPort.setText(brokerSettings.getString("port"));
+            brokerUser.setText(loginSettingsFile.getString("username"));
+            brokerPass.setText(loginSettingsFile.getString("password"));
+
         } catch (Exception e) {
             e.printStackTrace();
         }
