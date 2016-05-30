@@ -1,7 +1,6 @@
 package idu.stenden.inf1i.homewizard;
 
 import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -24,13 +23,9 @@ public class Managelights extends BaseMqttEventActivity {
     private boolean adminPinEnabled;
     private String adminPin;
 
-    public static Context context;
-	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        context = this;
 
         setContentView(R.layout.activity_managelights);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -38,11 +33,7 @@ public class Managelights extends BaseMqttEventActivity {
 
         try
         {
-<<<<<<< HEAD
-            JSONObject adminPinSettings = Util.readAdminPin(Managelights.context);
-=======
             JSONObject adminPinSettings = Util.readAdminPin(this);
->>>>>>> origin/master
             adminPinEnabled = adminPinSettings.getBoolean("enabled");
             adminPin = adminPinSettings.getString("pin");
         }
