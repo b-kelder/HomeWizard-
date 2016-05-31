@@ -8,6 +8,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.CompoundButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.json.JSONArray;
@@ -21,8 +22,6 @@ import java.util.List;
  * Created by Bram on 19/05/2016.
  */
 class DeviceEditAdapter extends ArrayAdapter<BaseSwitch> {
-
-    //TODO: Add support for non-Homewizard items
 
     public DeviceEditAdapter(Context context, int resource) {
         super(context, resource);
@@ -66,6 +65,7 @@ class DeviceEditAdapter extends ArrayAdapter<BaseSwitch> {
                     AppDataContainer.getInstance().removeCustomSwitch(customSwitch);
                     AppDataContainer.getInstance().notifyDataSetChanged();
                     AppDataContainer.getInstance().save();
+                    Toast.makeText(getContext(), "Custom device removed", Toast.LENGTH_SHORT).show();
                 }
             }
         });
