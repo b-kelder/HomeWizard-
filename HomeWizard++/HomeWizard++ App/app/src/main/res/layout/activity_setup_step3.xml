@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -9,65 +9,69 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="idu.stenden.inf1i.homewizard.SetupStep3">
 
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/setuphmwzUser"
-        android:hint="login@example.com"
-        android:layout_below="@+id/textView23"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="50dp"
-        android:layout_alignParentEnd="true" />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:inputType="textPassword"
-        android:ems="10"
-        android:id="@+id/setuphmwzPassword"
-        android:hint="Password"
-        android:layout_below="@+id/setuphmwzUser"
-        android:layout_alignParentStart="true"
-        android:layout_alignEnd="@+id/setuphmwzUser" />
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/setuphmwzUser"
+            android:hint="login@example.com"
+            android:layout_below="@+id/textView23"
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="50dp"
+            android:layout_alignParentEnd="true" />
 
-    <Button
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:text="Finish"
-        android:id="@+id/btnNextStep3"
-        android:layout_marginTop="39dp"
-        android:layout_below="@+id/setuphmwzPassword"
-        android:layout_centerHorizontal="true"
-        android:background="@color/design_textinput_error_color_light"
-        android:textColor="@color/abc_primary_text_material_dark" />
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:inputType="textPassword"
+            android:ems="10"
+            android:id="@+id/setuphmwzPassword"
+            android:hint="Password"
+            android:layout_below="@+id/setuphmwzUser"
+            android:layout_alignParentStart="true"
+            android:layout_alignEnd="@+id/setuphmwzUser" />
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="skip"
-        android:id="@+id/btnSkipStep3"
-        android:layout_below="@+id/btnNextStep3"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="10dp" />
+        <Button
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:text="Finish"
+            android:id="@+id/btnNextStep3"
+            android:layout_marginTop="39dp"
+            android:layout_below="@+id/setuphmwzPassword"
+            android:layout_centerHorizontal="true"
+            android:background="@color/design_textinput_error_color_light"
+            android:textColor="@color/abc_primary_text_material_dark" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Step 2"
-        android:id="@+id/textView22"
-        android:textSize="35dp"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true" />
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="skip"
+            android:id="@+id/btnSkipStep3"
+            android:layout_below="@+id/btnNextStep3"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Homewizard Configuration"
-        android:id="@+id/textView23"
-        android:layout_below="@+id/textView22"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="5dp" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="Step 2"
+            android:id="@+id/textView22"
+            android:textSize="35dp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentStart="true" />
 
-</RelativeLayout>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="Homewizard Configuration"
+            android:id="@+id/textView23"
+            android:layout_below="@+id/textView22"
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="5dp" />
+    </RelativeLayout>
+</ScrollView>
