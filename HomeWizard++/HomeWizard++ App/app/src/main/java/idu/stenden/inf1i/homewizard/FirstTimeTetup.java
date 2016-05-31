@@ -30,9 +30,6 @@ public class FirstTimeTetup extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        Toast toast = Toast.makeText(context, firstSetup.toString(), Toast.LENGTH_SHORT);
-        toast.show();
-
         if (firstSetup == false){
             startActivity(new Intent(getApplicationContext(), MainActivity.class));
             finish();
