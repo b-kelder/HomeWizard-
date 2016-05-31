@@ -13,31 +13,28 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/setupIP"
-        android:layout_marginTop="42dp"
-        android:layout_alignParentTop="true"
+        android:hint="IP Address"
+        android:layout_below="@+id/setupPassword"
         android:layout_alignParentStart="true"
-        android:layout_alignParentEnd="true"
-        android:text="setupIP" />
+        android:layout_alignParentEnd="true" />
 
     <EditText
-        android:layout_width="wrap_content"
+        android:layout_width="150dp"
         android:layout_height="wrap_content"
         android:id="@+id/setupPort"
+        android:hint="Port"
         android:layout_below="@+id/setupIP"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="32dp"
-        android:layout_alignEnd="@+id/setupIP"
-        android:text="setupPort" />
+        android:layout_alignParentStart="true" />
 
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/setupUsername"
-        android:layout_below="@+id/setupPort"
+        android:hint="Username"
+        android:layout_below="@+id/textView21"
         android:layout_alignParentStart="true"
-        android:layout_marginTop="27dp"
-        android:layout_alignEnd="@+id/setupPort"
-        android:text="setupUsername" />
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="25dp" />
 
     <EditText
         android:layout_width="wrap_content"
@@ -45,28 +42,48 @@
         android:inputType="textPassword"
         android:ems="10"
         android:id="@+id/setupPassword"
+        android:hint="Password"
         android:layout_below="@+id/setupUsername"
         android:layout_alignParentStart="true"
-        android:layout_marginTop="24dp"
-        android:layout_alignEnd="@+id/setupUsername"
-        android:text="setupPassword" />
+        android:layout_alignParentEnd="true" />
 
     <Button
-        android:layout_width="wrap_content"
+        android:layout_width="200dp"
         android:layout_height="wrap_content"
-        android:text="next"
+        android:text="Continue"
         android:id="@+id/btnStep2"
-        android:layout_marginTop="64dp"
-        android:layout_below="@+id/setupPassword"
-        android:layout_alignEnd="@+id/setupPassword"
-        android:layout_marginEnd="74dp" />
+        android:layout_marginTop="35dp"
+        android:layout_below="@+id/setupPort"
+        android:layout_centerHorizontal="true"
+        android:background="@color/design_textinput_error_color_light"
+        android:textColor="@color/abc_primary_text_material_dark" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="skip"
         android:id="@+id/btnStep2Skip"
-        android:layout_alignTop="@+id/btnStep2"
+        android:layout_below="@+id/btnStep2"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Step 1"
+        android:id="@+id/textView20"
+        android:textSize="35dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Broker Configuration"
+        android:id="@+id/textView21"
+        android:layout_below="@+id/textView20"
         android:layout_alignParentStart="true"
-        android:layout_marginStart="19dp" />
+        android:layout_marginTop="5dp" />
 </RelativeLayout>

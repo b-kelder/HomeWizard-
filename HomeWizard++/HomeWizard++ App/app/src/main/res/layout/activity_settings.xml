@@ -113,7 +113,7 @@
             android:layout_alignParentStart="true" />
 
         <EditText
-            android:layout_width="150px"
+            android:layout_width="150dp"
             android:layout_height="wrap_content"
             android:id="@+id/brokerPort"
             android:layout_below="@+id/brokerIP"

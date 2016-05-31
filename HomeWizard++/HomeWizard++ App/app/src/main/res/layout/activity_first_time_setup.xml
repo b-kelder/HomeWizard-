@@ -13,38 +13,42 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Welcome, let&apos;s get started"
+        android:text="Welcome,"
         android:id="@+id/textView"
         android:layout_marginTop="24dp"
-        android:textSize="30\dp"
+        android:textSize="35dp"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:textIsSelectable="true" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="It seems like this is the first time you run this app, so to make sure everything is working fine we need to setup a few things."
+        android:text="It seems this is the first time you run this application. To make sure everything is working fine, we need to setup a few things."
         android:id="@+id/textView19"
-        android:layout_marginTop="37dp"
-        android:layout_below="@+id/textView"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="20dp"
+        android:layout_alignParentEnd="false"
+        android:layout_below="@+id/textView" />
 
     <Button
-        android:layout_width="wrap_content"
+        android:layout_width="200dp"
         android:layout_height="wrap_content"
-        android:text="Lets buid that wall"
+        android:text="Let&apos;s get started"
         android:id="@+id/btnStep1"
-        android:layout_marginBottom="103dp"
-        android:layout_alignParentBottom="true"
-        android:layout_alignEnd="@+id/textView"
-        android:layout_marginEnd="14dp" />
+        android:background="@color/design_textinput_error_color_light"
+        android:textColor="@color/abc_primary_text_material_dark"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="skip"
         android:id="@+id/btnStep1Skip"
-        android:layout_alignTop="@+id/btnStep1"
-        android:layout_alignStart="@+id/textView" />
+        android:layout_below="@+id/btnStep1"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp" />
+
 </RelativeLayout>
