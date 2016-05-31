@@ -29,9 +29,10 @@ import java.util.List;
 
 class DeviceAdapter extends ArrayAdapter<BaseSwitch> {
 
-    private static final int VIEWTYPE_SWITCH = 0;
-    private static final int VIEWTYPE_DIMMER = 1;
-    private static final int VIEWTYPE_COUNT = VIEWTYPE_DIMMER + 1;
+    private static final int VIEWTYPE_SWITCH    = 0;
+    private static final int VIEWTYPE_DIMMER    = 1;
+    private static final int VIEWTYPE_HUE       = 2;
+    private static final int VIEWTYPE_COUNT = VIEWTYPE_HUE + 1;
 
     public DeviceAdapter(Context context, int resource) {
         super(context, resource);
@@ -47,6 +48,8 @@ class DeviceAdapter extends ArrayAdapter<BaseSwitch> {
         BaseSwitch sw = getItem(position);
         if(sw.getType().equals("dimmer")){
             return VIEWTYPE_DIMMER;
+        }if(sw.getType().equals("hue")){
+            return VIEWTYPE_HUE;
         } else {
             return VIEWTYPE_SWITCH;
         }
@@ -72,6 +75,9 @@ class DeviceAdapter extends ArrayAdapter<BaseSwitch> {
                 case VIEWTYPE_SWITCH:
                     convertView = LayoutInflater.from(getContext()).inflate(R.layout.row, parent, false);
                     break;
+                case VIEWTYPE_HUE:
+                    convertView = LayoutInflater.from(getContext()).inflate(R.layout.row_hue, parent, false);
+                    break;
             }
         }
 
@@ -82,7 +88,6 @@ class DeviceAdapter extends ArrayAdapter<BaseSwitch> {
 
         switch(viewType) {
             case VIEWTYPE_DIMMER: {
-                //TODO: Fix this after fixing normal switches
                 //Treat it as a dimmer
                 swName = (TextView) convertView.findViewById(R.id.rowDimTextView);
                 swBar = (SeekBar) convertView.findViewById(R.id.rowDimSeekBar);
@@ -187,6 +192,20 @@ class DeviceAdapter extends ArrayAdapter<BaseSwitch> {
                     swSwitch.setChecked(sw.getStatus());
                     swSwitch.setEnabled(true);
                 }
+            } break;
+            case VIEWTYPE_HUE: {
+                //Treat it as a HUE
+                //TODO: Add color picker and on/off button
+                swName = (TextView) convertView.findViewById(R.id.rowTextView);
+                swSwitch = (Switch) convertView.findViewById(R.id.rowSwitch);
+
+                swSwitch.setOnCheckedChangeListener((new CompoundButton.OnCheckedChangeListener() {
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+                    }
+                }));
+
+
             } break;
             default: {
                 // Shouldn't ever happen but stops the compiler from complaining

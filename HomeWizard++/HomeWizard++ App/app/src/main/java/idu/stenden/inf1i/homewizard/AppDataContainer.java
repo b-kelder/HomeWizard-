@@ -19,6 +19,8 @@ public class AppDataContainer implements MqttControllerMessageCallbackListener {
 
     private ArrayList<HomewizardSwitch> homewizardSwitches = new ArrayList<HomewizardSwitch>();
     private ArrayList<CustomSwitch> customSwitches = new ArrayList<>();
+    private ArrayList<HueSwitch> hueSwitches = new ArrayList<>();
+
     private ArrayList<BaseSwitch> allSwitches = new ArrayList<>();
 
     private DeviceAdapter deviceAdapter;
@@ -85,6 +87,25 @@ public class AppDataContainer implements MqttControllerMessageCallbackListener {
         updateAllSwitches();
     }
 
+    public ArrayList<HueSwitch> getHueSwitches() {
+        return hueSwitches;
+    }
+
+    public void addHueSwitch(HueSwitch hueSwitch) {
+        hueSwitches.add(hueSwitch);
+        updateAllSwitches();
+    }
+
+    public void removeCustomSwitch(HueSwitch hueSwitch) {
+        hueSwitches.remove(hueSwitch);
+        updateAllSwitches();
+    }
+
+    public void clearHueSwitches() {
+        hueSwitches.clear();
+        updateAllSwitches();
+    }
+
     public ArrayList<HomewizardSwitch> getHomewizardSwitches(){
         return homewizardSwitches;
     }
@@ -107,6 +128,7 @@ public class AppDataContainer implements MqttControllerMessageCallbackListener {
         allSwitches.clear();
         allSwitches.addAll(homewizardSwitches);
         allSwitches.addAll(customSwitches);
+        allSwitches.addAll(hueSwitches);
     }
 
     public DeviceAdapter getDeviceAdapter() {
