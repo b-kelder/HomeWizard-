@@ -51,4 +51,15 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="10dp" />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="After this setup, you can change the configuration within the settings menu. Feel free to skip this setup if you want to do this later."
+        android:id="@+id/textView24"
+        android:layout_marginBottom="59dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:textColor="@color/dim_foreground_disabled_material_light" />
+
 </RelativeLayout>
