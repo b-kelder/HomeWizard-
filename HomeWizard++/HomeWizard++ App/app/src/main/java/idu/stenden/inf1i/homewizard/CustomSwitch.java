@@ -3,21 +3,29 @@ package idu.stenden.inf1i.homewizard;
 /**
  * Created by Wouter on 26-05-16.
  */
-public class CustomSwitch {
+public class CustomSwitch extends BaseSwitch {
     private String topic;
-    private String name;
     private String payloadOn;
     private String payloadOff;
 
-    public CustomSwitch(String name, String topic, String payloadOn, String payloadOff){
+    public CustomSwitch(String name, String topic, String payloadOn, String payloadOff, String type, boolean status, int dimmer){
         this.name = name;
         this.topic = topic;
         this.payloadOff = payloadOff;
         this.payloadOn = payloadOn;
+        this.type = type;
+        this.status = status;
+        this.dimmer = dimmer;
     }
 
-    public CustomSwitch(String name, String topic){
-        this(name, topic, "on", "off");
+    @Override
+    public void sendStatus() {
+        MqttController.getInstance().publish(topic, status ? payloadOn : payloadOff);
+    }
+
+    @Override
+    public void sendDimmer() {
+        MqttController.getInstance().publish(topic, "" + dimmer);
     }
 
     public String getTopic() {

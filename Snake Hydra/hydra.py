@@ -18,7 +18,7 @@ import sys, getopt
 
 BASE_QOS = 2
 # TODO: Remove this
-HARDCODED_CONNECT = True
+HARDCODED_CONNECT = False
 
 #
 # Updates the base urls, topics and subscriptions according to a HomeWizard cloud url
@@ -238,6 +238,9 @@ def process_auth_request(client, msg):
     global reconnectThread
     global connectAuthThread
 
+    global username
+    global password
+
     # Wait for a reconnect if there is any running to prevent race conditions
     if((reconnectThread is not None) and (reconnectThread.is_alive())):
         reconnectThread.join()
@@ -261,6 +264,10 @@ def process_auth_request(client, msg):
                 string = json.dumps(data)
                 client.publish(hydraAuthTopic + "/results", string, BASE_QOS)
                 homewizardBaseUrl = urlResult
+
+                # Update globals
+                username = loginData["email"]
+                password = loginData["password"]
                 
         elif(loginData["type"] == "disconnect"):
             print(get_time_string(), "Recieved disconnect request for HomeWizard")

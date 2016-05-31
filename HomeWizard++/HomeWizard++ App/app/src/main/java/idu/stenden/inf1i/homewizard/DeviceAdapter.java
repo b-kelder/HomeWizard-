@@ -27,7 +27,7 @@ import java.util.List;
  */
 
 
-class DeviceAdapter extends ArrayAdapter<HomewizardSwitch> {
+class DeviceAdapter extends ArrayAdapter<BaseSwitch> {
 
     private static final int VIEWTYPE_SWITCH = 0;
     private static final int VIEWTYPE_DIMMER = 1;
@@ -38,12 +38,13 @@ class DeviceAdapter extends ArrayAdapter<HomewizardSwitch> {
     }
 
     public DeviceAdapter(Context context, int resource, int textViewResourceId, List<?> objects) {
-        super(context, resource, textViewResourceId, (List<HomewizardSwitch>) objects);
+        super(context, resource, textViewResourceId, (List<BaseSwitch>) objects);
     }
 
     @Override
     public int getItemViewType(int position){
-        HomewizardSwitch sw = getItem(position);
+        Log.e("DeviceAdapter", "getItemViewType, " + position);
+        BaseSwitch sw = getItem(position);
         if(sw.getType().equals("dimmer")){
             return VIEWTYPE_DIMMER;
         } else {
@@ -59,10 +60,8 @@ class DeviceAdapter extends ArrayAdapter<HomewizardSwitch> {
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
 
-        final HomewizardSwitch sw = getItem(position);
+        final BaseSwitch sw = getItem(position);
         int viewType = getItemViewType(position);
-
-        Log.i("DeviceAdapter", "getView " + position + " " + convertView + " type = " + viewType + " switch " + sw.getId());
 
 
         if(convertView == null) {
@@ -101,35 +100,50 @@ class DeviceAdapter extends ArrayAdapter<HomewizardSwitch> {
 
                     @Override
                     public void onStopTrackingTouch(SeekBar seekBar) {
-                        //User stopped touching, set correct dim level
-                        if(!sw.isUpdating()) {
+                        if(HomewizardSwitch.class.isInstance(sw)) {
+                            HomewizardSwitch homewizardSwitch = (HomewizardSwitch)sw;
+                            //User stopped touching, set correct dim level
+                            if(!homewizardSwitch.isUpdating()) {
+                                int dimValue = seekBar.getProgress();
+
+                                seekBar.setEnabled(false);
+
+                                homewizardSwitch.setDimmer(dimValue);
+                                homewizardSwitch.setStatus(dimValue > 0);
+                                homewizardSwitch.sendStatus();
+                                homewizardSwitch.sendDimmer();
+                                homewizardSwitch.setUpdating(true);
+                            }
+                        } else {
+                            //CustomSwitch
                             int dimValue = seekBar.getProgress();
 
-                            seekBar.setEnabled(false);
-
                             sw.setDimmer(dimValue);
-                            sw.setStatus(dimValue > 0);
-                            sw.sendStatus();
                             sw.sendDimmer();
-                            sw.setUpdating(true);
                         }
+
                     }
                 });
 
+                if(HomewizardSwitch.class.isInstance(sw)) {
+                    HomewizardSwitch homewizardSwitch = (HomewizardSwitch)sw;
+                    if (!homewizardSwitch.isUpdating()) {
+                        homewizardSwitch.setUpdating(true);
+                        swBar.setMax(100);
+                        swBar.setProgress(homewizardSwitch.getDimmer());
+                        homewizardSwitch.setUpdating(false);
+                    } else {
+                        swBar.setMax(100);
+                        swBar.setProgress(homewizardSwitch.getDimmer());
+                    }
 
-                if(!sw.isUpdating()) {
-                    sw.setUpdating(true);
-                    swBar.setMax(100);
-                    swBar.setProgress(sw.getDimmer());
-                    sw.setUpdating(false);
+                    swBar.setEnabled(!homewizardSwitch.isUpdating());
                 } else {
+                    //CustomSwitch
                     swBar.setMax(100);
                     swBar.setProgress(sw.getDimmer());
+                    swBar.setEnabled(true);
                 }
-
-
-
-                swBar.setEnabled(!sw.isUpdating());
 
             } break;
             case VIEWTYPE_SWITCH: {
@@ -139,28 +153,40 @@ class DeviceAdapter extends ArrayAdapter<HomewizardSwitch> {
 
                 swSwitch.setOnCheckedChangeListener((new CompoundButton.OnCheckedChangeListener() {
                     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                        //If we're not still waiting for a response from a previous toggle
-                        if (!sw.isUpdating()) {
-                            buttonView.setEnabled(false);
+                        if(HomewizardSwitch.class.isInstance(sw)) {
+                            HomewizardSwitch homewizardSwitch = (HomewizardSwitch) sw;
+                            //If we're not still waiting for a response from a previous toggle
+                            if (!homewizardSwitch.isUpdating()) {
+                                buttonView.setEnabled(false);
 
+                                homewizardSwitch.setStatus(isChecked);
+                                homewizardSwitch.sendStatus();
+                                homewizardSwitch.setUpdating(true);
+                            }
+                        } else {
+                            //CustomSwitch
                             sw.setStatus(isChecked);
                             sw.sendStatus();
-                            sw.setUpdating(true);
-                        } else {
-                            Log.e("DeviceAdapter", "Toggled switch that should be disabled! " + sw.toString());
                         }
                     }
                 }));
 
-                if(!sw.isUpdating()) {
-                    sw.setUpdating(true);
-                    swSwitch.setChecked(sw.getStatus());
-                    sw.setUpdating(false);
-                } else {
-                    swSwitch.setChecked(sw.getStatus());
-                }
+                if(HomewizardSwitch.class.isInstance(sw)) {
+                    HomewizardSwitch homewizardSwitch = (HomewizardSwitch) sw;
+                    if (!homewizardSwitch.isUpdating()) {
+                        homewizardSwitch.setUpdating(true);
+                        swSwitch.setChecked(homewizardSwitch.getStatus());
+                        homewizardSwitch.setUpdating(false);
+                    } else {
+                        swSwitch.setChecked(sw.getStatus());
+                    }
 
-                swSwitch.setEnabled(!sw.isUpdating());
+                    swSwitch.setEnabled(!homewizardSwitch.isUpdating());
+                } else {
+                    //CustomSwitch
+                    swSwitch.setChecked(sw.getStatus());
+                    swSwitch.setEnabled(true);
+                }
             } break;
             default: {
                 // Shouldn't ever happen but stops the compiler from complaining

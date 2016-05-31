@@ -4,15 +4,9 @@ package idu.stenden.inf1i.homewizard;
  * Created by Bram on 19/05/2016.
  */
 
-//TODO: Rework switch system
+public class HomewizardSwitch extends BaseSwitch {
 
-
-public class HomewizardSwitch {
-    private String name;
-    private String type;
-    private boolean status;
-    private int id;
-    private int dimmer;
+    private int id;                 //HomeWizard id
     private boolean updating;       //Used to check if this switch is waiting for a state change response
 
     public HomewizardSwitch(String name, String type, String status, String id){
@@ -35,56 +29,14 @@ public class HomewizardSwitch {
         return sb.toString();
     }
 
+    @Override
     public void sendStatus() {
         MqttController.getInstance().publish("HYDRA/HMWZ/sw/" + id, status ? "on" : "off");
     }
 
+    @Override
     public void sendDimmer() {
         MqttController.getInstance().publish("HYDRA/HMWZ/sw/dim/" + id, "" + dimmer);
-    }
-
-    public String getName(){
-        return name;
-    }
-
-    public boolean getStatus(){
-        return status;
-    }
-
-    public int getId(){
-        return id;
-    }
-
-    public void setName(String name){
-        this.name = name;
-    }
-
-    public void setStatus(boolean status){
-        this.status = status;
-    }
-
-    public void setId(int id){
-        this.id = id;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public int getDimmer() {
-        return dimmer;
-    }
-
-    public void setDimmer(int dimmer) {
-        this.dimmer = dimmer;
-    }
-
-    public void setDimmer(String dimmer) {
-        this.dimmer = Integer.parseInt(dimmer);
     }
 
     public boolean isUpdating() {
@@ -93,5 +45,13 @@ public class HomewizardSwitch {
 
     public void setUpdating(boolean updating) {
         this.updating = updating;
+    }
+
+    public void setId(int id){
+        this.id = id;
+    }
+
+    public int getId(){
+        return id;
     }
 }

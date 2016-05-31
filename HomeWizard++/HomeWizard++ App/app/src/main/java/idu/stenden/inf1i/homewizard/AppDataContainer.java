@@ -2,16 +2,13 @@ package idu.stenden.inf1i.homewizard;
 
 import android.content.Context;
 import android.util.Log;
-import android.widget.Toast;
 
-import org.eclipse.paho.android.service.MqttAndroidClient;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by Bram on 23/05/2016.
@@ -22,12 +19,12 @@ public class AppDataContainer implements MqttControllerMessageCallbackListener {
 
     private ArrayList<HomewizardSwitch> homewizardSwitches = new ArrayList<HomewizardSwitch>();
     private ArrayList<CustomSwitch> customSwitches = new ArrayList<>();
+    private ArrayList<BaseSwitch> allSwitches = new ArrayList<>();
 
     private DeviceAdapter deviceAdapter;
     private DeviceEditAdapter deviceEditAdapter;
 	
 	private Context saveContext;
-
 
     private AppDataContainer(){
         registerEventHandler();
@@ -53,17 +50,21 @@ public class AppDataContainer implements MqttControllerMessageCallbackListener {
     public void load() {
 		try {
 			customSwitches.clear();
-			JSONObject jsonObject = Util.readCustomSwitch(saveContext);
-			JSONArray list = jsonObject.getJSONArray("list");
-			for(int i = 0; i < list.length(); i++) {
-				JSONObject entry = list.getJSONObject(i);
-				CustomSwitch sw = new CustomSwitch(entry.getString("name"), entry.getString("topic"), entry.getString("payloadOn"), entry.getString("payloadOff"));
-				customSwitches.add(sw);
-			}
-		} catch (JSONException e1) {
+			customSwitches.addAll(Util.readCustomSwitch(saveContext));
+            updateAllSwitches();
+		} catch (Exception e1) {
 			Log.e("AppDataContainer", e1.toString());
 		}
     }
+
+
+    public void notifyDataSetChanged() {
+        deviceAdapter.notifyDataSetChanged();
+        deviceEditAdapter.notifyDataSetChanged();
+    }
+
+
+
 
     public ArrayList<CustomSwitch> getCustomSwitches() {
         return customSwitches;
@@ -71,10 +72,17 @@ public class AppDataContainer implements MqttControllerMessageCallbackListener {
 
     public void addCustomSwitch(CustomSwitch customSwitch) {
         customSwitches.add(customSwitch);
+        updateAllSwitches();
+    }
+
+    public void removeCustomSwitch(CustomSwitch customSwitch) {
+        customSwitches.remove(customSwitch);
+        updateAllSwitches();
     }
 
     public void clearCustomSwitches() {
         customSwitches.clear();
+        updateAllSwitches();
     }
 
     public ArrayList<HomewizardSwitch> getHomewizardSwitches(){
@@ -83,10 +91,22 @@ public class AppDataContainer implements MqttControllerMessageCallbackListener {
 
     public void addHomewizardSwitch(HomewizardSwitch homewizardSwitch){
         homewizardSwitches.add(homewizardSwitch);
+        updateAllSwitches();
     }
 
     public void clearHomewizardSwitches(){
         homewizardSwitches.clear();
+        updateAllSwitches();
+    }
+
+    public ArrayList<BaseSwitch> getAllSwitches() {
+        return allSwitches;
+    }
+
+    private void updateAllSwitches() {
+        allSwitches.clear();
+        allSwitches.addAll(homewizardSwitches);
+        allSwitches.addAll(customSwitches);
     }
 
     public DeviceAdapter getDeviceAdapter() {

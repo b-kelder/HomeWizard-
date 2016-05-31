@@ -1,7 +1,13 @@
 package idu.stenden.inf1i.homewizard;
 
 import android.content.Context;
+import android.util.Log;
+import android.widget.Toast;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -9,6 +15,7 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,30 +24,24 @@ import java.util.List;
  */
 public class Util {
 
-    public static void saveCustomSwitch(Context context, List<CustomSwitch> switchList){
-        JSONObject object = new JSONObject();
-        try{
-            object.put("list", switchList);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        writeFile(context, "customSwitch.json", object.toString());
+    public static void saveCustomSwitch(Context context, ArrayList<CustomSwitch> switchList){
+        Gson gson = new Gson();
+        writeFile(context, "customSwitch.json", gson.toJson(switchList));
     }
 
-    public static JSONObject readCustomSwitch(Context context){
-        JSONObject object = null;
+    public static ArrayList<CustomSwitch> readCustomSwitch(Context context){
+        Gson gson = new Gson();
         try {
-            object = new JSONObject(readFile(context, "customSwitch.json"));
-        } catch (JSONException e) {
+            Type collectionType = new TypeToken<ArrayList<CustomSwitch>>() {
+            }.getType();
+            ArrayList<CustomSwitch> list = gson.fromJson(readFile(context, "customSwitch.json"), collectionType);
+            return list;
+        } catch (Exception e) {
             saveCustomSwitch(context, new ArrayList<CustomSwitch>());
-            try {
-                object = new JSONObject(readFile(context, "customSwitch.json"));
-            } catch (JSONException e1) {
-                e1.printStackTrace();
-            }
-            e.printStackTrace();
+            readCustomSwitch(context);
+            Log.e("FUCK", "FUCK");
         }
-        return object;
+        return null;
     }
 
     public static void saveBrokerData(Context context, String ip, String port, String username, String password){

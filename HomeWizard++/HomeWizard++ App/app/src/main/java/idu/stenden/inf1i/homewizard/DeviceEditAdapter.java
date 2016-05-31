@@ -20,7 +20,7 @@ import java.util.List;
 /**
  * Created by Bram on 19/05/2016.
  */
-class DeviceEditAdapter extends ArrayAdapter<HomewizardSwitch> {
+class DeviceEditAdapter extends ArrayAdapter<BaseSwitch> {
 
     //TODO: Add support for non-Homewizard items
 
@@ -29,13 +29,13 @@ class DeviceEditAdapter extends ArrayAdapter<HomewizardSwitch> {
     }
 
     public DeviceEditAdapter(Context context, int resource, int textViewResourceId, List<?> objects) {
-        super(context, resource, textViewResourceId, (List<HomewizardSwitch>) objects);
+        super(context, resource, textViewResourceId, (List<BaseSwitch>) objects);
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
-        final HomewizardSwitch sw = getItem(position);
+        final BaseSwitch sw = getItem(position);
         if(convertView == null){
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.row_manage, parent, false);
         }
@@ -46,8 +46,6 @@ class DeviceEditAdapter extends ArrayAdapter<HomewizardSwitch> {
 
         btnName.setText(sw.getName());
 
-        final String switchId = String.valueOf(sw.getId());
-
         btnChange.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 //MqttController.getInstance().publish("", "");
@@ -57,8 +55,18 @@ class DeviceEditAdapter extends ArrayAdapter<HomewizardSwitch> {
 
         btnDelete.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                //Put switchId in topic so we can filter the return message properly
-                MqttController.getInstance().publish("HYDRA/HMWZ/sw/remove/" + switchId, "");
+                if(HomewizardSwitch.class.isInstance(sw)) {
+                    HomewizardSwitch homewizardSwitch = (HomewizardSwitch)sw;
+                    String switchId = String.valueOf(homewizardSwitch.getId());
+                    //Put switchId in topic so we can filter the return message properly
+                    MqttController.getInstance().publish("HYDRA/HMWZ/sw/remove/" + switchId, "");
+                } else {
+                    //Remove CustomSwitch from list
+                    CustomSwitch customSwitch = (CustomSwitch)sw;
+                    AppDataContainer.getInstance().removeCustomSwitch(customSwitch);
+                    AppDataContainer.getInstance().notifyDataSetChanged();
+                    AppDataContainer.getInstance().save();
+                }
             }
         });
 

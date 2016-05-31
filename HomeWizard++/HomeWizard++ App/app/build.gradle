@@ -23,6 +23,7 @@ repositories{
     maven{
         url "https://repo.eclipse.org/content.repositories/paho-releases/"
     }
+    mavenCentral()
 }
 
 dependencies {
@@ -34,4 +35,5 @@ dependencies {
     compile('org.eclipse.paho:org.eclipse.paho.android.service:1.0.2'){
         exclude module: 'support-v4'
     }
+    compile 'com.google.code.gson:gson:2.2.4'
 }

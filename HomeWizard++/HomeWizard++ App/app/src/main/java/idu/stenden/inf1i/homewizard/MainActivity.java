@@ -57,7 +57,7 @@ public class MainActivity extends BaseMqttEventActivity implements NavigationVie
         }
 
         mainListView = (ListView) findViewById(R.id.mainListView);
-        DeviceAdapter deviceAdapter = new DeviceAdapter(this, R.layout.row, R.id.rowTextView, appDataContainer.getHomewizardSwitches());
+        DeviceAdapter deviceAdapter = new DeviceAdapter(this, R.layout.row, R.id.rowTextView, appDataContainer.getAllSwitches());
         deviceAdapter.setNotifyOnChange(true);
         appDataContainer.setDeviceAdapter(deviceAdapter);
         mainListView.setAdapter(deviceAdapter);
@@ -70,6 +70,14 @@ public class MainActivity extends BaseMqttEventActivity implements NavigationVie
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+    }
+
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
+
+        //Save before exit
+        appDataContainer.save();
     }
 
 

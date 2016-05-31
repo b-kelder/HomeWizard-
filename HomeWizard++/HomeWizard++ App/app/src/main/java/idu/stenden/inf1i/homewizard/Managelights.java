@@ -100,7 +100,7 @@ public class Managelights extends BaseMqttEventActivity {
 
         mainListView = (ListView) findViewById(R.id.listViewManageLights);
 
-        DeviceEditAdapter deviceEditAdapter = new DeviceEditAdapter(this, R.layout.row_manage, R.id.manageTxt, appDataContainer.getHomewizardSwitches());
+        DeviceEditAdapter deviceEditAdapter = new DeviceEditAdapter(this, R.layout.row_manage, R.id.manageTxt, appDataContainer.getAllSwitches());
         appDataContainer.setDeviceEditAdapter(deviceEditAdapter);
         mainListView.setAdapter(deviceEditAdapter);
     }
