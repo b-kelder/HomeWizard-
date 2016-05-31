@@ -24,6 +24,32 @@ import java.util.List;
  */
 public class Util {
 
+    public static void saveFirstSetup(Context context, boolean firstSetup){
+        JSONObject object = new JSONObject();
+        try{
+            object.put("FirstSetup", firstSetup);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        writeFile(context, "firstSetup.json", object.toString());
+    }
+
+    public static JSONObject readFirstSetup(Context context){
+        JSONObject object = null;
+        try {
+            object = new JSONObject(readFile(context, "firstSetup.json"));
+        } catch (JSONException e) {
+            saveFirstSetup(context, true);
+            try {
+                object = new JSONObject(readFile(context, "firstSetup.json"));
+            } catch (JSONException e1) {
+                e1.printStackTrace();
+            }
+            e.printStackTrace();
+        }
+        return object;
+    }
+
     public static void saveCustomSwitch(Context context, ArrayList<CustomSwitch> switchList){
         Gson gson = new Gson();
         writeFile(context, "customSwitch.json", gson.toJson(switchList));
