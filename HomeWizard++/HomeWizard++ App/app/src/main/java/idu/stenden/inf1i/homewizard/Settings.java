@@ -134,7 +134,7 @@ public class Settings extends BaseMqttEventActivity{
                     if(!adminPin.isEmpty())
                     {
                         Util.saveAdminPin(Settings.context, "", false);
-                        Toast.makeText(Settings.this, "Pin code removed and disabled", Toast.LENGTH_LONG).show();
+                        Toast.makeText(Settings.this, "Pin code disabled", Toast.LENGTH_LONG).show();
                     }
                 }
             }
