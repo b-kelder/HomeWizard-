@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="idu.stenden.inf1i.homewizard.SetupStep3">
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/setuphmwzUser"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="160dp"
+        android:layout_alignParentEnd="true"
+        android:text="hmwzUser" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textPassword"
+        android:ems="10"
+        android:id="@+id/setuphmwzPassword"
+        android:layout_centerVertical="true"
+        android:layout_alignStart="@+id/setuphmwzUser"
+        android:text="hmwzPassword" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Finish"
+        android:id="@+id/btnNextStep3"
+        android:layout_below="@+id/setuphmwzPassword"
+        android:layout_toEndOf="@+id/setuphmwzPassword"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="70dp" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="skip"
+        android:id="@+id/btnSkipStep3"
+        android:layout_alignTop="@+id/btnNextStep3"
+        android:layout_alignStart="@+id/setuphmwzPassword"
+        android:layout_marginStart="42dp" />
+
+</RelativeLayout>

@@ -204,7 +204,7 @@ public class MqttController {
         }
     }
 
-    private void showDialog(Context context, String title, String message, long timeoutmillis){
+    private void showDialog(final Context context, String title, String message, long timeoutmillis){
         if(progressDialog != null){
             progressDialog.dismiss();
             progressDialogTimeoutTimer.cancel();
@@ -215,6 +215,8 @@ public class MqttController {
         progressDialog.setCancelable(false);
         progressDialog.show();
 
+        final String tielete = title;
+
         progressDialogTimeoutTimer = new CountDownTimer(timeoutmillis, timeoutmillis) {
             @Override
             public void onTick(long l){
@@ -223,6 +225,7 @@ public class MqttController {
             @Override
             public void onFinish() {
                 progressDialog.dismiss();
+                Toast.makeText(context,"Attempt at " + tielete.toLowerCase() + " timed out.", Toast.LENGTH_SHORT).show();
             }
         };
         progressDialogTimeoutTimer.start();
