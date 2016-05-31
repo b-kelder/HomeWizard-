@@ -129,7 +129,6 @@ public class MqttController {
 
                 //Toast.makeText(getApplicationContext(), "TRIGGERED SETTINGS EVENT LISTENER " + topic, Toast.LENGTH_SHORT).show();
                 if (topic.equals("HYDRA/AUTH/results")) {
-                    //haal serial code uit json bericht
                     dismissConnectingDialog();
 
                     JSONObject json = null;
@@ -244,7 +243,7 @@ public class MqttController {
 
             showDialog(context, "Connecting", "Connecting to HomeWizard...", 10000);
 
-            Util.saveLoginData(context, email, password, JSONObject.NULL);
+            Util.saveLoginData(context, email, password);
             this.publish("HYDRA/AUTH", "{\"email\":\"" + email + "\", \"password\":\"" + password + "\", \"type\":\"login\"}");
             //Toast toast = Toast.makeText(context, "Trying to log in", Toast.LENGTH_SHORT);
             //toast.show();

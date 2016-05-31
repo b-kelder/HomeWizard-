@@ -215,13 +215,42 @@ public class Settings extends BaseMqttEventActivity{
         Button clearbutton = (Button) findViewById(R.id.clearBtn);
         clearbutton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                Util.saveLoginData(Settings.context, emailField.getText().toString(), passwordField.getText().toString(), JSONObject.NULL);
+                Util.saveLoginData(Settings.context, emailField.getText().toString(), passwordField.getText().toString());
                 emailField.setText("");
                 passwordField.setText("");
                 Toast toast = Toast.makeText(getApplicationContext(), "Cleared all login data", Toast.LENGTH_SHORT);
                 toast.show();
             }
         });
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+
+        //Load stuff from files
+        final EditText emailField = (EditText) findViewById(R.id.emailField);
+        final EditText passwordField = (EditText) findViewById(R.id.passwordField);
+        final EditText brokerIP = (EditText) findViewById(R.id.brokerIP);
+        final EditText brokerPort = (EditText) findViewById(R.id.brokerPort);
+        final EditText brokerUser = (EditText) findViewById(R.id.brkUsername);
+        final EditText brokerPass = (EditText) findViewById(R.id.brkPassword);
+
+        try {
+            JSONObject loginSettingsFile = Util.readLoginData(this);
+            serial = loginSettingsFile.getString("serial");
+            emailField.setText(loginSettingsFile.getString("email"));
+            passwordField.setText(loginSettingsFile.getString("password"));
+
+            JSONObject brokerSettings = Util.readBrokerData(Settings.context);
+            brokerIP.setText(brokerSettings.getString("ip"));
+            brokerPort.setText(brokerSettings.getString("port"));
+            brokerUser.setText(brokerSettings.getString("username"));
+            brokerPass.setText(brokerSettings.getString("password"));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 	@Override
@@ -242,8 +271,7 @@ public class Settings extends BaseMqttEventActivity{
                     try {
                         json = new JSONObject(message.toString());
                         if (json.getString("status").equals("ok")) {
-                            String serial = json.getString("serial");
-                            Util.saveLoginData(Settings.context, emailField.getText().toString(), passwordField.getText().toString(), serial);
+                            Util.saveLoginData(Settings.context, emailField.getText().toString(), passwordField.getText().toString());
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();

@@ -126,12 +126,11 @@ public class Util {
         return object;
     }
 
-    public static void saveLoginData(Context context, String email, String password, Object serial){
+    public static void saveLoginData(Context context, String email, String password){
         JSONObject object = new JSONObject();
         try{
             object.put("email", email);
             object.put("password", password);
-            object.put("serial", serial);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -143,7 +142,7 @@ public class Util {
         try {
             object = new JSONObject(readFile(context, "login.json"));
         } catch (JSONException e) {
-            saveLoginData(context, "", "", JSONObject.NULL);
+            saveLoginData(context, "", "");
             try {
                 object = new JSONObject(readFile(context, "login.json"));
             } catch (JSONException e1) {

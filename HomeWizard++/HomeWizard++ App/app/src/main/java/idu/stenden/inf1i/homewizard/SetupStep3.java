@@ -29,8 +29,7 @@ public class SetupStep3 extends BaseMqttEventActivity {
         Button loginbutton = (Button) findViewById(R.id.btnNextStep3);
         loginbutton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                //publish email/password
-                MqttController.getInstance().loginHomeWizard(emailField.getText().toString(), passwordField.getText().toString(), Settings.context);
+                Util.saveLoginData(context, emailField.getText().toString(), passwordField.getText().toString());
                 Util.saveFirstSetup(context, false);
                 startActivity(new Intent(getApplicationContext(), MainActivity.class));
             }
@@ -43,35 +42,6 @@ public class SetupStep3 extends BaseMqttEventActivity {
             public void onClick(View v) {
                 Util.saveFirstSetup(context, false);
                 startActivity(new Intent(getApplicationContext(), MainActivity.class));
-            }
-        });
-    }
-
-    @Override
-    protected void addEventListeners(){
-        //als er een bericht terug word ontvangen
-        final EditText emailField = (EditText) findViewById(R.id.setuphmwzUser);
-        final EditText passwordField = (EditText) findViewById(R.id.setuphmwzPassword);
-
-        addEventListener(new MqttControllerMessageCallbackListener() {
-            @Override
-            /// Stores last successful login data and serial
-            public void onMessageArrived(String topic, MqttMessage message) {
-
-                //Toast.makeText(getApplicationContext(), "TRIGGERED SETTINGS EVENT LISTENER " + topic, Toast.LENGTH_SHORT).show();
-                if (topic.equals("HYDRA/AUTH/results")) {
-                    //haal serial code uit json bericht
-                    JSONObject json = null;
-                    try {
-                        json = new JSONObject(message.toString());
-                        if (json.getString("status").equals("ok")) {
-                            String serial = json.getString("serial");
-                            Util.saveLoginData(SetupStep3.context, emailField.getText().toString(), passwordField.getText().toString(), serial);
-                        }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
             }
         });
     }
