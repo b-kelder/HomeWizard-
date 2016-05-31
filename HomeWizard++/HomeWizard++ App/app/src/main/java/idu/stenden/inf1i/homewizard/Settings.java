@@ -109,17 +109,9 @@ public class Settings extends BaseMqttEventActivity{
                         Util.saveAdminPin(Settings.context, adminPinTxt.getText().toString(), true);
                         Toast.makeText(Settings.this, "Pin code saved", Toast.LENGTH_LONG).show();
                     }
-                    else
+                    else if(adminPinTxt.getText().toString().isEmpty() && adminPinButton.isChecked())
                     {
-                        if(!adminPin.isEmpty() && !adminPinButton.isChecked())
-                        {
-                            Util.saveAdminPin(Settings.context, "", false);
-                            Toast.makeText(Settings.this, "Pin code removed", Toast.LENGTH_LONG).show();
-                        }
-                        else
-                        {
-                            Toast.makeText(Settings.this, "Please enter a code", Toast.LENGTH_LONG).show();
-                        }
+                        Toast.makeText(Settings.this, "Please enter a code", Toast.LENGTH_LONG).show();
                     }
                 }
                 catch(Exception e)
@@ -136,7 +128,13 @@ public class Settings extends BaseMqttEventActivity{
                     adminPinTxt.setEnabled(true); // enable pin text input
                     applyPin.setEnabled(true); // enable apply pin button
                 } else {
+                    if(!adminPin.isEmpty())
+                    {
+                        Util.saveAdminPin(Settings.context, "", false);
+                        Toast.makeText(Settings.this, "Pin code disabled", Toast.LENGTH_LONG).show();
+                    }
                     adminPinTxt.setEnabled(false); // disable pin text input
+                    applyPin.setEnabled(false); // disable apply pin button
                 }
             }
         }));
