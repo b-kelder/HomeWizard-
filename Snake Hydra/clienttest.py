@@ -5,6 +5,32 @@ import sys, getopt
 # Import hydra so we can reuse it's generic stuff
 import hydra
 
+def alert():
+
+	while True:
+		lol = {
+        "lights": 1,
+        "command": {
+            "on": True,
+            "hue": 10000,
+            "bri": 200,
+            "sat": 255,
+			"transitiontime" : 20}
+        }
+		client.publish("HYDRA/HUE/set-light", json.dumps(lol))
+		time.sleep(2)
+		lol = {
+        "lights": 1,
+        "command": {
+            "on": False,
+            "hue": 10000,
+            "bri": 200,
+            "sat": 255,
+			"transitiontime" : 20}
+        }
+		client.publish("HYDRA/HUE/set-light", json.dumps(lol))
+		time.sleep(2)
+
 
 def hue_test(ip, hue, bri, sat):
     client.publish("HYDRA/HUE/connect", ip)
@@ -18,7 +44,8 @@ def hue_test(ip, hue, bri, sat):
             "on": True,
             "hue": hue,
             "bri": bri,
-            "sat": sat}
+            "sat": sat,
+			"transitiontime" : 50}
         }
     
     client.publish("HYDRA/HUE/set-light", json.dumps(lol))

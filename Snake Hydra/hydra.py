@@ -20,7 +20,7 @@ import phue
 
 BASE_QOS = 2
 # TODO: Remove this
-HARDCODED_CONNECT = False
+HARDCODED_CONNECT = True
 
 
 # Returns a string with the current date and time
@@ -70,7 +70,7 @@ def homewizard_logon(username, password):
 #
 def homewizard_connect(username, password, local=False):
     if(HARDCODED_CONNECT):
-        return "http://192.168.0.104/1234567890"
+        return "http://192.168.1.104/1234567890"
     
     if(local):
         try:
