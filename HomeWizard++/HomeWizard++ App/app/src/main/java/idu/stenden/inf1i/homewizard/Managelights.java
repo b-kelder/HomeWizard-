@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -47,8 +48,8 @@ public class Managelights extends BaseMqttEventActivity {
         if(adminPinEnabled && !adminPin.isEmpty()) {
             final Dialog login = new Dialog(this);
 
+            login.requestWindowFeature(Window.FEATURE_NO_TITLE);
             login.setContentView(R.layout.login_dialog);
-            login.setTitle("Admin verification");
             login.setCanceledOnTouchOutside(false); // makes sure you can not cancel dialog by clicking outside of it
             login.setCancelable(false);
 

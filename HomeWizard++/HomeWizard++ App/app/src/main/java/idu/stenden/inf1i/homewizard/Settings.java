@@ -3,6 +3,7 @@ package idu.stenden.inf1i.homewizard;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -60,8 +61,8 @@ public class Settings extends BaseMqttEventActivity{
         if(adminPinEnabled && !adminPin.isEmpty()) {
             final Dialog login = new Dialog(this);
 
+            login.requestWindowFeature(Window.FEATURE_NO_TITLE);
             login.setContentView(R.layout.login_dialog);
-            login.setTitle("Admin verification");
             login.setCanceledOnTouchOutside(false); // makes sure you can not cancel dialog by clicking outside of it
             login.setCancelable(false);
 
