@@ -12,8 +12,8 @@ def alert():
         "lights": 1,
         "command": {
             "on": True,
-            "hue": 10000,
-            "bri": 200,
+            "hue": 0,
+            "bri": 255,
             "sat": 255,
 			"transitiontime" : 20}
         }
@@ -23,8 +23,8 @@ def alert():
         "lights": 1,
         "command": {
             "on": False,
-            "hue": 10000,
-            "bri": 200,
+            "hue": 0,
+            "bri": 255,
             "sat": 255,
 			"transitiontime" : 20}
         }
