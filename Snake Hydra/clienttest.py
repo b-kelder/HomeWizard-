@@ -6,6 +6,23 @@ import sys, getopt
 import hydra
 
 
+def hue_test(ip, hue, bri, sat):
+    client.publish("HYDRA/HUE/connect", ip)
+    
+    time.sleep(2)
+    client.publish("HYDRA/HUE/lights", 0)
+
+    lol = {
+        "lights": 1,
+        "command": {
+            "on": True,
+            "hue": hue,
+            "bri": bri,
+            "sat": sat}
+        }
+    
+    client.publish("HYDRA/HUE/set-light", json.dumps(lol))
+
 #
 # Updates the base urls, topics and subscriptions according to a HomeWizard cloud url
 #
@@ -59,6 +76,8 @@ def on_connect(client, userdata, flags, rc):
     client.subscribe(hydra.homewizardBaseReturnTopic)
     client.subscribe(hydra.hydraStatusTopic + "/results")
     client.subscribe(hydra.hydraAuthTopic + "/results")
+    client.subscribe("HYDRA/HUERETURN/#")
+    client.subscribe("HYDRA/HUERETURN")
 
 # PUBLISH Message recieved callback
 def on_message(client, userdata, msg):

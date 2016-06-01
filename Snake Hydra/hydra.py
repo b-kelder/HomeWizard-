@@ -15,59 +15,12 @@ import threading
 import queue
 # Launch param parsing
 import sys, getopt
+# Hue
+import phue
 
 BASE_QOS = 2
 # TODO: Remove this
 HARDCODED_CONNECT = False
-
-#
-# Updates the base urls, topics and subscriptions according to a HomeWizard cloud url
-#
-##def set_topics(url = None):
-##    #print(get_time_string(), "Setting topics for", url)
-##    global homewizardBaseUrl
-##    global homewizardBaseTopic
-##    global homewizardBaseReturnTopic
-##    global hydraStatusTopic
-##    global hydraAuthTopic
-##
-##    # Clean up subscriptions
-##    try:
-##        # This won't work the first time because all these are None
-##        client.unsubscribe(homewizardBaseTopic)
-##        client.unsubscribe(homewizardBaseTopic + "/#")
-##        client.unsubscribe(homewizardBaseTopic)
-##        client.unsubscribe(hydraStatusTopic)
-##        client.unsubscribe(hydraAuthTopic)
-##    except:
-##        pass
-##    
-##    
-##    # Reset all 
-##    homewizardBaseTopic = "HYDRA/HMWZ"
-##    homewizardBaseReturnTopic = "HYDRA/HMWZRETURN"
-##    hydraStatusTopic = "HYDRA/STATUS"
-##    hydraAuthTopic = "HYDRA/AUTH"
-##
-##    homewizardBaseUrl = url
-##
-##    url = None
-##
-##    # Url?
-##    if url is not None:
-##        serial = get_serial(url)
-##            
-##        homewizardBaseTopic += "/" + serial
-##        homewizardBaseReturnTopic += "/" + serial
-##        hydraStatusTopic += "/" + serial
-##        hydraAuthTopic += "/" + serial
-##
-##    # Resub          
-##    client.subscribe(homewizardBaseTopic)
-##    client.subscribe(homewizardBaseTopic + "/#")
-##    client.subscribe(homewizardBaseTopic)
-##    client.subscribe(hydraStatusTopic)
-##    client.subscribe(hydraAuthTopic)
 
 
 # Returns a string with the current date and time
@@ -157,6 +110,8 @@ def on_connect(client, userdata, flags, rc):
     client.subscribe(homewizardBaseTopic)
     client.subscribe(hydraStatusTopic)
     client.subscribe(hydraAuthTopic)
+    client.subscribe(hueBaseTopic + "/#")
+    client.subscribe(hueBaseTopic)
 
 #
 # PUBLISH Message recieved callback
@@ -190,6 +145,9 @@ def on_message(client, userdata, msg):
         if((connectAuthThread is None) or (connectAuthThread.is_alive() == False)):
             connectAuthThread = threading.Thread(target = process_auth_request, args = (client, msg))
             connectAuthThread.start()
+
+    elif(msg.topic.startswith(hueBaseTopic)):
+        threading.Thread(target = process_hue_message, args = (client, msg)).start()
 
         
 #
@@ -295,6 +253,83 @@ def homewizard_reconnect():
 
 
 #
+# Connect to a Hue Bridge
+#
+def hue_connect(ip):
+    global hueBridge
+    hueBridge = phue.Bridge(ip)
+    try:
+         # WARNING: If Hue data is SAVED, then this will always succeed, even if the Hue isn't actually on the network!
+        hueBridge.connect()             # Press on the Hue button here
+    except:
+        print("Error connecting to Hue", ip, "Check if it's connected to the network and make sure the button is pressed.")
+        errorData = {
+            "status": "hydra_failed",
+            "error": 91,
+            "errorMessage": "Connecting to Hue failed",
+            "request":{"route": "hueconnect"}}
+        client.publish(hueBaseReturnTopic + "/connect", json.dumps(errorData))
+    else:
+        errorData = {
+            "status": "ok",
+            "request":{"route": "hueconnect"}}
+        client.publish(hueBaseReturnTopic + "/connect", json.dumps(errorData))
+
+#
+# Processes an incoming message for the Philips Hue
+#
+# Actions:
+# get-lights                    returns a list of all lights
+# set-light                     sets light settings, takes a json object with params for set_light function
+# connect                       connects to a Hue bridge with the IP in the payload
+#
+def process_hue_message(client, msg):
+    action = msg.topic.rsplit('/',1)[1] # Last part of topic is the action
+    if(action == "connect"):
+        print("Processing HUE connect message")
+        hue_connect(msg.payload.decode("utf-8"))    # Connect to a Hue bridge
+        return
+    if(hueBridge is not None):
+        print("Processing HUE message")
+        if(action == "get-lights"):
+            lights = hueBridge.get_light_objects()  # Get Hue lights data
+            lightData = []
+            for l in lights:
+                ld = {"name": l.name,
+                      "on": l.on,
+                      "colormode": l.colormode,
+                      "brightness": l.brightness,
+                      "hue": l.hue,
+                      "saturation": l.saturation,
+                      "xy": l.xy,
+                      "colortemp": l.colortemp,
+                      "colortemp_k": l.colortemp_k
+                      }
+                lightData.append(ld)
+                
+            jsonData = json.dumps(lightData)
+            client.publish(hueBaseReturnTopic + "/" + action, jsonData)
+        elif(action == "set-light"):                # Payload has to be a json string containing first and second param 
+            try:                                    # hueBridge.set_light(lights, command)
+                jsonData = json.loads(msg.payload.decode("utf-8"))
+                lights = jsonData["lights"]
+                command = jsonData["command"]
+
+                hueBridge.set_light(lights, command)
+            except Exception as e:
+                print("Error on HUE set-light payload")
+                print(e.message)
+    else:
+        print("Processing HUE message, no Hue")
+        # Not connected to HUE
+        errorData = {
+            "status": "hydra_failed",
+            "error": 99,
+            "errorMessage": "Not connected to Hue bridge",
+            "request":{"route": action}}
+        client.publish(hueBaseReturnTopic + "/" + action, json.dumps(errorData))
+
+#
 # Tries to access a HomeWizard url based on topic and payload of the message
 # When successful the result is published on the return topic
 # Will try to reconnect if connection to the HomeWizard is lost
@@ -369,9 +404,15 @@ homewizardBaseTopic = "HYDRA/HMWZ"
 homewizardBaseReturnTopic = "HYDRA/HMWZRETURN"
 hydraStatusTopic = "HYDRA/STATUS"
 hydraAuthTopic = "HYDRA/AUTH"
+hueBaseTopic = "HYDRA/HUE"
+hueBaseReturnTopic = "HYDRA/HUERETURN"
+
 homewizardBaseUrl = None
 
 # Data
+hueIp = None
+hueBridge = None
+
 username = None
 password = None
 local = False
