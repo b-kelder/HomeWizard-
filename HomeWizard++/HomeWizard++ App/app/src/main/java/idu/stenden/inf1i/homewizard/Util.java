@@ -115,7 +115,7 @@ public class Util {
         try {
             object = new JSONObject(readFile(context, "admin.json"));
         } catch (JSONException e) {
-            saveAdminPin(context, "0000", false);
+            saveAdminPin(context, "", false);
             try {
                 object = new JSONObject(readFile(context, "admin.json"));
             } catch (JSONException e1) {
