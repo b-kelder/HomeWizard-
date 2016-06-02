@@ -95,7 +95,7 @@ public class Settings extends BaseMqttEventActivity{
                         }
                         else
                         {
-                            if(System.currentTimeMillis() - 30000 > loginTimestamp)
+                            if(System.currentTimeMillis() - 60000 > loginTimestamp)
                             {
                                 Util.saveLoginAttempts(context, 0, true);
                                 counter = 2;
