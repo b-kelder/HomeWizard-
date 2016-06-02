@@ -69,6 +69,7 @@ def homewizard_logon(username, password):
 # Returns None on failure
 #
 def homewizard_connect(username, password, local=False):
+    # TODO: Remove this
     if(HARDCODED_CONNECT):
         return "http://192.168.1.104/1234567890"
     
@@ -88,7 +89,6 @@ def homewizard_connect(username, password, local=False):
         jsonData = homewizard_logon(username, password)
         if(jsonData != None):
             if(jsonData["status"] == "ok"):
-                #TODO: Support for accounts with multiple HomeWizards?
                 sessionid = jsonData["session"]
                 serial = jsonData["response"][0]["serial"]
 
@@ -260,7 +260,7 @@ def hue_connect(ip):
     hueBridge = phue.Bridge(ip)
     try:
          # WARNING: If Hue data is SAVED, then this will always succeed, even if the Hue isn't actually on the network!
-        hueBridge.connect()             # Press on the Hue button here
+        hueBridge.connect()             # Press on the Hue button before this here
     except:
         print("Error connecting to Hue", ip, "Check if it's connected to the network and make sure the button is pressed.")
         errorData = {
@@ -291,6 +291,7 @@ def process_hue_message(client, msg):
         return
     if(hueBridge is not None):
         print("Processing HUE message")
+        print(msg.payload.decode("utf-8"))
         if(action == "get-lights"):
             lights = hueBridge.get_light_objects()  # Get Hue lights data
             lightData = []
@@ -511,8 +512,7 @@ if __name__ == '__main__':
     if brokerUser is not None:
         client.username_pw_set(brokerUser, brokerPass)
 
-    # TODO: Proper error handling
-    # TODO: Port via arguments
+    # TODO: Better error handling
     try:
         if(tls):
             ####
