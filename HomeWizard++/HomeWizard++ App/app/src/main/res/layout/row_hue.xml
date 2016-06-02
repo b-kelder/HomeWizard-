@@ -32,4 +32,13 @@
         android:layout_toStartOf="@+id/rowHueSwitch"
         android:layout_alignBottom="@+id/rowHueTextView" />
 
+    <SeekBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/seekBarHue"
+        android:layout_below="@+id/rowHueTextView"
+        android:layout_alignParentStart="true"
+        android:layout_alignEnd="@+id/rowHueSwitch"
+        android:max="255" />
+
 </RelativeLayout>

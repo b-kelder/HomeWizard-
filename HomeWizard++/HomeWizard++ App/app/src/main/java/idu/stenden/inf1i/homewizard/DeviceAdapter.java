@@ -2,12 +2,15 @@ package idu.stenden.inf1i.homewizard;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Color;
 import android.inputmethodservice.Keyboard;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.SeekBar;
 import android.widget.Switch;
@@ -22,6 +25,8 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import idu.stenden.inf1i.homewizard.ColorPickerDialog.OnColorChangedListener;
+
 /**
  * Created by Bram on 19/05/2016.
  */
@@ -33,6 +38,7 @@ class DeviceAdapter extends ArrayAdapter<BaseSwitch> {
     private static final int VIEWTYPE_DIMMER    = 1;
     private static final int VIEWTYPE_HUE       = 2;
     private static final int VIEWTYPE_COUNT = VIEWTYPE_HUE + 1;
+    final Context context = getContext();
 
     public DeviceAdapter(Context context, int resource) {
         super(context, resource);
@@ -196,15 +202,111 @@ class DeviceAdapter extends ArrayAdapter<BaseSwitch> {
             case VIEWTYPE_HUE: {
                 //Treat it as a HUE
                 //TODO: Add color picker and on/off button
-                swName = (TextView) convertView.findViewById(R.id.rowTextView);
-                swSwitch = (Switch) convertView.findViewById(R.id.rowSwitch);
+                swName = (TextView) convertView.findViewById(R.id.rowHueTextView);
+                swSwitch = (Switch) convertView.findViewById(R.id.rowHueSwitch);
+                final SeekBar swSeekbar = (SeekBar) convertView.findViewById(R.id.seekBarHue);
+
+                final Button swButton = (Button) convertView.findViewById(R.id.rowHueButton);
+
+                final int lightID = 1;
 
                 swSwitch.setOnCheckedChangeListener((new CompoundButton.OnCheckedChangeListener() {
                     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                        if(!isChecked){
+                            JSONObject payload = new JSONObject();
+                            try {
+                                payload.put("lights", lightID);
 
+                                JSONObject command = new JSONObject();
+                                command.put("on", false);
+                                payload.put("command", command);
+
+                                MqttController.getInstance().publish("HYDRA/HUE/set-light", payload.toString());
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        } else {
+                            JSONObject payload = new JSONObject();
+                            try {
+                                payload.put("lights", lightID);
+
+                                JSONObject command = new JSONObject();
+                                command.put("on", true);
+                                payload.put("command", command);
+
+                                MqttController.getInstance().publish("HYDRA/HUE/set-light", payload.toString());
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
                     }
                 }));
 
+                swButton.setOnClickListener(new View.OnClickListener() {
+                    public void onClick(View v) {
+                        new ColorPickerDialog(context, new OnColorChangedListener() {
+                            @Override
+                            public void colorChanged(int color) {
+                                swButton.setBackgroundColor(color);
+
+                                int RGB = (int)Long.parseLong("" + color, 16);
+                                int r = (color >> 16) & 0xFF;
+                                int g = (color >> 8) & 0xFF;
+                                int b = (color >> 0) & 0xFF;
+
+                                float[] hsv = new float[3];
+                                Color.RGBToHSV(r, g, b, hsv);
+
+                                JSONObject payload = new JSONObject();
+                                try {
+                                    payload.put("lights", lightID);
+
+                                    JSONObject command = new JSONObject();
+                                    command.put("on", true);
+                                    command.put("hue", Math.ceil((hsv[0] / 360) * 65536));
+                                    command.put("sat", Math.ceil(hsv[1] * 255));
+
+                                    payload.put("command", command);
+
+                                    MqttController.getInstance().publish("HYDRA/HUE/set-light", payload.toString());
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+
+                            }
+                        }, 0xFFFF0000).show();
+                    }
+                });
+
+                swSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                    @Override
+                    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+
+                    }
+
+                    @Override
+                    public void onStartTrackingTouch(SeekBar seekBar) {
+
+                    }
+
+                    @Override
+                    public void onStopTrackingTouch(SeekBar seekBar) {
+                        JSONObject payload = new JSONObject();
+                        try {
+                            payload.put("lights", lightID);
+
+                            JSONObject command = new JSONObject();
+                            command.put("on", true);
+                            command.put("bri", Math.ceil(swSeekbar.getProgress()));
+
+                            payload.put("command", command);
+
+                            MqttController.getInstance().publish("HYDRA/HUE/set-light", payload.toString());
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
 
             } break;
             default: {
