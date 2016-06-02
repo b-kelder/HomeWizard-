@@ -17,7 +17,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -60,6 +59,32 @@ public class Util {
             e.printStackTrace();
         }
         writeFile(context, "firstSetup.json", object.toString());
+    }
+
+    public static JSONObject readBridgeAdded(Context context){
+        JSONObject object = null;
+        try {
+            object = new JSONObject(readFile(context, "bridgeAdded.json"));
+        } catch (JSONException e) {
+            saveBridgeAdded(context, false);
+            try {
+                object = new JSONObject(readFile(context, "bridgeAdded.json"));
+            } catch (JSONException e1) {
+                e1.printStackTrace();
+            }
+            e.printStackTrace();
+        }
+        return object;
+    }
+
+    public static void saveBridgeAdded(Context context, boolean bridgeAdded){
+        JSONObject object = new JSONObject();
+        try{
+            object.put("BridgeAdded", bridgeAdded);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        writeFile(context, "bridgeAdded.json", object.toString());
     }
 
     public static JSONObject readFirstSetup(Context context){
@@ -154,34 +179,6 @@ public class Util {
         return object;
     }
 
-    public static void saveLoginAttempts(Context context, long timeStamp, boolean isEnabled){
-        JSONObject object = new JSONObject();
-        try{
-            object.put("timestamp", timeStamp);
-            object.put("enabled", isEnabled);
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        writeFile(context, "trackLogin.json", object.toString());
-    }
-
-    public static JSONObject readLoginAttempts(Context context){
-        JSONObject object = null;
-        try {
-            object = new JSONObject(readFile(context, "trackLogin.json"));
-        } catch (JSONException e) {
-            saveLoginAttempts(context, 0, true);
-            try {
-                object = new JSONObject(readFile(context, "trackLogin.json"));
-            } catch (JSONException e1) {
-                e1.printStackTrace();
-            }
-            e.printStackTrace();
-        }
-        return object;
-    }
-
     public static void saveLoginData(Context context, String email, String password){
         JSONObject object = new JSONObject();
         try{
@@ -201,6 +198,34 @@ public class Util {
             saveLoginData(context, "", "");
             try {
                 object = new JSONObject(readFile(context, "login.json"));
+            } catch (JSONException e1) {
+                e1.printStackTrace();
+            }
+            e.printStackTrace();
+        }
+        return object;
+    }
+
+public static void saveLoginAttempts(Context context, long timeStamp, boolean isEnabled){
+        JSONObject object = new JSONObject();
+        try{
+            object.put("timestamp", timeStamp);
+            object.put("enabled", isEnabled);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        writeFile(context, "trackLogin.json", object.toString());
+    }
+
+    public static JSONObject readLoginAttempts(Context context){
+        JSONObject object = null;
+        try {
+            object = new JSONObject(readFile(context, "trackLogin.json"));
+        } catch (JSONException e) {
+            saveLoginAttempts(context, 0, true);
+            try {
+                object = new JSONObject(readFile(context, "trackLogin.json"));
             } catch (JSONException e1) {
                 e1.printStackTrace();
             }
