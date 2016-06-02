@@ -23,7 +23,7 @@ public class AddChoice extends AppCompatActivity {
         Button hueBtn = (Button) findViewById(R.id.huebtnlight);
         hueBtn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-
+                startActivity(new Intent(getApplicationContext(), AddHueBridge.class));
             }
         });
 
