@@ -3,6 +3,7 @@ package idu.stenden.inf1i.homewizard;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -73,10 +74,14 @@ public class AddHomewizardlight extends BaseMqttEventActivity {
                     try {
                         JSONObject jsonObject = new JSONObject(message.toString());
                         String route = jsonObject.getJSONObject("request").getString("route");
-                        if(route.equals("/sw/generatekaku")){
-                            String code = jsonObject.getJSONObject("response").getString("code");
-                            EditText HMWZlightcode = (EditText) findViewById(R.id.HMWZlightcode);
-                            HMWZlightcode.setText(code);
+                        if(route.equals("/sw")){
+                            try {
+                                String code = jsonObject.getJSONObject("response").getString("code");
+                                EditText HMWZlightcode = (EditText) findViewById(R.id.HMWZlightcode);
+                                HMWZlightcode.setText(code);
+                            } catch (Exception e) {
+                                Log.e("AddHomewizardlight", e.getMessage());
+                            }
                         }
 
                     } catch (JSONException e) {

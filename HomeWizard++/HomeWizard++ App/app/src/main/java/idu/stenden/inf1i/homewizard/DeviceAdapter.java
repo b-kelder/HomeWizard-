@@ -1,10 +1,7 @@
 package idu.stenden.inf1i.homewizard;
 
-import android.app.Application;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Color;
-import android.inputmethodservice.Keyboard;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,14 +12,10 @@ import android.widget.CompoundButton;
 import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import org.eclipse.paho.client.mqttv3.MqttMessage;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import idu.stenden.inf1i.homewizard.ColorPickerDialog.OnColorChangedListener;
@@ -92,6 +85,9 @@ class DeviceAdapter extends ArrayAdapter<BaseSwitch> {
         final Switch swSwitch;
         final SeekBar swBar;
 
+        // Stop the switch from sending an update when we set the UI correctly
+        sw.setRespondToInput(false);
+
         switch(viewType) {
             case VIEWTYPE_DIMMER: {
                 //Treat it as a dimmer
@@ -111,6 +107,9 @@ class DeviceAdapter extends ArrayAdapter<BaseSwitch> {
 
                     @Override
                     public void onStopTrackingTouch(SeekBar seekBar) {
+                        if(!sw.respondToInput()) {
+                            return;
+                        }
                         if(HomewizardSwitch.class.isInstance(sw)) {
                             HomewizardSwitch homewizardSwitch = (HomewizardSwitch)sw;
                             //User stopped touching, set correct dim level
@@ -138,15 +137,8 @@ class DeviceAdapter extends ArrayAdapter<BaseSwitch> {
 
                 if(HomewizardSwitch.class.isInstance(sw)) {
                     HomewizardSwitch homewizardSwitch = (HomewizardSwitch)sw;
-                    if (!homewizardSwitch.isUpdating()) {
-                        homewizardSwitch.setUpdating(true);
-                        swBar.setMax(100);
-                        swBar.setProgress(homewizardSwitch.getDimmer());
-                        homewizardSwitch.setUpdating(false);
-                    } else {
-                        swBar.setMax(100);
-                        swBar.setProgress(homewizardSwitch.getDimmer());
-                    }
+                    swBar.setMax(100);
+                    swBar.setProgress(homewizardSwitch.getDimmer());
 
                     swBar.setEnabled(!homewizardSwitch.isUpdating());
                 } else {
@@ -164,6 +156,9 @@ class DeviceAdapter extends ArrayAdapter<BaseSwitch> {
 
                 swSwitch.setOnCheckedChangeListener((new CompoundButton.OnCheckedChangeListener() {
                     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                        if(!sw.respondToInput()) {
+                            return;
+                        }
                         if(HomewizardSwitch.class.isInstance(sw)) {
                             HomewizardSwitch homewizardSwitch = (HomewizardSwitch) sw;
                             //If we're not still waiting for a response from a previous toggle
@@ -184,14 +179,7 @@ class DeviceAdapter extends ArrayAdapter<BaseSwitch> {
 
                 if(HomewizardSwitch.class.isInstance(sw)) {
                     HomewizardSwitch homewizardSwitch = (HomewizardSwitch) sw;
-                    if (!homewizardSwitch.isUpdating()) {
-                        homewizardSwitch.setUpdating(true);
-                        swSwitch.setChecked(homewizardSwitch.getStatus());
-                        homewizardSwitch.setUpdating(false);
-                    } else {
-                        swSwitch.setChecked(sw.getStatus());
-                    }
-
+                    swSwitch.setChecked(sw.getStatus());
                     swSwitch.setEnabled(!homewizardSwitch.isUpdating());
                 } else {
                     //CustomSwitch
@@ -212,6 +200,10 @@ class DeviceAdapter extends ArrayAdapter<BaseSwitch> {
 
                 swSwitch.setOnCheckedChangeListener((new CompoundButton.OnCheckedChangeListener() {
                     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                        if(!sw.respondToInput()) {
+                            return;
+                        }
+
                         if(!isChecked){
                             JSONObject payload = new JSONObject();
                             try {
@@ -316,6 +308,9 @@ class DeviceAdapter extends ArrayAdapter<BaseSwitch> {
         } //switch
 
         swName.setText(sw.getName());
+
+        //Re-enable the switch
+        sw.setRespondToInput(true);
 
         return convertView;
     }

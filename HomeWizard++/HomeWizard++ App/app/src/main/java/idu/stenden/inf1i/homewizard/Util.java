@@ -25,6 +25,33 @@ import java.util.List;
  */
 public class Util {
 
+    public static void saveHueData(Context context, String ip, String username){
+        JSONObject object = new JSONObject();
+        try{
+            object.put("ip", ip);
+            object.put("username", username);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        writeFile(context, "hue.json", object.toString());
+    }
+
+    public static JSONObject readHueData(Context context){
+        JSONObject object = null;
+        try {
+            object = new JSONObject(readFile(context, "hue.json"));
+        } catch (JSONException e) {
+            saveHueData(context, "", "");
+            try {
+                object = new JSONObject(readFile(context, "hue.json"));
+            } catch (JSONException e1) {
+                e1.printStackTrace();
+            }
+            e.printStackTrace();
+        }
+        return object;
+    }
+
     public static void saveFirstSetup(Context context, boolean firstSetup){
         JSONObject object = new JSONObject();
         try{

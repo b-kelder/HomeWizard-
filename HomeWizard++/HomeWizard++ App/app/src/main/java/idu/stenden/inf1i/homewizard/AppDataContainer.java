@@ -167,7 +167,7 @@ public class AppDataContainer implements MqttControllerMessageCallbackListener {
                  */
                 //Switch Id SHOULD be the last part of the topic
                 int id = Integer.parseInt(topic.substring(topic.lastIndexOf("/")+1));
-                if(route.equals("/sw/dim")) {
+                if(topic.contains("/dim/")) {
                     //Loop de loop
                     for (HomewizardSwitch sw : homewizardSwitches) {
                         if(sw.getId() == id) {

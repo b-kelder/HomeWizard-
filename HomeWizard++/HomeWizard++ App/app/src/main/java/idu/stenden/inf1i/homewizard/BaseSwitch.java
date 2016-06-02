@@ -9,10 +9,20 @@ public abstract class BaseSwitch {
     protected boolean status;
     protected int dimmer;
 
+    protected boolean respondToInput;
+
     public void sendStatus() {
     }
 
     public void sendDimmer() {
+    }
+
+    public boolean respondToInput() {
+        return respondToInput;
+    }
+
+    public void setRespondToInput(boolean respondToInput) {
+        this.respondToInput = respondToInput;
     }
 
     public String getName(){

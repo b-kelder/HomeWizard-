@@ -272,7 +272,8 @@ def hue_connect(ip):
     else:
         errorData = {
             "status": "ok",
-            "request":{"route": "hueconnect"}}
+            "request":{"route": "hueconnect"},
+            "username": hueBridge.username}
         client.publish(hueBaseReturnTopic + "/connect", json.dumps(errorData))
 
 #
