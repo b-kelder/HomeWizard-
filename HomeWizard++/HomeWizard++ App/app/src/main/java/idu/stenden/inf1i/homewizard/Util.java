@@ -24,6 +24,33 @@ import java.util.List;
  */
 public class Util {
 
+    public static float[] RGBtoXYB(int rgbColor){
+        float red, green, blue;
+
+        int r = (rgbColor >> 16) & 0xFF;
+        int g = (rgbColor >> 8) & 0xFF;
+        int b = (rgbColor >> 0) & 0xFF;
+
+        red = (float)r / 255f;
+        green = (float)g / 255f;
+        blue = (float)b / 255f;
+
+        red = (red > 0.04045f) ? (float)Math.pow((red + 0.055f) / (1.0f + 0.055f), 2.4f) : (red / 12.92f);
+        green = (green > 0.04045f) ? (float)Math.pow((green + 0.055f) / (1.0f + 0.055f), 2.4f) : (green / 12.92f);
+        blue = (blue > 0.04045f) ? (float)Math.pow((blue + 0.055f) / (1.0f + 0.055f), 2.4f) : (blue / 12.92f);
+
+        float X = red * 0.664511f + green * 0.154324f + blue * 0.162028f;
+        float Y = red * 0.283881f + green * 0.668433f + blue * 0.047685f;
+        float Z = red * 0.000088f + green * 0.072310f + blue * 0.986039f;
+
+        float x = X / (X + Y + Z);
+        float y = Y / (X + Y + Z);
+
+        //TODO: Bounds checking
+
+        return new float[] {x, y, Y};
+    }
+
     public static void saveHueData(Context context, String ip, String username){
         JSONObject object = new JSONObject();
         try{

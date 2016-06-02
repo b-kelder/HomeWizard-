@@ -5,6 +5,8 @@ package idu.stenden.inf1i.homewizard;
  */
 public class HueSwitch extends BaseSwitch {
 
+
+
     @Override
     public String getType() {
         return "hue";

@@ -13,9 +13,11 @@ import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Arrays;
 import java.util.List;
 
 import idu.stenden.inf1i.homewizard.ColorPickerDialog.OnColorChangedListener;
@@ -251,16 +253,22 @@ class DeviceAdapter extends ArrayAdapter<BaseSwitch> {
 
                                 JSONObject payload = new JSONObject();
                                 try {
-                                    payload.put("lights", lightID);
+                                    //payload.put("lights", lightID);
 
                                     JSONObject command = new JSONObject();
                                     command.put("on", true);
-                                    command.put("hue", Math.ceil((hsv[0] / 360) * 65536));
-                                    command.put("sat", Math.ceil(hsv[1] * 255));
+                                    /*//command.put("hue", Math.ceil((hsv[0] / 360) * 65536));
+                                    //command.put("sat", Math.ceil(hsv[1] * 255));
 
-                                    payload.put("command", command);
+                                    double[] xy = {xyB[0], xyB[1]};
+                                    command.put("xy", new JSONArray(Arrays.asList(xy)));
+                                    //command.put("bri", xyB[2]);*/
 
-                                    MqttController.getInstance().publish("HYDRA/HUE/set-light", payload.toString());
+                                    //payload.put("command", command);
+                                    float[] xyB = Util.RGBtoXYB(color);
+                                    String pld = "{\"lights\":1, \"command\":{\"on\": true, \"xy\": [" + String.valueOf(xyB[0]) + "," + String.valueOf(xyB[1]) + "]}, \"bri\": " + String.valueOf((int)Math.ceil(xyB[2] * 255f)) + "}";
+
+                                    MqttController.getInstance().publish("HYDRA/HUE/set-light", pld);
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }

@@ -541,7 +541,16 @@ if __name__ == '__main__':
             if(inp_norm == "status"):
                 print("Status report")
                 print("URL:", homewizardBaseUrl)
+                if(hueBridge is not None):
+                    print("Hue:", hueBridge.ip)
+                else:
+                    print("Hue: Not connected")
                 print("broker:", brokerAddr, ":", brokerPort)
+            else:
+                try:
+                    exec(inputstring)
+                except Exception as e:
+                    print(e)
 
         # Clean up
         client.disconnect()
