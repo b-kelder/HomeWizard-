@@ -15,7 +15,7 @@
         android:id="@+id/hueBridgeIP"
         android:layout_below="@+id/textView28"
         android:layout_alignParentStart="true"
-        android:layout_alignEnd="@+id/textView26" />
+        android:layout_alignEnd="@+id/textView30" />
 
     <Button
         style="?android:attr/buttonStyleSmall"
@@ -31,7 +31,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="HOLD THE BUTTON ON THE GOD DAMN BRIDGE WHILE YOU HIT CONNECT MADAFUKKA"
+        android:text="Press the button on the Hue bridge before trying to connect."
         android:id="@+id/textView26"
         android:layout_marginBottom="20dp"
         android:layout_above="@+id/btnHueBridgeConnect"
@@ -52,7 +52,26 @@
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:text="Hue Bridge IP address:"
         android:id="@+id/textView28"
+        android:layout_below="@+id/textView30"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="86dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Add a Hue bridge"
+        android:id="@+id/textView29"
         android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Before you can add Phillips Hue lights you need to add a Hue bridge"
+        android:id="@+id/textView30"
+        android:layout_below="@+id/textView29"
         android:layout_alignParentStart="true" />
 
 </RelativeLayout>

@@ -42,7 +42,8 @@ public class AddHueBridge extends AppCompatActivity {
         nextBtn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
 
-                MqttController.getInstance().publish("HYDRA/HUE/set-light", bridgeIP.getText().toString());
+                MqttController.getInstance().publish("HYDRA/HUE/connect", bridgeIP.getText().toString());
+                MqttController.getInstance().subscribe("HYDRA/HUERETURN/connect");
 
                 MqttController.getInstance().addMessageListener(new MqttControllerMessageCallbackListener() {
                     @Override
