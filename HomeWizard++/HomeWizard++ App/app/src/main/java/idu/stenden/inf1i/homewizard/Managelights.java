@@ -1,6 +1,7 @@
 package idu.stenden.inf1i.homewizard;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -16,16 +17,24 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Date;
+
 public class Managelights extends BaseMqttEventActivity {
 
     private MqttController mqttController;
     private ListView mainListView;
     private AppDataContainer appDataContainer;
+    public static Context context;
+
     private boolean adminPinEnabled;
     private String adminPin;
+    private int counter = 2;
+    private boolean loginEnabled = true;
+    private long loginTimestamp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        context = this;
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_managelights);
@@ -34,13 +43,16 @@ public class Managelights extends BaseMqttEventActivity {
 
         try
         {
-            JSONObject adminPinSettings = Util.readAdminPin(this);
+            JSONObject adminPinSettings = Util.readAdminPin(Managelights.context);
             adminPinEnabled = adminPinSettings.getBoolean("enabled");
             adminPin = adminPinSettings.getString("pin");
+
+            JSONObject getLoginAttempts = Util.readLoginAttempts(Managelights.context);
+            loginEnabled = getLoginAttempts.getBoolean("enabled");
+            loginTimestamp = getLoginAttempts.getLong("timestamp");
         }
         catch(Exception e)
         {
-            adminPinEnabled = false;
             e.printStackTrace();
         }
 
@@ -53,20 +65,39 @@ public class Managelights extends BaseMqttEventActivity {
             login.setCanceledOnTouchOutside(false); // makes sure you can not cancel dialog by clicking outside of it
             login.setCancelable(false);
 
-            Button btnLogin = (Button) login.findViewById(R.id.btnLogin);
-            Button btnCancel = (Button) login.findViewById(R.id.btnCancel);
+            final Button btnLogin = (Button) login.findViewById(R.id.btnLogin);
+            final Button btnCancel = (Button) login.findViewById(R.id.btnCancel);
             final EditText txtPassword = (EditText) login.findViewById(R.id.txtPassword);
 
             btnLogin.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     if (txtPassword.getText().toString().trim().length() > 0) {
-                        if(txtPassword.getText().toString().equals(adminPin)) {
-                            login.dismiss();
+                        if(loginEnabled) {
+                            if (txtPassword.getText().toString().equals(adminPin)) {
+                                login.dismiss();
+                            } else if (counter == 0) {
+                                Toast.makeText(Managelights.this, "Login disabled. To many failed attempts. Try again in 60 seconds.", Toast.LENGTH_LONG).show();
+                                Util.saveLoginAttempts(context, new Date().getTime(), false);
+                                finish();
+                            } else {
+                                Toast.makeText(context, "Incorrect pin", Toast.LENGTH_LONG).show();
+                                counter--;
+                            }
                         }
                         else
                         {
-                            Toast.makeText(Managelights.this, "Incorrect pin", Toast.LENGTH_LONG).show();
+                            if(System.currentTimeMillis() - 60000 > loginTimestamp)
+                            {
+                                Util.saveLoginAttempts(context, 0, true);
+                                counter = 2;
+                                Toast.makeText(Managelights.this, "Login attempts resetting." , Toast.LENGTH_LONG).show();
+                                finish();
+                            }
+                            else
+                            {
+                                Toast.makeText(Managelights.this, "Login is disabled for 60 seconds." , Toast.LENGTH_LONG).show();
+                            }
                         }
                     } else {
                         Toast.makeText(Managelights.this, "Please enter a pin code", Toast.LENGTH_LONG).show();
@@ -76,7 +107,6 @@ public class Managelights extends BaseMqttEventActivity {
             btnCancel.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    login.dismiss();
                     finish();
                 }
             });

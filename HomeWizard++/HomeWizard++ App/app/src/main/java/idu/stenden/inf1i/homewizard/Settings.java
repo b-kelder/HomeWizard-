@@ -31,6 +31,7 @@ public class Settings extends BaseMqttEventActivity{
     //fields
     private MqttController mqttController;
     private String serial;
+
     private boolean adminPinEnabled;
     private String adminPin;
     private int counter = 2;
@@ -115,7 +116,6 @@ public class Settings extends BaseMqttEventActivity{
             btnCancel.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    login.dismiss();
                     finish();
                 }
             });
