@@ -18,6 +18,7 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.util.Date;
 import java.util.Set;
 
 import android.app.Activity;
@@ -32,6 +33,9 @@ public class Settings extends BaseMqttEventActivity{
     private String serial;
     private boolean adminPinEnabled;
     private String adminPin;
+    private int counter = 2;
+    private boolean loginEnabled = true;
+    private long loginTimestamp;
 
     public static Context context;
 
@@ -50,10 +54,13 @@ public class Settings extends BaseMqttEventActivity{
             JSONObject adminPinSettings = Util.readAdminPin(Settings.context);
             adminPinEnabled = adminPinSettings.getBoolean("enabled");
             adminPin = adminPinSettings.getString("pin");
+
+            JSONObject getLoginAttempts = Util.readLoginAttempts(Settings.context);
+            loginEnabled = getLoginAttempts.getBoolean("enabled");
+            loginTimestamp = getLoginAttempts.getLong("timestamp");
         }
         catch(Exception e)
         {
-            adminPinEnabled = false;
             e.printStackTrace();
         }
 
@@ -66,20 +73,39 @@ public class Settings extends BaseMqttEventActivity{
             login.setCanceledOnTouchOutside(false); // makes sure you can not cancel dialog by clicking outside of it
             login.setCancelable(false);
 
-            Button btnLogin = (Button) login.findViewById(R.id.btnLogin);
-            Button btnCancel = (Button) login.findViewById(R.id.btnCancel);
+            final Button btnLogin = (Button) login.findViewById(R.id.btnLogin);
+            final Button btnCancel = (Button) login.findViewById(R.id.btnCancel);
             final EditText txtPassword = (EditText) login.findViewById(R.id.txtPassword);
 
             btnLogin.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     if (txtPassword.getText().toString().trim().length() > 0) {
-                        if(txtPassword.getText().toString().equals(adminPin)) {
-                            login.dismiss();
+                        if(loginEnabled) {
+                            if (txtPassword.getText().toString().equals(adminPin)) {
+                                login.dismiss();
+                            } else if (counter == 0) {
+                                Toast.makeText(Settings.this, "Login disabled. To many failed attempts. Try again in 60 seconds.", Toast.LENGTH_LONG).show();
+                                Util.saveLoginAttempts(context, new Date().getTime(), false);
+                                finish();
+                            } else {
+                                Toast.makeText(Settings.this, "Incorrect pin", Toast.LENGTH_LONG).show();
+                                counter--;
+                            }
                         }
                         else
                         {
-                            Toast.makeText(Settings.this, "Incorrect pin", Toast.LENGTH_LONG).show();
+                            if(System.currentTimeMillis() - 30000 > loginTimestamp)
+                            {
+                                Util.saveLoginAttempts(context, 0, true);
+                                counter = 2;
+                                Toast.makeText(Settings.this, "Login attempts resetting." , Toast.LENGTH_LONG).show();
+                                finish();
+                            }
+                            else
+                            {
+                                Toast.makeText(Settings.this, "Login is disabled for 60 seconds." , Toast.LENGTH_LONG).show();
+                            }
                         }
                     } else {
                         Toast.makeText(Settings.this, "Please enter a pin code", Toast.LENGTH_LONG).show();

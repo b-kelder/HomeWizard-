@@ -17,6 +17,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -118,6 +119,34 @@ public class Util {
             saveAdminPin(context, "", false);
             try {
                 object = new JSONObject(readFile(context, "admin.json"));
+            } catch (JSONException e1) {
+                e1.printStackTrace();
+            }
+            e.printStackTrace();
+        }
+        return object;
+    }
+
+    public static void saveLoginAttempts(Context context, long timeStamp, boolean isEnabled){
+        JSONObject object = new JSONObject();
+        try{
+            object.put("timestamp", timeStamp);
+            object.put("enabled", isEnabled);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        writeFile(context, "trackLogin.json", object.toString());
+    }
+
+    public static JSONObject readLoginAttempts(Context context){
+        JSONObject object = null;
+        try {
+            object = new JSONObject(readFile(context, "trackLogin.json"));
+        } catch (JSONException e) {
+            saveLoginAttempts(context, 0, true);
+            try {
+                object = new JSONObject(readFile(context, "trackLogin.json"));
             } catch (JSONException e1) {
                 e1.printStackTrace();
             }
