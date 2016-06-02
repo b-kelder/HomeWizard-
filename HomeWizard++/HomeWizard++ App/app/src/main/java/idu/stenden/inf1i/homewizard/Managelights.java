@@ -87,6 +87,9 @@ public class Managelights extends BaseMqttEventActivity {
                         }
                         else
                         {
+                            // Very simple anti-brute force system.
+                            long timespan = Math.abs((System.currentTimeMillis() - 60000 - loginTimestamp) / 1000);
+
                             if(System.currentTimeMillis() - 60000 > loginTimestamp)
                             {
                                 Util.saveLoginAttempts(context, 0, true);
@@ -96,7 +99,7 @@ public class Managelights extends BaseMqttEventActivity {
                             }
                             else
                             {
-                                Toast.makeText(Managelights.this, "Login is disabled for 60 seconds." , Toast.LENGTH_LONG).show();
+                                Toast.makeText(Managelights.this, "Login is disabled for " + timespan + " seconds." , Toast.LENGTH_LONG).show();
                             }
                         }
                     } else {
