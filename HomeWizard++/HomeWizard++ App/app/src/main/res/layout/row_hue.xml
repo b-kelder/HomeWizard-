@@ -25,12 +25,13 @@
         android:layout_alignParentTop="true" />
 
     <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="70dp"
+        android:layout_height="40dp"
         android:text="Color"
         android:id="@+id/rowHueButton"
         android:layout_toStartOf="@+id/rowHueSwitch"
-        android:layout_alignBottom="@+id/rowHueTextView" />
+        android:layout_alignBottom="@+id/rowHueTextView"
+        android:layout_alignParentTop="true" />
 
     <SeekBar
         android:layout_width="wrap_content"

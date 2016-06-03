@@ -216,7 +216,7 @@ class DeviceAdapter extends ArrayAdapter<BaseSwitch> {
                         hueSwitch.getBrightness() / 255f
                 };
                 int color = Util.XYBtoRGB(xyB);
-                swButton.setBackgroundColor(color);
+                swButton.setTextColor(color);
 
                 swSwitch.setChecked(sw.getStatus());
 
@@ -272,7 +272,7 @@ class DeviceAdapter extends ArrayAdapter<BaseSwitch> {
                         new ColorPickerDialog(context, new OnColorChangedListener() {
                             @Override
                             public void colorChanged(int color) {
-                                swButton.setBackgroundColor(color);
+                                swButton.setTextColor(color);
 
                                 int r = (color >> 16) & 0xFF;
                                 int g = (color >> 8) & 0xFF;
