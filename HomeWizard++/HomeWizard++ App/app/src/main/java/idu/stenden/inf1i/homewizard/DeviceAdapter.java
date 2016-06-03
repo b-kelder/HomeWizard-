@@ -1,5 +1,6 @@
 package idu.stenden.inf1i.homewizard;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -13,6 +14,7 @@ import android.widget.CompoundButton;
 import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -20,6 +22,7 @@ import org.json.JSONObject;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import idu.stenden.inf1i.homewizard.ColorPickerDialog.OnColorChangedListener;
 
@@ -226,6 +229,22 @@ class DeviceAdapter extends ArrayAdapter<BaseSwitch> {
                     swButton.setEnabled(true);
                     swSeekbar.setEnabled(true);
                 }
+
+                swName.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if(AppDataContainer.getInstance().findCustomSwitchByName("Disco Fever") != null) {
+                            Thread discoThread = new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Disco.doDisco();
+                                }
+                            });
+                            discoThread.start();
+                            Toast.makeText(MainActivity.context, "DISCO FEVER!", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
 
                 swSwitch.setOnCheckedChangeListener((new CompoundButton.OnCheckedChangeListener() {
                     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {

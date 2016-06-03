@@ -77,6 +77,16 @@ public class AppDataContainer implements MqttControllerMessageCallbackListener {
         updateAllSwitches();
     }
 
+    public CustomSwitch findCustomSwitchByName(String name) {
+        for(CustomSwitch sw : customSwitches) {
+            if(sw.name.equals(name)){
+                return sw;
+            }
+        }
+
+        return null;
+    }
+
     public void removeCustomSwitch(CustomSwitch customSwitch) {
         customSwitches.remove(customSwitch);
         updateAllSwitches();

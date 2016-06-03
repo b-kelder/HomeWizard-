@@ -357,7 +357,11 @@ public class MqttController {
         }
     }
 
-    public void publish(String topic, String payload){
+    public boolean publish(String topic, String payload){
+        return publish(topic, payload, true);
+    }
+
+    public boolean publish(String topic, String payload, boolean connectToast){
 
         MqttMessage message = new MqttMessage(payload.getBytes());
         message.setQos(2);
@@ -366,13 +370,15 @@ public class MqttController {
         if(isConnected()){
             try {
                 client.publish(topic, message);
+                return true;
             } catch (MqttException e) {
                 e.printStackTrace();
             }
-        }else{
+        } else if(connectToast) {
             Toast toast = Toast.makeText(context, "Not connected to broker", Toast.LENGTH_SHORT);
             toast.show();
         }
+        return false;
     }
 
     public void subscribe(String topic){
