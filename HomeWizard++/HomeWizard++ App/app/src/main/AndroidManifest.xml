@@ -27,6 +27,7 @@
         //The settings activity
         <activity
             android:name=".Settings"
+            android:label="Settings"
             android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait">
             <meta-data android:name="android.support.PARENT_ACTIVITY" android:value="idu.stenden.inf1i.homewizard.MainActivity" />
@@ -35,6 +36,7 @@
         //The help page activity
         <activity
             android:name=".HelpPage"
+            android:label="Help"
             android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait">
             <meta-data android:name="android.support.PARENT_ACTIVITY" android:value="idu.stenden.inf1i.homewizard.MainActivity" />
@@ -53,6 +55,7 @@
         //Add tab to choose what to add
         <activity
             android:name=".AddChoice"
+            android:label="Add device"
             android:parentActivityName=".Managelights"
             android:screenOrientation="portrait">
             <meta-data android:name="android.support.PARENT_ACTIVITY" android:value="idu.stenden.inf1i.homewizard.Managelights" />
@@ -61,6 +64,7 @@
         //Add homewizz light/switch/dimmer
         <activity
             android:name=".AddHomewizardlight"
+            android:label="Add Homewizard device"
             android:screenOrientation="portrait"
             android:parentActivityName=".AddChoice">
             <meta-data android:name="android.support.PARENT_ACTIVITY" android:value="idu.stenden.inf1i.homewizard.AddChoice" />
@@ -69,6 +73,7 @@
         //Add custom MQTT device
         <activity
             android:name=".AddCustomMqtt"
+            android:label="Add custom device"
             android:screenOrientation="portrait"
             android:parentActivityName=".AddChoice">
             <meta-data android:name="android.support.PARENT_ACTIVITY" android:value="idu.stenden.inf1i.homewizard.AddChoice" />
@@ -77,6 +82,7 @@
         //Add hue bridge
         <activity
             android:name=".AddHueBridge"
+            android:label="Add a hue bridge"
             android:parentActivityName=".AddChoice">
             <meta-data android:name="android.support.PARENT_ACTIVITY" android:value="idu.stenden.inf1i.homewizard.AddChoice" />
         </activity>
