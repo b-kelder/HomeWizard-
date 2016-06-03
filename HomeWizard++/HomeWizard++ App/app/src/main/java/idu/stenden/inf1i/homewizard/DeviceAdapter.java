@@ -198,7 +198,6 @@ class DeviceAdapter extends ArrayAdapter<BaseSwitch> {
             } break;
             case VIEWTYPE_HUE: {
                 //Treat it as a HUE
-                //TODO: Add color picker and on/off button
                 swName = (TextView) convertView.findViewById(R.id.rowHueTextView);
                 swSwitch = (Switch) convertView.findViewById(R.id.rowHueSwitch);
                 final SeekBar swSeekbar = (SeekBar) convertView.findViewById(R.id.seekBarHue);
@@ -210,7 +209,6 @@ class DeviceAdapter extends ArrayAdapter<BaseSwitch> {
                 final HueSwitch hueSwitch = (HueSwitch)sw;
                 swSeekbar.setProgress(hueSwitch.getBrightness());
 
-                //TODO: Fix color display
                 float[] xyB = {
                         hueSwitch.getXy()[0],
                         hueSwitch.getXy()[1],
