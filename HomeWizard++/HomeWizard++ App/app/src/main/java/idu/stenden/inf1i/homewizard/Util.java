@@ -1,6 +1,7 @@
 package idu.stenden.inf1i.homewizard;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -51,6 +52,79 @@ public class Util {
         return new float[] {x, y, Y};
     }
 
+    public static int XYBtoRGB(float[] xyB) {
+        //TODO: Bounds checking
+
+        float x = xyB[0]; // the given x value
+        float y = xyB[1]; // the given y value
+        float z = 1.0f - x - y;
+        float Y = xyB[2]; // The given brightness value
+        float X = (Y / y) * x;
+        float Z = (Y / y) * z;
+
+        float r =  X * 1.656492f - Y * 0.354851f - Z * 0.255038f;
+        float g = -X * 0.707196f + Y * 1.655397f + Z * 0.036152f;
+        float b =  X * 0.051713f - Y * 0.121364f + Z * 1.011530f;
+
+
+        if (r > b && r > g && r > 1.0f) {
+            // red is too big
+            g = g / r;
+            b = b / r;
+            r = 1.0f;
+        }
+        else if (g > b && g > r && g > 1.0f) {
+            // green is too big
+            r = r / g;
+            b = b / g;
+            g = 1.0f;
+        }
+        else if (b > r && b > g && b > 1.0f) {
+            // blue is too big
+            r = r / b;
+            g = g / b;
+            b = 1.0f;
+        }
+
+        //Gamma correction
+        r = r <= 0.0031308f ? 12.92f * r : (1.0f + 0.055f) * (float)Math.pow(r, (1.0f / 2.4f)) - 0.055f;
+        g = g <= 0.0031308f ? 12.92f * g : (1.0f + 0.055f) * (float)Math.pow(g, (1.0f / 2.4f)) - 0.055f;
+        b = b <= 0.0031308f ? 12.92f * b : (1.0f + 0.055f) * (float)Math.pow(b, (1.0f / 2.4f)) - 0.055f;
+
+        if (r > b && r > g) {
+            // red is biggest
+            if (r > 1.0f) {
+                g = g / r;
+                b = b / r;
+                r = 1.0f;
+            }
+        }
+        else if (g > b && g > r) {
+            // green is biggest
+            if (g > 1.0f) {
+                r = r / g;
+                b = b / g;
+                g = 1.0f;
+            }
+        }
+        else if (b > r && b > g) {
+            // blue is biggest
+            if (b > 1.0f) {
+                r = r / b;
+                g = g / b;
+                b = 1.0f;
+            }
+        }
+
+        int red, green, blue;
+        red = (int)Math.ceil(r * 255f);
+        green = (int)Math.ceil(g * 255f);
+        blue = (int)Math.ceil(b * 255f);
+
+
+        return Color.rgb(red, green, blue);
+    }
+
     public static void saveHueData(Context context, String ip, String username){
         JSONObject object = new JSONObject();
         try{
@@ -88,31 +162,7 @@ public class Util {
         writeFile(context, "firstSetup.json", object.toString());
     }
 
-    public static JSONObject readBridgeAdded(Context context){
-        JSONObject object = null;
-        try {
-            object = new JSONObject(readFile(context, "bridgeAdded.json"));
-        } catch (JSONException e) {
-            saveBridgeAdded(context, false);
-            try {
-                object = new JSONObject(readFile(context, "bridgeAdded.json"));
-            } catch (JSONException e1) {
-                e1.printStackTrace();
-            }
-            e.printStackTrace();
-        }
-        return object;
-    }
 
-    public static void saveBridgeAdded(Context context, boolean bridgeAdded){
-        JSONObject object = new JSONObject();
-        try{
-            object.put("BridgeAdded", bridgeAdded);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        writeFile(context, "bridgeAdded.json", object.toString());
-    }
 
     public static JSONObject readFirstSetup(Context context){
         JSONObject object = null;

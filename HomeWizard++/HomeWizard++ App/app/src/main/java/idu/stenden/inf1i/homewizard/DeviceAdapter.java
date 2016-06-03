@@ -32,7 +32,8 @@ class DeviceAdapter extends ArrayAdapter<BaseSwitch> {
     private static final int VIEWTYPE_SWITCH    = 0;
     private static final int VIEWTYPE_DIMMER    = 1;
     private static final int VIEWTYPE_HUE       = 2;
-    private static final int VIEWTYPE_COUNT = VIEWTYPE_HUE + 1;
+    private static final int VIEWTYPE_SEPARATOR = 3;
+    private static final int VIEWTYPE_COUNT = VIEWTYPE_SEPARATOR + 1;
     final Context context = getContext();
 
     public DeviceAdapter(Context context, int resource) {
@@ -51,6 +52,8 @@ class DeviceAdapter extends ArrayAdapter<BaseSwitch> {
             return VIEWTYPE_DIMMER;
         }if(sw.getType().equals("hue")){
             return VIEWTYPE_HUE;
+        }if(sw.getType().equals("separator")){
+            return VIEWTYPE_SEPARATOR;
         } else {
             return VIEWTYPE_SWITCH;
         }
@@ -78,6 +81,9 @@ class DeviceAdapter extends ArrayAdapter<BaseSwitch> {
                     break;
                 case VIEWTYPE_HUE:
                     convertView = LayoutInflater.from(getContext()).inflate(R.layout.row_hue, parent, false);
+                    break;
+                case VIEWTYPE_SEPARATOR:
+                    convertView = LayoutInflater.from(getContext()).inflate(R.layout.row_seperator, parent, false);
                     break;
             }
         }
@@ -198,7 +204,29 @@ class DeviceAdapter extends ArrayAdapter<BaseSwitch> {
 
                 final Button swButton = (Button) convertView.findViewById(R.id.rowHueButton);
 
-                final int lightID = 1;
+
+                swSeekbar.setMax(255);
+                final HueSwitch hueSwitch = (HueSwitch)sw;
+                swSeekbar.setProgress(hueSwitch.getBrightness());
+
+                //TODO: Fix color display
+                float[] xyB = {
+                        hueSwitch.getXy()[0],
+                        hueSwitch.getXy()[1],
+                        hueSwitch.getBrightness() / 255f
+                };
+                int color = Util.XYBtoRGB(xyB);
+                swButton.setBackgroundColor(color);
+
+                swSwitch.setChecked(sw.getStatus());
+
+                if(sw.getStatus() == false) {
+                    swButton.setEnabled(false);
+                    swSeekbar.setEnabled(false);
+                } else {
+                    swButton.setEnabled(true);
+                    swSeekbar.setEnabled(true);
+                }
 
                 swSwitch.setOnCheckedChangeListener((new CompoundButton.OnCheckedChangeListener() {
                     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -206,44 +234,46 @@ class DeviceAdapter extends ArrayAdapter<BaseSwitch> {
                             return;
                         }
 
-                        if(!isChecked){
-                            JSONObject payload = new JSONObject();
-                            try {
-                                payload.put("lights", lightID);
+                        JSONObject payload = new JSONObject();
+                        try {
+                            payload.put("lights", sw.getName());
 
-                                JSONObject command = new JSONObject();
-                                command.put("on", false);
-                                payload.put("command", command);
+                            JSONObject command = new JSONObject();
+                            command.put("on", isChecked);
+                            payload.put("command", command);
 
-                                MqttController.getInstance().publish("HYDRA/HUE/set-light", payload.toString());
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
+                            MqttController.getInstance().publish("HYDRA/HUE/set-light", payload.toString());
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                        sw.setStatus(isChecked);
+                        if(sw.getStatus() == false) {
+                            swButton.setEnabled(false);
+                            swSeekbar.setEnabled(false);
                         } else {
-                            JSONObject payload = new JSONObject();
-                            try {
-                                payload.put("lights", lightID);
-
-                                JSONObject command = new JSONObject();
-                                command.put("on", true);
-                                payload.put("command", command);
-
-                                MqttController.getInstance().publish("HYDRA/HUE/set-light", payload.toString());
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
+                            swButton.setEnabled(true);
+                            swSeekbar.setEnabled(true);
                         }
                     }
                 }));
 
                 swButton.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View v) {
+                        /*float[] xyB = {
+                                hueSwitch.getXy()[0],
+                                hueSwitch.getXy()[1],
+                                (float)hueSwitch.getBrightness() / 255f
+                        };
+                        int color = Util.XYBtoRGB(xyB);*/
+                        int color = 0xFFFFFFFF;
+
                         new ColorPickerDialog(context, new OnColorChangedListener() {
                             @Override
                             public void colorChanged(int color) {
                                 swButton.setBackgroundColor(color);
 
-                                int RGB = (int)Long.parseLong("" + color, 16);
                                 int r = (color >> 16) & 0xFF;
                                 int g = (color >> 8) & 0xFF;
                                 int b = (color >> 0) & 0xFF;
@@ -251,30 +281,14 @@ class DeviceAdapter extends ArrayAdapter<BaseSwitch> {
                                 float[] hsv = new float[3];
                                 Color.RGBToHSV(r, g, b, hsv);
 
-                                JSONObject payload = new JSONObject();
-                                try {
-                                    //payload.put("lights", lightID);
 
-                                    JSONObject command = new JSONObject();
-                                    command.put("on", true);
-                                    /*//command.put("hue", Math.ceil((hsv[0] / 360) * 65536));
-                                    //command.put("sat", Math.ceil(hsv[1] * 255));
+                                float[] xyB = Util.RGBtoXYB(color);
+                                String pld = "{\"lights\":\"" + sw.name + "\", \"command\":{\"xy\": [" + String.valueOf(xyB[0]) + "," + String.valueOf(xyB[1]) + "]}, \"bri\": " + String.valueOf((int)Math.ceil(xyB[2] * 255f)) + "}";
 
-                                    double[] xy = {xyB[0], xyB[1]};
-                                    command.put("xy", new JSONArray(Arrays.asList(xy)));
-                                    //command.put("bri", xyB[2]);*/
-
-                                    //payload.put("command", command);
-                                    float[] xyB = Util.RGBtoXYB(color);
-                                    String pld = "{\"lights\":1, \"command\":{\"on\": true, \"xy\": [" + String.valueOf(xyB[0]) + "," + String.valueOf(xyB[1]) + "]}, \"bri\": " + String.valueOf((int)Math.ceil(xyB[2] * 255f)) + "}";
-
-                                    MqttController.getInstance().publish("HYDRA/HUE/set-light", pld);
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-
+                                MqttController.getInstance().publish("HYDRA/HUE/set-light", pld);
+                                hueSwitch.setXy(new float[]{xyB[0], xyB[1]});
                             }
-                        }, 0xFFFF0000).show();
+                        }, color).show();
                     }
                 });
 
@@ -293,11 +307,10 @@ class DeviceAdapter extends ArrayAdapter<BaseSwitch> {
                     public void onStopTrackingTouch(SeekBar seekBar) {
                         JSONObject payload = new JSONObject();
                         try {
-                            payload.put("lights", lightID);
+                            payload.put("lights", sw.getName());
 
                             JSONObject command = new JSONObject();
-                            command.put("on", true);
-                            command.put("bri", Math.ceil(swSeekbar.getProgress()));
+                            command.put("bri", (int)Math.ceil(swSeekbar.getProgress()));
 
                             payload.put("command", command);
 
@@ -305,10 +318,15 @@ class DeviceAdapter extends ArrayAdapter<BaseSwitch> {
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
+
+                        hueSwitch.setBrightness((int)Math.ceil(swSeekbar.getProgress()));
                     }
                 });
 
             } break;
+            case VIEWTYPE_SEPARATOR: {
+                swName = (TextView) convertView.findViewById(R.id.rowSepText);
+            }break;
             default: {
                 // Shouldn't ever happen but stops the compiler from complaining
                 swName = null;

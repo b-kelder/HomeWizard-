@@ -8,6 +8,11 @@ public class CustomSwitch extends BaseSwitch {
     private String payloadOn;
     private String payloadOff;
 
+    public CustomSwitch(String name, String type) {
+        this.name = name;
+        this.type = type;
+    }
+
     public CustomSwitch(String name, String topic, String payloadOn, String payloadOff, String type, boolean status, int dimmer){
         this.name = name;
         this.topic = topic;

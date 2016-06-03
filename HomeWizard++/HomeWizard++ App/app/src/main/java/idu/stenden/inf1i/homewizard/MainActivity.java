@@ -8,6 +8,7 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ListView;
@@ -108,6 +109,9 @@ public class MainActivity extends BaseMqttEventActivity implements NavigationVie
                             HomewizardSwitch hmwzSwitch = new HomewizardSwitch(name, type, status, id);
                             if(type.equals("dimmer")){
                                 hmwzSwitch.setDimmer(switches.getString("dimlevel"));
+                            } else if(type.equals("hue")) {
+                                //NOPE
+                                continue;
                             }
 							appDataContainer.addHomewizardSwitch(hmwzSwitch);
 						}
@@ -150,12 +154,22 @@ public class MainActivity extends BaseMqttEventActivity implements NavigationVie
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_refresh) {
             mqttController.publish("HYDRA/HMWZ", "get-sensors");
+            //Refresh HUE
+            try {
+                JSONObject jsonObject = Util.readHueData(this);
+                if (!jsonObject.getString("ip").isEmpty()) {
+                    mqttController.publish("HYDRA/HUE/connect", jsonObject.getString("ip"));
+                    mqttController.publish("HYDRA/HUE/get-lights", "");
+                }
+            } catch(JSONException e){
+                Log.e("MainActivity", e.getMessage());
+            }
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
+
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.

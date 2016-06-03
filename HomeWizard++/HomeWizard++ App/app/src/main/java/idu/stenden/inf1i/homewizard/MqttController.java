@@ -324,8 +324,9 @@ public class MqttController {
                     subscribe("HYDRA/HMWZRETURN/#");
                     subscribe("HYDRA/STATUS/results");
                     subscribe("HYDRA/AUTH/results");
+                    subscribe("HYDRA/HUERETURN/#");
+                    subscribe("HYDRA/HUERETURN");
 
-                    // Does this actually happen?
                     publish("HYDRA/STATUS", "get-status");
 
                     dismissConnectingDialog();

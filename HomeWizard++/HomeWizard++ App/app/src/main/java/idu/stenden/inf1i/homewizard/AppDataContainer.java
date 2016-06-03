@@ -126,8 +126,11 @@ public class AppDataContainer implements MqttControllerMessageCallbackListener {
 
     private void updateAllSwitches() {
         allSwitches.clear();
+        allSwitches.add(new CustomSwitch("HomeWizard", "separator"));
         allSwitches.addAll(homewizardSwitches);
+        allSwitches.add(new CustomSwitch("Custom", "separator"));
         allSwitches.addAll(customSwitches);
+        allSwitches.add(new CustomSwitch("Philips Hue", "separator"));
         allSwitches.addAll(hueSwitches);
     }
 
@@ -153,7 +156,39 @@ public class AppDataContainer implements MqttControllerMessageCallbackListener {
 
     @Override
     public void onMessageArrived(String topic, MqttMessage message) {
-        if(topic.contains("HYDRA/HMWZRETURN/sw")) {
+        if(topic.contains("HYDRA/HUERETURN/get-lights")) {
+            try{
+                hueSwitches.clear();
+
+                JSONArray jsonObject = new JSONArray(message.toString());
+                for(int i = 0; i < jsonObject.length(); i++) {
+                    JSONObject obj = jsonObject.getJSONObject(i);
+                    HueSwitch hueSwitch = new HueSwitch();
+                    hueSwitch.setName(obj.getString("name"));
+                    hueSwitch.setHue(obj.getInt("hue"));
+                    hueSwitch.setBrightness(obj.getInt("brightness"));
+                    hueSwitch.setSaturation(obj.getInt("saturation"));
+                    hueSwitch.setStatus(obj.getBoolean("on"));
+
+                    JSONArray xy = obj.getJSONArray("xy");
+                    float x = (float)xy.getDouble(0);
+                    float y = (float)xy.getDouble(1);
+                    Log.d("AppDataContainer", "x: " + x + " y: " + y);
+                    hueSwitch.setXy(new float[]{x, y});
+
+                    hueSwitch.setColormode(obj.getString("colormode"));
+
+                    hueSwitches.add(hueSwitch);
+                }
+
+                updateAllSwitches();
+                notifyDataSetChanged();
+            } catch (JSONException e) {
+                Log.e("AppDataContainer", e.getMessage());
+            }
+
+        }
+        else if(topic.contains("HYDRA/HMWZRETURN/sw")) {
             //NOTE: try/catch is not required to stop crashing because MqttController handles this
             try {
                 JSONObject jsonObject = new JSONObject(message.toString());

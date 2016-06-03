@@ -13,8 +13,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class AddHueBridge extends AppCompatActivity {
-
-    Boolean bridgeAdded;
     Context context;
 
     @Override
@@ -23,18 +21,6 @@ public class AddHueBridge extends AppCompatActivity {
         setContentView(R.layout.activity_add_hue_bridge);
 
         context = this;
-
-        JSONObject readBridgeAdded = Util.readBridgeAdded(this);
-        try {
-            bridgeAdded = readBridgeAdded.getBoolean("BridgeAdded");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        if (bridgeAdded){
-            startActivity(new Intent(getApplicationContext(), AddHueLights.class));
-            finish();
-        }
 
         final EditText bridgeIP = (EditText) findViewById(R.id.hueBridgeIP);
 
@@ -61,7 +47,6 @@ public class AddHueBridge extends AppCompatActivity {
                         if(status.equals("ok")){
                             try {
                                 Util.saveHueData(context, bridgeIP.getText().toString(), json.getString("username"));
-                                Util.saveBridgeAdded(context, true);
                                 finish();
                                 startActivity(new Intent(getApplicationContext(), AddChoice.class));
                             } catch (JSONException e) {
