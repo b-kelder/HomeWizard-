@@ -12,30 +12,58 @@
     <Button
         style="?android:attr/buttonStyleSmall"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="40dp"
         android:text="Homewizard Light/Switch"
         android:id="@+id/hmwzbtnlight"
-        android:layout_alignParentTop="true"
+        android:background="@color/design_textinput_error_color_light"
+        android:textColor="@color/abc_primary_text_material_dark"
+        android:layout_below="@+id/textView32"
         android:layout_alignParentStart="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignEnd="@+id/huebtnlight"
+        android:layout_marginTop="15dp" />
 
     <Button
         style="?android:attr/buttonStyleSmall"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="40dp"
         android:text="Phillips Hue"
         android:id="@+id/huebtnlight"
-        android:layout_below="@+id/hmwzbtnlight"
+        android:background="@color/design_textinput_error_color_light"
+        android:textColor="@color/abc_primary_text_material_dark"
+        android:layout_below="@+id/textView31"
+        android:layout_alignParentEnd="true"
         android:layout_alignParentStart="true"
-        android:layout_alignEnd="@+id/hmwzbtnlight" />
+        android:layout_marginTop="15dp" />
 
     <Button
         style="?android:attr/buttonStyleSmall"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="40dp"
         android:text="Custom MQTT device"
         android:id="@+id/BtnAddCustom"
+        android:background="@color/design_textinput_error_color_light"
+        android:textColor="@color/abc_primary_text_material_dark"
+        android:layout_below="@+id/hmwzbtnlight"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="15dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Controllers"
+        android:id="@+id/textView31"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Devices"
+        android:id="@+id/textView32"
         android:layout_below="@+id/huebtnlight"
         android:layout_alignParentStart="true"
-        android:layout_alignEnd="@+id/huebtnlight" />
+        android:layout_marginTop="30dp" />
 </RelativeLayout>

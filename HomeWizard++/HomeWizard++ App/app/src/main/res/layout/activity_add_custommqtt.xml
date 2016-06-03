@@ -56,7 +56,8 @@
             android:text="MQTT Payload (switch state off)"
             android:id="@+id/textView7"
             android:layout_below="@+id/customDimmer"
-            android:layout_alignParentStart="true" />
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="10dp" />
 
         <EditText
             android:layout_width="wrap_content"
@@ -86,12 +87,15 @@
         <Button
             style="?android:attr/buttonStyleSmall"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="40dp"
             android:text="add"
             android:id="@+id/customAddBtn"
+            android:background="@color/design_textinput_error_color_light"
+            android:textColor="@color/abc_primary_text_material_dark"
             android:layout_below="@+id/payloadStateon"
-            android:layout_alignEnd="@+id/textView7"
-            android:layout_centerHorizontal="true" />
+            android:layout_marginTop="15dp"
+            android:layout_alignEnd="@+id/payloadStateon"
+            android:layout_alignParentStart="true" />
 
         <CheckBox
             android:layout_width="wrap_content"
@@ -99,7 +103,8 @@
             android:text="Is dimmer"
             android:id="@+id/customDimmer"
             android:layout_below="@+id/customMqttTopic"
-            android:layout_alignParentStart="true" />
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="10dp" />
 
     </RelativeLayout>
 </ScrollView>

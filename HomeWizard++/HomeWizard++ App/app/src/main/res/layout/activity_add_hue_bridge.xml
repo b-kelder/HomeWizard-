@@ -20,12 +20,15 @@
     <Button
         style="?android:attr/buttonStyleSmall"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="40dp"
         android:text="Connect"
         android:id="@+id/btnHueBridgeConnect"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="36dp" />
+        android:background="@color/design_textinput_error_color_light"
+        android:textColor="@color/abc_primary_text_material_dark"
+        android:layout_below="@+id/hueBridgeIP"
+        android:layout_alignParentStart="true"
+        android:layout_alignEnd="@+id/hueBridgeIP"
+        android:layout_marginTop="15dp" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -33,9 +36,9 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="Press the button on the Hue bridge before trying to connect."
         android:id="@+id/textView26"
-        android:layout_marginBottom="20dp"
-        android:layout_above="@+id/btnHueBridgeConnect"
-        android:layout_alignParentStart="true" />
+        android:layout_below="@+id/textView27"
+        android:layout_alignParentStart="true"
+        android:textSize="15dp" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -43,7 +46,8 @@
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:text="Please note:"
         android:id="@+id/textView27"
-        android:layout_above="@+id/textView26"
+        android:layout_marginTop="40dp"
+        android:layout_below="@+id/btnHueBridgeConnect"
         android:layout_alignParentStart="true" />
 
     <TextView
@@ -54,7 +58,7 @@
         android:id="@+id/textView28"
         android:layout_below="@+id/textView30"
         android:layout_alignParentStart="true"
-        android:layout_marginTop="86dp" />
+        android:layout_marginTop="40dp" />
 
     <TextView
         android:layout_width="wrap_content"
