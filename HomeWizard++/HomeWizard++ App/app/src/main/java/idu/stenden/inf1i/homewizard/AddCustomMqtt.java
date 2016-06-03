@@ -57,7 +57,7 @@ public class AddCustomMqtt extends AppCompatActivity {
 
                     finish();
                 } else {
-                    Toast toaster = Toast.makeText(getApplicationContext(), "Vul velden in", Toast.LENGTH_SHORT);
+                    Toast toaster = Toast.makeText(getApplicationContext(), "Fields cannot be empty", Toast.LENGTH_SHORT);
                     toaster.show();
                 }
             }

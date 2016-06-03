@@ -55,22 +55,27 @@
 
         <Button
             style="?android:attr/buttonStyleSmall"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="90dp"
+            android:layout_height="35dp"
             android:text="Login"
             android:id="@+id/loginButton"
             android:layout_below="@+id/passwordField"
             android:layout_alignEnd="@+id/passwordField"
-            android:layout_alignStart="@+id/bkrConfirmBtn" />
+            android:layout_alignStart="@+id/bkrConfirmBtn"
+            android:textColor="@color/abc_primary_text_material_dark"
+            android:background="@color/design_textinput_error_color_light" />
 
         <Button
             style="?android:attr/buttonStyleSmall"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="90dp"
+            android:layout_height="35dp"
             android:text="Clear"
             android:id="@+id/clearBtn"
             android:layout_above="@+id/view"
-            android:layout_toStartOf="@+id/loginButton" />
+            android:layout_toStartOf="@+id/loginButton"
+            android:textColor="@color/abc_primary_text_material_dark"
+            android:background="@color/design_textinput_error_color_light"
+            android:layout_marginRight="10dp" />
 
         <View
             android:layout_width="fill_parent"
@@ -120,12 +125,14 @@
             android:layout_alignEnd="@+id/brokerSettings" />
 
         <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="90dp"
+            android:layout_height="35dp"
             android:text="Apply"
             android:id="@+id/bkrConfirmBtn"
             android:layout_below="@+id/brokerIP"
-            android:layout_alignParentEnd="true" />
+            android:layout_alignParentEnd="true"
+            android:textColor="@color/abc_primary_text_material_dark"
+            android:background="@color/design_textinput_error_color_light" />
 
         <Switch
             android:layout_width="wrap_content"
@@ -156,12 +163,15 @@
             android:layout_alignParentStart="true" />
 
         <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="90dp"
+            android:layout_height="35dp"
             android:text="Apply"
             android:id="@+id/applyAdminPin"
             android:layout_alignTop="@+id/editAdminPin"
-            android:layout_toEndOf="@+id/clearBtn" />
+            android:layout_toEndOf="@+id/clearBtn"
+            android:textColor="@color/abc_primary_text_material_dark"
+            android:background="@color/design_textinput_error_color_light"
+            android:layout_alignParentEnd="false" />
 
         <TextView
             android:layout_width="wrap_content"

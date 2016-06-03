@@ -58,7 +58,7 @@ public class AddHomewizardlight extends BaseMqttEventActivity {
                     //This just adds to the activity stack, we don't want that!
                     //startActivity(new Intent(getApplicationContext(), MainActivity.class));
                 } else {
-                    Toast toaster = Toast.makeText(getApplicationContext(), "Vul velden in", Toast.LENGTH_SHORT);
+                    Toast toaster = Toast.makeText(getApplicationContext(), "Fields cannot be empty", Toast.LENGTH_SHORT);
                     toaster.show();
                 }
             }
