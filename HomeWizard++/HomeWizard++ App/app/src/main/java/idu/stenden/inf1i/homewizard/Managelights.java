@@ -28,7 +28,7 @@ public class Managelights extends BaseMqttEventActivity {
 
     private boolean adminPinEnabled;
     private String adminPin;
-    private int counter = 2;
+    private int counter;
     private boolean loginEnabled = true;
     private long loginTimestamp;
 
@@ -50,6 +50,7 @@ public class Managelights extends BaseMqttEventActivity {
             JSONObject getLoginAttempts = Util.readLoginAttempts(Managelights.context);
             loginEnabled = getLoginAttempts.getBoolean("enabled");
             loginTimestamp = getLoginAttempts.getLong("timestamp");
+            counter = getLoginAttempts.getInt("attempts");
         }
         catch(Exception e)
         {
@@ -76,13 +77,16 @@ public class Managelights extends BaseMqttEventActivity {
                         if(loginEnabled) {
                             if (txtPassword.getText().toString().equals(adminPin)) {
                                 login.dismiss();
+                                Util.saveLoginAttempts(context, 0, 2, true); // On login, reset login-attempts
                             } else if (counter == 0) {
                                 Toast.makeText(Managelights.this, "Login disabled. To many failed attempts. Try again in 60 seconds.", Toast.LENGTH_LONG).show();
-                                Util.saveLoginAttempts(context, new Date().getTime(), false);
+                                Util.saveLoginAttempts(context, new Date().getTime(), 0, false); // set login to false and attempts to 0
                                 finish();
                             } else {
-                                Toast.makeText(context, "Incorrect pin", Toast.LENGTH_LONG).show();
+                                Toast.makeText(Managelights.this, "Incorrect pin", Toast.LENGTH_LONG).show();
+                                // subtract 1 from current counter, and save
                                 counter--;
+                                Util.saveLoginAttempts(context, 0, counter, true);
                             }
                         }
                         else
@@ -90,10 +94,10 @@ public class Managelights extends BaseMqttEventActivity {
                             // Very simple anti-brute force system.
                             long timespan = Math.abs((System.currentTimeMillis() - 60000 - loginTimestamp) / 1000);
 
+                            // when 60 seconds passed (in miliseconds), re-enable login
                             if(System.currentTimeMillis() - 60000 > loginTimestamp)
                             {
-                                Util.saveLoginAttempts(context, 0, true);
-                                counter = 2;
+                                Util.saveLoginAttempts(context, 0, 2, true); // set login to true and reset attempts
                                 Toast.makeText(Managelights.this, "Login attempts resetting." , Toast.LENGTH_LONG).show();
                                 finish();
                             }

@@ -233,10 +233,11 @@ public class Util {
         return object;
     }
 
-public static void saveLoginAttempts(Context context, long timeStamp, boolean isEnabled){
+public static void saveLoginAttempts(Context context, long timeStamp, int attempts, boolean isEnabled){
         JSONObject object = new JSONObject();
         try{
             object.put("timestamp", timeStamp);
+            object.put("attempts", attempts);
             object.put("enabled", isEnabled);
 
         } catch (JSONException e) {
@@ -250,7 +251,7 @@ public static void saveLoginAttempts(Context context, long timeStamp, boolean is
         try {
             object = new JSONObject(readFile(context, "trackLogin.json"));
         } catch (JSONException e) {
-            saveLoginAttempts(context, 0, true);
+            saveLoginAttempts(context, 0, 2, true);
             try {
                 object = new JSONObject(readFile(context, "trackLogin.json"));
             } catch (JSONException e1) {

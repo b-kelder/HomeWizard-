@@ -39,6 +39,7 @@ public class FirstTimeTetup extends AppCompatActivity {
         skipBtn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                Util.saveFirstSetup(context, false);
                 finish();
             }
         });
@@ -46,7 +47,6 @@ public class FirstTimeTetup extends AppCompatActivity {
         Button nextBtn = (Button) findViewById(R.id.btnStep1);
         nextBtn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                Util.saveFirstSetup(context, false);
                 startActivity(new Intent(getApplicationContext(), SetupStep2.class));
                 finish();
             }

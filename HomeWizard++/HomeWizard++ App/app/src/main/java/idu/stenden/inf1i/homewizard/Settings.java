@@ -34,7 +34,7 @@ public class Settings extends BaseMqttEventActivity{
 
     private boolean adminPinEnabled;
     private String adminPin;
-    private int counter = 2;
+    private int counter;
     private boolean loginEnabled = true;
     private long loginTimestamp;
 
@@ -59,6 +59,7 @@ public class Settings extends BaseMqttEventActivity{
             JSONObject getLoginAttempts = Util.readLoginAttempts(Settings.context);
             loginEnabled = getLoginAttempts.getBoolean("enabled");
             loginTimestamp = getLoginAttempts.getLong("timestamp");
+            counter = getLoginAttempts.getInt("attempts");
         }
         catch(Exception e)
         {
@@ -85,24 +86,27 @@ public class Settings extends BaseMqttEventActivity{
                         if(loginEnabled) {
                             if (txtPassword.getText().toString().equals(adminPin)) {
                                 login.dismiss();
+                                Util.saveLoginAttempts(context, 0, 2, true); // On login, reset login-attempts
                             } else if (counter == 0) {
                                 Toast.makeText(Settings.this, "Login disabled. To many failed attempts. Try again in 60 seconds.", Toast.LENGTH_LONG).show();
-                                Util.saveLoginAttempts(context, new Date().getTime(), false);
+                                Util.saveLoginAttempts(context, new Date().getTime(), 0, false); // set login to false and attempts to 0
                                 finish();
                             } else {
                                 Toast.makeText(Settings.this, "Incorrect pin", Toast.LENGTH_LONG).show();
+                                // subtract 1 from current counter, and save
                                 counter--;
+                                Util.saveLoginAttempts(context, 0, counter, true);
                             }
                         }
                         else
                         {
                             // Very simple anti-brute force system.
-                            long timespan = Math.abs((System.currentTimeMillis() - 60000 - loginTimestamp) / 1000);
+                            long timespan = Math.abs((System.currentTimeMillis() - 60000 - loginTimestamp) / 1000); // display timer for when login is re-enabled
 
+                            // when 60 seconds passed (in miliseconds), re-enable login
                             if(System.currentTimeMillis() - 60000 > loginTimestamp)
                             {
-                                Util.saveLoginAttempts(context, 0, true);
-                                counter = 2;
+                                Util.saveLoginAttempts(context, 0, 2, true); // set login to true and reset attempts
                                 Toast.makeText(Settings.this, "Login attempts resetting." , Toast.LENGTH_LONG).show();
                                 finish();
                             }
