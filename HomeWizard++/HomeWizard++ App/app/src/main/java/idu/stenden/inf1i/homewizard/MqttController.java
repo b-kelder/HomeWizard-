@@ -79,9 +79,10 @@ public class MqttController {
 
                     if (route.equals("hydrastatus")) {
                         JSONObject file = Util.readLoginData(context);
-                        loginHomeWizard(file.getString("email"), file.getString("password"), context);
+                        if(!file.getString("email").isEmpty()) {
+                            loginHomeWizard(file.getString("email"), file.getString("password"), context);
+                        }
                     }
-
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
