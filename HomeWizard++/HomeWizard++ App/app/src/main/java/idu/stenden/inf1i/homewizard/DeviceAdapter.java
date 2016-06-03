@@ -2,6 +2,7 @@ package idu.stenden.inf1i.homewizard;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -269,7 +270,7 @@ class DeviceAdapter extends ArrayAdapter<BaseSwitch> {
                         int color = Util.XYBtoRGB(xyB);*/
                         int color = 0xFFFFFFFF;
 
-                        new ColorPickerDialog(context, new OnColorChangedListener() {
+                        ColorPickerDialog colorPickerDialog = new ColorPickerDialog(context, new OnColorChangedListener() {
                             @Override
                             public void colorChanged(int color) {
                                 swButton.setTextColor(color);
@@ -288,7 +289,9 @@ class DeviceAdapter extends ArrayAdapter<BaseSwitch> {
                                 MqttController.getInstance().publish("HYDRA/HUE/set-light", pld);
                                 hueSwitch.setXy(new float[]{xyB[0], xyB[1]});
                             }
-                        }, color).show();
+                        }, color);
+                        colorPickerDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                        colorPickerDialog.show();
                     }
                 });
 
