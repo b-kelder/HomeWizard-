@@ -7,49 +7,66 @@ import hydra
 
 def alert():
 
-	while True:
-		lol = {
+    while True:
+        lol = {
         "lights": 1,
         "command": {
-            "on": True,
-            "hue": 0,
-            "bri": 255,
-            "sat": 255,
-			"transitiontime" : 20}
+        "on": True,
+        "hue": 0,
+        "bri": 255,
+        "sat": 255,
+        "transitiontime" : 20}
         }
-		client.publish("HYDRA/HUE/set-light", json.dumps(lol))
-		time.sleep(2)
-		lol = {
+        client.publish("HYDRA/HUE/set-light", json.dumps(lol))
+        time.sleep(2)
+        lol = {
         "lights": 1,
         "command": {
-            "on": False,
-            "hue": 0,
-            "bri": 255,
-            "sat": 255,
-			"transitiontime" : 20}
+        "on": False,
+        "hue": 0,
+        "bri": 255,
+        "sat": 255,
+        "transitiontime" : 20}
         }
-		client.publish("HYDRA/HUE/set-light", json.dumps(lol))
-		time.sleep(2)
+        client.publish("HYDRA/HUE/set-light", json.dumps(lol))
+        time.sleep(2)
 
 
 def hue_test(ip, hue, bri, sat):
     client.publish("HYDRA/HUE/connect", ip)
-    
+
     time.sleep(2)
-    client.publish("HYDRA/HUE/lights", 0)
 
     lol = {
-        "lights": 1,
-        "command": {
-            "on": True,
-            "hue": hue,
-            "bri": bri,
-            "sat": sat,
-			"transitiontime" : 50}
-        }
-    
+    "lights": 1,
+    "command": {
+    "on": True,
+    "hue": hue,
+    "bri": bri,
+    "sat": sat,
+            "transitiontime" : 50}
+    }
+
     client.publish("HYDRA/HUE/set-light", json.dumps(lol))
 
+def hue_lights():
+    client.publish("HYDRA/HUE/get-lights", 0)
+
+def hue_init(ip):
+    client.publish("HYDRA/HUE/connect", ip)
+
+def hue(on, hue, bri, sat):
+    lol = {
+    "lights": 1,
+    "command": {
+    "on": on,
+    "hue": hue,
+    "bri": bri,
+    "sat": sat,
+    "transitiontime" : 50}
+    }
+
+    client.publish("HYDRA/HUE/set-light", json.dumps(lol))
 #
 # Updates the base urls, topics and subscriptions according to a HomeWizard cloud url
 #
