@@ -92,7 +92,7 @@ public class Managelights extends BaseMqttEventActivity {
                         else
                         {
                             // Very simple anti-brute force system.
-                            long timespan = Math.abs((System.currentTimeMillis() - 60000 - loginTimestamp) / 1000);
+                            long timespan = Math.abs((System.currentTimeMillis() - 60000 - loginTimestamp) / 1000); // display timer for when login is re-enabled
 
                             // when 60 seconds passed (in miliseconds), re-enable login
                             if(System.currentTimeMillis() - 60000 > loginTimestamp)
