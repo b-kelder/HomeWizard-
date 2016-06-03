@@ -126,11 +126,19 @@ public class AppDataContainer implements MqttControllerMessageCallbackListener {
 
     private void updateAllSwitches() {
         allSwitches.clear();
-        allSwitches.add(new CustomSwitch("HomeWizard", "separator"));
+        if(homewizardSwitches.size()> 0) {
+            allSwitches.add(new CustomSwitch("HomeWizard", "separator"));
+        }
         allSwitches.addAll(homewizardSwitches);
-        allSwitches.add(new CustomSwitch("Custom", "separator"));
+
+        if(customSwitches.size() > 0) {
+            allSwitches.add(new CustomSwitch("Custom", "separator"));
+        }
         allSwitches.addAll(customSwitches);
-        allSwitches.add(new CustomSwitch("Philips Hue", "separator"));
+
+        if(hueSwitches.size() > 0) {
+            allSwitches.add(new CustomSwitch("Philips Hue", "separator"));
+        }
         allSwitches.addAll(hueSwitches);
     }
 

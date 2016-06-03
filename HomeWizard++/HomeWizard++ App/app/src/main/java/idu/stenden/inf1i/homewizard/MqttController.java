@@ -327,7 +327,18 @@ public class MqttController {
                     subscribe("HYDRA/HUERETURN/#");
                     subscribe("HYDRA/HUERETURN");
 
+                    //Refresh homewizard
                     publish("HYDRA/STATUS", "get-status");
+                    //Refresh HUE
+                    try {
+                        JSONObject jsonObject = Util.readHueData(context);
+                        if (!jsonObject.getString("ip").isEmpty()) {
+                            publish("HYDRA/HUE/connect", jsonObject.getString("ip"));
+                            publish("HYDRA/HUE/get-lights", "");
+                        }
+                    } catch(JSONException e){
+                        Log.e("MainActivity", e.getMessage());
+                    }
 
                     dismissConnectingDialog();
                 }

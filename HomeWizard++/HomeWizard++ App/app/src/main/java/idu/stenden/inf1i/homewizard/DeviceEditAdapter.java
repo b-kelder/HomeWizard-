@@ -112,6 +112,8 @@ class DeviceEditAdapter extends ArrayAdapter<BaseSwitch> {
                             //Put switchId in topic so we can filter the return message properly
                             MqttController.getInstance().publish("HYDRA/HMWZ/sw/remove/" + switchId, "");
                             delete.dismiss();
+                        } else if(HueSwitch.class.isInstance(sw)) {
+                            //TODO: Remove Hue?
                         } else {
                             //Remove CustomSwitch from list
                             CustomSwitch customSwitch = (CustomSwitch)sw;

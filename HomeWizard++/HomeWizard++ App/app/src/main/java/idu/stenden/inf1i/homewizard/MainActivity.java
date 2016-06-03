@@ -153,17 +153,24 @@ public class MainActivity extends BaseMqttEventActivity implements NavigationVie
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_refresh) {
-            mqttController.publish("HYDRA/HMWZ", "get-sensors");
-            //Refresh HUE
             try {
-                JSONObject jsonObject = Util.readHueData(this);
-                if (!jsonObject.getString("ip").isEmpty()) {
-                    mqttController.publish("HYDRA/HUE/connect", jsonObject.getString("ip"));
-                    mqttController.publish("HYDRA/HUE/get-lights", "");
+                JSONObject file = Util.readBrokerData(this);
+                if(!mqttController.isConnected()){
+                    mqttController.connect("tcp://" + file.getString("ip") + ":" + file.getString("port"), "Homewizard++", file.getString("username"), file.getString("password"), this);
+                } else {
+                    mqttController.publish("HYDRA/HMWZ", "get-sensors");
+                    //Refresh HUE
+                    JSONObject jsonObject = Util.readHueData(this);
+                    if (!jsonObject.getString("ip").isEmpty()) {
+                        mqttController.publish("HYDRA/HUE/connect", jsonObject.getString("ip"));
+                        mqttController.publish("HYDRA/HUE/get-lights", "");
+                    }
                 }
-            } catch(JSONException e){
+            } catch (JSONException e) {
                 Log.e("MainActivity", e.getMessage());
             }
+
+
         }
 
         return super.onOptionsItemSelected(item);
