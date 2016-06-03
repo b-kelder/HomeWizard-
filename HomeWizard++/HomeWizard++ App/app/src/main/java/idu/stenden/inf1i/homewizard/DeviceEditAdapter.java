@@ -1,10 +1,13 @@
 package idu.stenden.inf1i.homewizard;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.CompoundButton;
 import android.widget.TextView;
@@ -43,6 +46,13 @@ class DeviceEditAdapter extends ArrayAdapter<BaseSwitch> {
         final ImageButton btnChange = (ImageButton) convertView.findViewById(R.id.btnChange);
         final ImageButton btnDelete = (ImageButton) convertView.findViewById(R.id.btnDelete);
 
+        final Dialog delete = new Dialog(getContext());
+        delete.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        delete.setContentView(R.layout.delete_dialog);
+
+        final Button btnDoDelete = (Button) delete.findViewById(R.id.btnDelete);
+        final Button btnNoDelete = (Button) delete.findViewById(R.id.btnNoDelete);
+
         btnName.setText(sw.getName());
 
         btnChange.setOnClickListener(new View.OnClickListener() {
@@ -54,11 +64,20 @@ class DeviceEditAdapter extends ArrayAdapter<BaseSwitch> {
 
         btnDelete.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+                delete.show();
+            }
+        });
+
+        btnDoDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
                 if(HomewizardSwitch.class.isInstance(sw)) {
                     HomewizardSwitch homewizardSwitch = (HomewizardSwitch)sw;
                     String switchId = String.valueOf(homewizardSwitch.getId());
                     //Put switchId in topic so we can filter the return message properly
+
                     MqttController.getInstance().publish("HYDRA/HMWZ/sw/remove/" + switchId, "");
+                    delete.dismiss();
                 } else {
                     //Remove CustomSwitch from list
                     CustomSwitch customSwitch = (CustomSwitch)sw;
@@ -66,7 +85,15 @@ class DeviceEditAdapter extends ArrayAdapter<BaseSwitch> {
                     AppDataContainer.getInstance().notifyDataSetChanged();
                     AppDataContainer.getInstance().save();
                     Toast.makeText(getContext(), "Custom device removed", Toast.LENGTH_SHORT).show();
+                    delete.dismiss();
                 }
+            }
+        });
+
+        btnNoDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                delete.dismiss();
             }
         });
 
