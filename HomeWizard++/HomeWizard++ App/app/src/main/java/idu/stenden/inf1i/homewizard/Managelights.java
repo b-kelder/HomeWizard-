@@ -83,7 +83,7 @@ public class Managelights extends BaseMqttEventActivity {
                                 Util.saveLoginAttempts(context, new Date().getTime(), 0, false); // set login to false and attempts to 0
                                 finish();
                             } else {
-                                Toast.makeText(Managelights.this, "Incorrect pin", Toast.LENGTH_LONG).show();
+                                Toast.makeText(Managelights.this, "Incorrect pin - " + counter + " attempt(s) left", Toast.LENGTH_LONG).show();
                                 // subtract 1 from current counter, and save
                                 counter--;
                                 Util.saveLoginAttempts(context, 0, counter, true);
