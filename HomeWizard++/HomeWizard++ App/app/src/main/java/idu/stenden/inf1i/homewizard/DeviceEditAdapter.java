@@ -2,6 +2,7 @@ package idu.stenden.inf1i.homewizard;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -94,6 +95,15 @@ class DeviceEditAdapter extends ArrayAdapter<BaseSwitch> {
                     public void onClick(View v) {
                         //MqttController.getInstance().publish("", "");
                         //TODO: Popup dialog with options for name and code change
+
+                        if(HomewizardSwitch.class.isInstance(sw))
+                        {
+                            
+                        }
+                        else if(CustomSwitch.class.isInstance(sw))
+                        {
+
+                        }
                     }
                 });
 

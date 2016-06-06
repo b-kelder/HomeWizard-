@@ -15,33 +15,32 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <service android:name="org.eclipse.paho.android.service.MqttService" />
-
         //The main activity
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar">
-        </activity>
-
+            android:theme="@style/AppTheme.NoActionBar" />
         //The settings activity
         <activity
             android:name=".Settings"
             android:label="Settings"
             android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait">
-            <meta-data android:name="android.support.PARENT_ACTIVITY" android:value="idu.stenden.inf1i.homewizard.MainActivity" />
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="idu.stenden.inf1i.homewizard.MainActivity" />
         </activity>
-
         //The help page activity
         <activity
             android:name=".HelpPage"
             android:label="Help"
             android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait">
-            <meta-data android:name="android.support.PARENT_ACTIVITY" android:value="idu.stenden.inf1i.homewizard.MainActivity" />
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="idu.stenden.inf1i.homewizard.MainActivity" />
         </activity>
-
         //The devices manage activity
         <activity
             android:name=".Managelights"
@@ -49,62 +48,69 @@
             android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
-            <meta-data android:name="android.support.PARENT_ACTIVITY" android:value="idu.stenden.inf1i.homewizard.MainActivity" />
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="idu.stenden.inf1i.homewizard.MainActivity" />
         </activity>
-
         //Add tab to choose what to add
         <activity
             android:name=".AddChoice"
             android:label="Add device"
             android:parentActivityName=".Managelights"
             android:screenOrientation="portrait">
-            <meta-data android:name="android.support.PARENT_ACTIVITY" android:value="idu.stenden.inf1i.homewizard.Managelights" />
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="idu.stenden.inf1i.homewizard.Managelights" />
         </activity>
-
         //Add homewizz light/switch/dimmer
         <activity
             android:name=".AddHomewizardlight"
             android:label="Add Homewizard device"
-            android:screenOrientation="portrait"
-            android:parentActivityName=".AddChoice">
-            <meta-data android:name="android.support.PARENT_ACTIVITY" android:value="idu.stenden.inf1i.homewizard.AddChoice" />
+            android:parentActivityName=".AddChoice"
+            android:screenOrientation="portrait">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="idu.stenden.inf1i.homewizard.AddChoice" />
         </activity>
-
         //Add custom MQTT device
         <activity
             android:name=".AddCustomMqtt"
             android:label="Add custom device"
-            android:screenOrientation="portrait"
-            android:parentActivityName=".AddChoice">
-            <meta-data android:name="android.support.PARENT_ACTIVITY" android:value="idu.stenden.inf1i.homewizard.AddChoice" />
+            android:parentActivityName=".AddChoice"
+            android:screenOrientation="portrait">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="idu.stenden.inf1i.homewizard.AddChoice" />
         </activity>
-
         //Add hue bridge
         <activity
             android:name=".AddHueBridge"
             android:label="Add a hue bridge"
             android:parentActivityName=".AddChoice">
-            <meta-data android:name="android.support.PARENT_ACTIVITY" android:value="idu.stenden.inf1i.homewizard.AddChoice" />
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="idu.stenden.inf1i.homewizard.AddChoice" />
         </activity>
-
         //Not needed??
         <activity
             android:name=".AddHueLights"
             android:parentActivityName=".AddChoice">
-            <meta-data android:name="android.support.PARENT_ACTIVITY" android:value="idu.stenden.inf1i.homewizard.AddChoice" />
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="idu.stenden.inf1i.homewizard.AddChoice" />
         </activity>
-
-
-
         //First time setup
         <activity android:name=".FirstTimeTetup">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity android:name=".SetupStep2" />
         <activity android:name=".SetupStep3" />
+        <activity android:name=".edit_homewizard_switch" />
+        <activity android:name=".edit_custom_mqtt"></activity>
     </application>
 
 </manifest>
