@@ -109,8 +109,6 @@
         </activity>
         <activity android:name=".SetupStep2" />
         <activity android:name=".SetupStep3" />
-        <activity android:name=".edit_homewizard_switch" />
-        <activity android:name=".edit_custom_mqtt"></activity>
     </application>
 
 </manifest>

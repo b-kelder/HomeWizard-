@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_height="match_parent"
+    android:paddingLeft="10dp" android:paddingRight="10dp"
+    android:background="#fff" android:layout_width="300dp"
+    android:paddingTop="10dp">s
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="Name"
+        android:id="@+id/textView33" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/editCustomSwitchName"
+        android:hint="Name" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="Topic"
+        android:id="@+id/textView34" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/editCustomSwitchTopic"
+        android:layout_gravity="center_horizontal"
+        android:hint="Topic" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="Payload on"
+        android:id="@+id/textView35" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/editCustomSwitchOn"
+        android:layout_gravity="center_horizontal"
+        android:hint="Payload On" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="Payload off"
+        android:id="@+id/textView36" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/editCustomSwitchOff"
+        android:layout_gravity="center_horizontal"
+        android:hint="Payload Off" />
+
+    <Button android:layout_width="wrap_content"
+        android:layout_height="36dp"
+        android:text="Apply"
+        android:id="@+id/editCustomSwitchButton"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="5dp"
+        android:textColor="@color/background_material_light"
+        android:background="@color/design_textinput_error_color_light"
+        android:layout_gravity="center_horizontal"/>
+
+</LinearLayout>

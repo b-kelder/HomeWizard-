@@ -54,4 +54,10 @@ public class HomewizardSwitch extends BaseSwitch {
     public int getId(){
         return id;
     }
+
+    public void sendEdit(){
+        ///sw/edit/%IdVanSwitch%/%NaamVanLamp%/no/dimmer/0
+        String urlName = name.trim().replace(" ", "+");
+        MqttController.getInstance().publish("HYDRA/HMWZ/sw/edit/" + id, urlName + "/no/" + type + "/0");
+    }
 }
