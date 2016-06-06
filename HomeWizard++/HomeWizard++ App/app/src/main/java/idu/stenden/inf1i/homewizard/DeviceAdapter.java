@@ -299,7 +299,6 @@ class DeviceAdapter extends ArrayAdapter<BaseSwitch> {
                                 float[] hsv = new float[3];
                                 Color.RGBToHSV(r, g, b, hsv);
 
-
                                 float[] xyB = Util.RGBtoXYB(color);
                                 String pld = "{\"lights\":\"" + sw.name + "\", \"command\":{\"xy\": [" + String.valueOf(xyB[0]) + "," + String.valueOf(xyB[1]) + "]}, \"bri\": " + String.valueOf((int)Math.ceil(xyB[2] * 255f)) + "}";
 

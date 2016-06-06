@@ -86,29 +86,28 @@
         <activity
             android:name=".AddHueBridge"
             android:label="Add a hue bridge"
-            android:parentActivityName=".AddChoice">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="idu.stenden.inf1i.homewizard.AddChoice" />
-        </activity>
-        //Not needed??
-        <activity
-            android:name=".AddHueLights"
-            android:parentActivityName=".AddChoice">
+            android:parentActivityName=".AddChoice"
+            android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="idu.stenden.inf1i.homewizard.AddChoice" />
         </activity>
         //First time setup
-        <activity android:name=".FirstTimeTetup">
+        <activity
+            android:name=".FirstTimeTetup"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".SetupStep2" />
-        <activity android:name=".SetupStep3" />
+        <activity
+            android:name=".SetupStep2"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".SetupStep3"
+            android:screenOrientation="portrait"/>
     </application>
 
 </manifest>

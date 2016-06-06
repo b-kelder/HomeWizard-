@@ -13,5 +13,5 @@
         android:layout_height="161dp"
         android:id="@+id/imageView"
         android:background="@drawable/homewizard"
-        android:layout_marginLeft="20dp" />
+        android:layout_gravity="center_horizontal" />
 </LinearLayout>
