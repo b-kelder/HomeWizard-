@@ -182,20 +182,23 @@ public class AppDataContainer implements MqttControllerMessageCallbackListener {
                 for(int i = 0; i < jsonObject.length(); i++) {
                     JSONObject obj = jsonObject.getJSONObject(i);
                     HueSwitch hueSwitch = new HueSwitch();
+                    hueSwitch.setHueType(obj.getString("type"));
                     hueSwitch.setName(obj.getString("name"));
-                    hueSwitch.setHue(obj.getInt("hue"));
                     hueSwitch.setBrightness(obj.getInt("brightness"));
-                    hueSwitch.setSaturation(obj.getInt("saturation"));
                     hueSwitch.setStatus(obj.getBoolean("on"));
 
-                    JSONArray xy = obj.getJSONArray("xy");
-                    float x = (float)xy.getDouble(0);
-                    float y = (float)xy.getDouble(1);
-                    Log.d("AppDataContainer", "x: " + x + " y: " + y);
-                    hueSwitch.setXy(new float[]{x, y});
+                    if(hueSwitch.isColorLight()) {
 
-                    hueSwitch.setColormode(obj.getString("colormode"));
+                        hueSwitch.setHue(obj.getInt("hue"));
+                        hueSwitch.setSaturation(obj.getInt("saturation"));
+                        JSONArray xy = obj.getJSONArray("xy");
+                        float x = (float) xy.getDouble(0);
+                        float y = (float) xy.getDouble(1);
+                        Log.d("AppDataContainer", "x: " + x + " y: " + y);
+                        hueSwitch.setXy(new float[]{x, y});
 
+                        hueSwitch.setColormode(obj.getString("colormode"));
+                    }
                     hueSwitches.add(hueSwitch);
                 }
 

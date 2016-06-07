@@ -294,21 +294,28 @@ def process_hue_message(client, msg):
         print("Processing HUE message")
         print(msg.payload.decode("utf-8"))
         if(action == "get-lights"):
-            lights = hueBridge.get_light_objects()  # Get Hue lights data
+            lights = hueBridge.get_light_objects("name")  # Get Hue lights data
             lightData = []
-            for l in lights:
-                ld = {"name": l.name,
-                      "on": l.on,
-                      "colormode": l.colormode,
-                      "brightness": l.brightness,
-                      "hue": l.hue,
-                      "saturation": l.saturation,
-                      "xy": l.xy,
-                      "colortemp": l.colortemp,
-                      "colortemp_k": l.colortemp_k
-                      }
+            for l in lights.values():
+                if(l.type == "Extended color light"):
+                    ld = {"name": l.name,
+                          "type": l.type,
+                          "on": l.on,
+                          "colormode": l.colormode,
+                          "brightness": l.brightness,
+                          "hue": l.hue,
+                          "saturation": l.saturation,
+                          "xy": l.xy,
+                          "colortemp": l.colortemp,
+                          "colortemp_k": l.colortemp_k
+                          }
+                else:
+                    ld = {"name": l.name,
+                          "type": l.type,
+                          "on": l.on,
+                          "brightness": l.brightness
+                          }
                 lightData.append(ld)
-                
             jsonData = json.dumps(lightData)
             client.publish(hueBaseReturnTopic + "/" + action, jsonData)
         elif(action == "set-light"):                # Payload has to be a json string containing first and second param 

@@ -212,28 +212,39 @@ class DeviceAdapter extends ArrayAdapter<BaseSwitch> {
                 final HueSwitch hueSwitch = (HueSwitch)sw;
                 swSeekbar.setProgress(hueSwitch.getBrightness());
 
-                float[] xyB = {
-                        hueSwitch.getXy()[0],
-                        hueSwitch.getXy()[1],
-                        hueSwitch.getBrightness() / 255f
-                };
-                int color = Util.XYBtoRGB(xyB);
-                swButton.setTextColor(color);
+                final boolean isColorLight = hueSwitch.isColorLight();
+
+                if(isColorLight) {
+                    float[] xyB = {
+                            hueSwitch.getXy()[0],
+                            hueSwitch.getXy()[1],
+                            hueSwitch.getBrightness() / 255f
+                    };
+                    int color = Util.XYBtoRGB(xyB);
+                    swButton.setTextColor(color);
+                    swButton.setEnabled(true);
+                } else {
+                    swButton.setEnabled(false);
+                }
 
                 swSwitch.setChecked(sw.getStatus());
 
                 if(sw.getStatus() == false) {
-                    swButton.setEnabled(false);
+                    if(isColorLight) {
+                        swButton.setEnabled(false);
+                    }
                     swSeekbar.setEnabled(false);
                 } else {
-                    swButton.setEnabled(true);
+                    if(isColorLight) {
+                        swButton.setEnabled(true);
+                    }
                     swSeekbar.setEnabled(true);
                 }
 
                 swName.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        if(AppDataContainer.getInstance().findCustomSwitchByName("Disco Fever") != null) {
+                        if(AppDataContainer.getInstance().findCustomSwitchByName("Disco Fever") != null && hueSwitch.getHueType().equals("Extended color light")) {
                             Thread discoThread = new Thread(new Runnable() {
                                 @Override
                                 public void run() {
@@ -268,10 +279,14 @@ class DeviceAdapter extends ArrayAdapter<BaseSwitch> {
 
                         sw.setStatus(isChecked);
                         if(sw.getStatus() == false) {
-                            swButton.setEnabled(false);
+                            if(isColorLight) {
+                                swButton.setEnabled(false);
+                            }
                             swSeekbar.setEnabled(false);
                         } else {
-                            swButton.setEnabled(true);
+                            if(isColorLight) {
+                                swButton.setEnabled(true);
+                            }
                             swSeekbar.setEnabled(true);
                         }
                     }

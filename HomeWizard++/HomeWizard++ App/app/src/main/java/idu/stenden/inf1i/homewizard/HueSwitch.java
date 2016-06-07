@@ -7,7 +7,6 @@ import java.util.Arrays;
  */
 public class HueSwitch extends BaseSwitch {
 
-
     /*
     "name": l.name,
     "on": l.on,
@@ -19,6 +18,7 @@ public class HueSwitch extends BaseSwitch {
     "colortemp": l.colortemp,
     "colortemp_k": l.colortemp_k
 	*/
+    protected String hueType;
     protected String colormode;
     protected int brightness;
     protected int hue;
@@ -33,6 +33,14 @@ public class HueSwitch extends BaseSwitch {
     @Override
     public String getType() {
         return "hue";
+    }
+
+    public String getHueType() {
+        return hueType;
+    }
+
+    public void setHueType(String hueType) {
+        this.hueType = hueType;
     }
 
     public String getColormode() {
@@ -86,5 +94,9 @@ public class HueSwitch extends BaseSwitch {
         sb.append(", xy=").append(Arrays.toString(xy));
         sb.append('}');
         return sb.toString();
+    }
+
+    public boolean isColorLight() {
+        return hueType.equals("Extended color light");
     }
 }
