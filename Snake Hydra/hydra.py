@@ -328,6 +328,16 @@ def process_hue_message(client, msg):
             except Exception as e:
                 print("Error on HUE set-light payload")
                 print(e.message)
+        elif(action == "set-name"):                # Payload has to be a json object with lights (current name) and name (new name)
+            try:                                    # hueBridge.set_light(lights, command)
+                jsonData = json.loads(msg.payload.decode("utf-8"))
+                lights = jsonData["lights"]
+                name = jsonData["name"]
+
+                hueBridge.set_light(hueBridge.get_light_id_by_name(lights), "name", name)
+            except Exception as e:
+                print("Error on HUE set-name payload")
+                print(e.message)
     else:
         print("Processing HUE message, no Hue")
         # Not connected to HUE

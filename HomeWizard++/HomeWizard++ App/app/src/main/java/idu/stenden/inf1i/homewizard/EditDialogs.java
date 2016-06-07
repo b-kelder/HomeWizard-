@@ -103,15 +103,12 @@ public class EditDialogs {
                 JSONObject payload = new JSONObject();
                 try {
                     payload.put("lights", hueSwitch.getName());
-
-                    JSONObject command = new JSONObject();
-                    command.put("name", hueSwitch.getName());
-                    payload.put("command", command);
+                    payload.put("name", nameView.getText().toString());
                 } catch (JSONException e) {
                     Log.e("EditDialogs", e.getMessage());
                 }
 
-                MqttController.getInstance().publish("HYDRA/HUE/set-light", payload.toString());
+                MqttController.getInstance().publish("HYDRA/HUE/set-name", payload.toString());
 
                 // Store data in object
                 hueSwitch.setName(nameView.getText().toString());
