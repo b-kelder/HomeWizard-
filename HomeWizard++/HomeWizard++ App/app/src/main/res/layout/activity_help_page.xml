@@ -67,7 +67,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="You are required to set up a mosquitto broker server. This translates the MQTT and JSON. Use the attached Hydra-Snape script for this broker. When you did this, configure the HomeWizard++ application to use the brokers IP and port."
+            android:text="You are required to set up a mosquitto broker server. This translates the MQTT and JSON. Use the attached Hydra script for this broker. When you did this, configure the HomeWizard++ application to use the brokers IP and port."
             android:id="@+id/textView15"
             android:layout_below="@+id/textView14"
             android:layout_alignParentStart="true"
@@ -87,7 +87,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Decide if you want to use an admin-pin. This locks up your settings and device configuration with a pin code. Enable the admin-pin, decide the code you want to use, and save changes."
+            android:text="Decide if you want to use an admin-pin. This locks up your settings and device configuration with a pin code. Enable the admin-pin by clicking the switch button, decide the code you want to use, and click apply. Warning: write this code down. Once set, you will need the code to access the settings menu."
             android:id="@+id/textView17"
             android:layout_below="@+id/textView16"
             android:layout_alignParentStart="true"
