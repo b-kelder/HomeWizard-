@@ -2,11 +2,14 @@ package idu.stenden.inf1i.homewizard;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.TextView;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.w3c.dom.Text;
 
 /**
@@ -73,6 +76,45 @@ public class EditDialogs {
                 customSwitch.setTopic(topicView.getText().toString());
                 customSwitch.setPayloadOn(onView.getText().toString());
                 customSwitch.setPayloadOff(offView.getText().toString());
+
+                AppDataContainer.getInstance().notifyDataSetChanged();
+                dialog.dismiss();
+            }
+        });
+    }
+
+    public static void showHueDialog(Context context, final HueSwitch hueSwitch) {
+        final Dialog dialog = new Dialog(context);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.edit_dialog_hmwz_switch);
+        dialog.setCancelable(true);
+        dialog.show();
+
+        //// Item specific code
+        final TextView nameView = (TextView) dialog.findViewById(R.id.editHmwzSwitchName);
+        nameView.setText(hueSwitch.getName());
+
+        //// Apply button
+        final Button applyButton = (Button) dialog.findViewById(R.id.editHmwzSwitchButton);
+        applyButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                JSONObject payload = new JSONObject();
+                try {
+                    payload.put("lights", hueSwitch.getName());
+
+                    JSONObject command = new JSONObject();
+                    command.put("name", hueSwitch.getName());
+                    payload.put("command", command);
+                } catch (JSONException e) {
+                    Log.e("EditDialogs", e.getMessage());
+                }
+
+                MqttController.getInstance().publish("HYDRA/HUE/set-light", payload.toString());
+
+                // Store data in object
+                hueSwitch.setName(nameView.getText().toString());
 
                 AppDataContainer.getInstance().notifyDataSetChanged();
                 dialog.dismiss();

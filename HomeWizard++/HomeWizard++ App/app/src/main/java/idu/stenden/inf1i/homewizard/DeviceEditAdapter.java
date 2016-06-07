@@ -105,6 +105,10 @@ class DeviceEditAdapter extends ArrayAdapter<BaseSwitch> {
                         {
                             EditDialogs.showCustomSwitchDialog(getContext(), (CustomSwitch)sw);
                         }
+                        else if(HueSwitch.class.isInstance(sw))
+                        {
+                            EditDialogs.showHueDialog(getContext(), (HueSwitch)sw);
+                        }
                     }
                 });
 

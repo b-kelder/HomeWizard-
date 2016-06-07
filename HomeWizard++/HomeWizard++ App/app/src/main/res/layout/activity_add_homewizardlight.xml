@@ -53,7 +53,7 @@
             android:id="@+id/HMWZlightcode"
             android:layout_below="@+id/textView4"
             android:layout_alignParentStart="true"
-            android:layout_toStartOf="@+id/HMWZlightgenerate" />
+            android:layout_toStartOf="@+id/HMWZlightaddlearn" />
         <Button
             style="?android:attr/buttonStyleSmall"
             android:layout_width="wrap_content"
@@ -83,5 +83,14 @@
             android:id="@+id/HMWZlightdimmer"
             android:layout_below="@+id/HMWZlightgenerate"
             android:layout_alignParentStart="true" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Learn"
+            android:id="@+id/HMWZlightaddlearn"
+            android:layout_toStartOf="@+id/HMWZlightgenerate"
+            android:layout_alignBottom="@+id/HMWZlightcode"
+            android:layout_alignTop="@+id/HMWZlightgenerate" />
     </RelativeLayout>
 </ScrollView>

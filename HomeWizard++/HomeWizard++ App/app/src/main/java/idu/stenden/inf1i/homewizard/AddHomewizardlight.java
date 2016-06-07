@@ -40,6 +40,16 @@ public class AddHomewizardlight extends BaseMqttEventActivity {
             }
         });
 
+        Button learnKaku = (Button) findViewById(R.id.HMWZlightaddlearn);
+
+        learnKaku.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                MqttController controller = MqttController.getInstance();
+                controller.publish("HYDRA/HMWZ/sw", "learn");
+            }
+        });
+
         Button addHMWZ = (Button) findViewById(R.id.HMWZlightadd);
 
         addHMWZ.setOnClickListener(new View.OnClickListener() {
