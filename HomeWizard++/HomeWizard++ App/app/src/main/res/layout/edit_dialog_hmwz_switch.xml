@@ -11,12 +11,12 @@
         android:id="@+id/editHmwzSwitchName"
         android:hint="Name" />
 
-    <Button android:layout_width="wrap_content"
+    <Button android:layout_width="150dp"
         android:layout_height="36dp"
         android:text="Apply"
         android:id="@+id/editHmwzSwitchButton"
         android:layout_marginTop="10dp"
-        android:layout_marginBottom="5dp"
+        android:layout_marginBottom="10dp"
         android:textColor="@color/background_material_light"
         android:background="@color/design_textinput_error_color_light"
         android:layout_gravity="center_horizontal"/>
