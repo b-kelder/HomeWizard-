@@ -71,8 +71,8 @@ public class EditDialogs {
                 // Store data in object
                 customSwitch.setName(nameView.getText().toString());
                 customSwitch.setTopic(topicView.getText().toString());
-                customSwitch.setPayloadOn(topicView.getText().toString());
-                customSwitch.setPayloadOff(topicView.getText().toString());
+                customSwitch.setPayloadOn(onView.getText().toString());
+                customSwitch.setPayloadOff(offView.getText().toString());
 
                 AppDataContainer.getInstance().notifyDataSetChanged();
                 dialog.dismiss();

@@ -54,7 +54,6 @@ public class Disco {
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
-                //PFFF
             }
         }
     }
