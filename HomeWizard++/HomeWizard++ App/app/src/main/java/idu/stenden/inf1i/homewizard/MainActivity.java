@@ -163,7 +163,6 @@ public class MainActivity extends BaseMqttEventActivity implements NavigationVie
                     JSONObject jsonObject = Util.readHueData(this);
                     if (!jsonObject.getString("ip").isEmpty()) {
                         mqttController.publish("HYDRA/HUE/connect", jsonObject.getString("ip"));
-                        mqttController.publish("HYDRA/HUE/get-lights", "");
                     }
                 }
             } catch (JSONException e) {

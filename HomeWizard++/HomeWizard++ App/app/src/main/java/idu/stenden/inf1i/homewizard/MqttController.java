@@ -148,6 +148,28 @@ public class MqttController {
                 }
             }
         });
+
+        //
+
+        /// Displays HUE login result toasts and refresh
+        addMessageListener(new MqttControllerMessageCallbackListener() {
+            @Override
+            public void onMessageArrived(String topic, MqttMessage message) {
+
+                //Toast.makeText(getApplicationContext(), "TRIGGERED SETTINGS EVENT LISTENER " + topic, Toast.LENGTH_SHORT).show();
+                if (topic.equals("HYDRA/HUERETURN/connect")) {
+                    JSONObject json;
+                    try {
+                        json = new JSONObject(message.toString());
+                        if (json.getString("status").equals("ok")) {
+                            publish("HYDRA/HUE/get-lights", "");
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
     }
 
     public static MqttController getInstance(){
@@ -335,7 +357,6 @@ public class MqttController {
                         JSONObject jsonObject = Util.readHueData(context);
                         if (!jsonObject.getString("ip").isEmpty()) {
                             publish("HYDRA/HUE/connect", jsonObject.getString("ip"));
-                            publish("HYDRA/HUE/get-lights", "");
                         }
                     } catch(JSONException e){
                         Log.e("MainActivity", e.getMessage());

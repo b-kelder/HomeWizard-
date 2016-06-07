@@ -204,15 +204,12 @@ class DeviceAdapter extends ArrayAdapter<BaseSwitch> {
                 swName = (TextView) convertView.findViewById(R.id.rowHueTextView);
                 swSwitch = (Switch) convertView.findViewById(R.id.rowHueSwitch);
                 final SeekBar swSeekbar = (SeekBar) convertView.findViewById(R.id.seekBarHue);
-
                 final Button swButton = (Button) convertView.findViewById(R.id.rowHueButton);
-
+                final HueSwitch hueSwitch = (HueSwitch)sw;
+                final boolean isColorLight = hueSwitch.isColorLight();
 
                 swSeekbar.setMax(255);
-                final HueSwitch hueSwitch = (HueSwitch)sw;
                 swSeekbar.setProgress(hueSwitch.getBrightness());
-
-                final boolean isColorLight = hueSwitch.isColorLight();
 
                 if(isColorLight) {
                     float[] xyB = {
@@ -225,6 +222,7 @@ class DeviceAdapter extends ArrayAdapter<BaseSwitch> {
                     swButton.setEnabled(true);
                 } else {
                     swButton.setEnabled(false);
+                    swButton.setTextColor(0x00000000);
                 }
 
                 swSwitch.setChecked(sw.getStatus());
@@ -248,7 +246,7 @@ class DeviceAdapter extends ArrayAdapter<BaseSwitch> {
                             Thread discoThread = new Thread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    Disco.doDisco();
+                                    Disco.doDisco(hueSwitch.getId());
                                 }
                             });
                             discoThread.start();
@@ -265,7 +263,7 @@ class DeviceAdapter extends ArrayAdapter<BaseSwitch> {
 
                         JSONObject payload = new JSONObject();
                         try {
-                            payload.put("lights", sw.getName());
+                            payload.put("lights", hueSwitch.getId());
 
                             JSONObject command = new JSONObject();
                             command.put("on", isChecked);
@@ -315,7 +313,7 @@ class DeviceAdapter extends ArrayAdapter<BaseSwitch> {
                                 Color.RGBToHSV(r, g, b, hsv);
 
                                 float[] xyB = Util.RGBtoXYB(color);
-                                String pld = "{\"lights\":\"" + sw.name + "\", \"command\":{\"xy\": [" + String.valueOf(xyB[0]) + "," + String.valueOf(xyB[1]) + "]}, \"bri\": " + String.valueOf((int)Math.ceil(xyB[2] * 255f)) + "}";
+                                String pld = "{\"lights\":" + hueSwitch.getId() + ", \"command\":{\"xy\": [" + String.valueOf(xyB[0]) + "," + String.valueOf(xyB[1]) + "]}, \"bri\": " + String.valueOf((int)Math.ceil(xyB[2] * 255f)) + "}";
 
                                 MqttController.getInstance().publish("HYDRA/HUE/set-light", pld);
                                 hueSwitch.setXy(new float[]{xyB[0], xyB[1]});
@@ -341,7 +339,7 @@ class DeviceAdapter extends ArrayAdapter<BaseSwitch> {
                     public void onStopTrackingTouch(SeekBar seekBar) {
                         JSONObject payload = new JSONObject();
                         try {
-                            payload.put("lights", sw.getName());
+                            payload.put("lights", hueSwitch.getId());
 
                             JSONObject command = new JSONObject();
                             command.put("bri", (int)Math.ceil(swSeekbar.getProgress()));

@@ -102,7 +102,7 @@ public class EditDialogs {
 
                 JSONObject payload = new JSONObject();
                 try {
-                    payload.put("lights", hueSwitch.getName());
+                    payload.put("light", hueSwitch.getId());
                     payload.put("name", nameView.getText().toString());
                 } catch (JSONException e) {
                     Log.e("EditDialogs", e.getMessage());

@@ -23,6 +23,7 @@ public class HueSwitch extends BaseSwitch {
     protected int brightness;
     protected int hue;
     protected int saturation;
+    protected int id;
     protected float[] xy;
 
 	public HueSwitch() {
@@ -83,6 +84,13 @@ public class HueSwitch extends BaseSwitch {
         this.xy = xy;
     }
 
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     @Override
     public String toString() {

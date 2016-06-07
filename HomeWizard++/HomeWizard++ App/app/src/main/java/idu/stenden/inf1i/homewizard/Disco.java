@@ -7,7 +7,7 @@ import android.graphics.Color;
  * Created by Wouter on 03-06-16.
  */
 public class Disco {
-    public static void doDisco() {
+    public static void doDisco(int lightId) {
         int index = 0;
         int loops = 0;
         while(true) {
@@ -32,7 +32,7 @@ public class Disco {
 
 
             float[] xyB = Util.RGBtoXYB(color);
-            final String pld = "{\"lights\":1, \"command\":{\"xy\": [" + String.valueOf(xyB[0]) + "," + String.valueOf(xyB[1]) + "]}, \"bri\": " + String.valueOf((int)Math.ceil(xyB[2] * 255f)) + "}";
+            final String pld = "{\"lights\":" + lightId + ", \"command\":{\"xy\": [" + String.valueOf(xyB[0]) + "," + String.valueOf(xyB[1]) + "]}, \"bri\": " + String.valueOf((int)Math.ceil(xyB[2] * 255f)) + "}";
 
 
             if(!MqttController.getInstance().publish("HYDRA/HUE/set-light", pld, false)) {

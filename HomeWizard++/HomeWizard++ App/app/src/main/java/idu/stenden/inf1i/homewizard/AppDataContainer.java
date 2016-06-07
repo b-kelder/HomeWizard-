@@ -186,6 +186,7 @@ public class AppDataContainer implements MqttControllerMessageCallbackListener {
                     hueSwitch.setName(obj.getString("name"));
                     hueSwitch.setBrightness(obj.getInt("brightness"));
                     hueSwitch.setStatus(obj.getBoolean("on"));
+                    hueSwitch.setId(obj.getInt("id"));
 
                     if(hueSwitch.isColorLight()) {
 

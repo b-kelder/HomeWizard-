@@ -294,11 +294,13 @@ def process_hue_message(client, msg):
         print("Processing HUE message")
         print(msg.payload.decode("utf-8"))
         if(action == "get-lights"):
-            lights = hueBridge.get_light_objects("name")  # Get Hue lights data
+            lights = hueBridge.get_light_objects("id")  # Get Hue lights data
             lightData = []
-            for l in lights.values():
+            for index in lights:
+                l = lights[index]
                 if(l.type == "Extended color light"):
                     ld = {"name": l.name,
+                          "id": index,
                           "type": l.type,
                           "on": l.on,
                           "colormode": l.colormode,
@@ -311,6 +313,7 @@ def process_hue_message(client, msg):
                           }
                 else:
                     ld = {"name": l.name,
+                          "id": index,
                           "type": l.type,
                           "on": l.on,
                           "brightness": l.brightness
@@ -328,13 +331,13 @@ def process_hue_message(client, msg):
             except Exception as e:
                 print("Error on HUE set-light payload")
                 print(e.message)
-        elif(action == "set-name"):                # Payload has to be a json object with lights (current name) and name (new name)
+        elif(action == "set-name"):                # Payload has to be a json object with light (id) and name (new name)
             try:                                    # hueBridge.set_light(lights, command)
                 jsonData = json.loads(msg.payload.decode("utf-8"))
-                lights = jsonData["lights"]
+                light = jsonData["light"]
                 name = jsonData["name"]
 
-                hueBridge.set_light(hueBridge.get_light_id_by_name(lights), "name", name)
+                hueBridge.set_light(light, "name", name)
             except Exception as e:
                 print("Error on HUE set-name payload")
                 print(e.message)
