@@ -36,4 +36,8 @@ dependencies {
         exclude module: 'support-v4'
     }
     compile 'com.google.code.gson:gson:2.2.4'
+    compile 'com.madgag.spongycastle:core:1.54.0.0'
+    compile 'com.madgag.spongycastle:prov:1.54.0.0'
+    compile 'com.madgag.spongycastle:pkix:1.54.0.0'
+    compile 'com.madgag.spongycastle:pg:1.54.0.0'
 }

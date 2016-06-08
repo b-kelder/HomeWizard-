@@ -15,12 +15,21 @@ import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
+import org.eclipse.paho.client.mqttv3.internal.security.SSLSocketFactoryFactory;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
+
+import javax.net.SocketFactory;
+import javax.net.ssl.SSLSocketFactory;
 
 /**
  * Created by Wouter on 19/05/2016.
@@ -299,6 +308,14 @@ public class MqttController {
                 Log.e("MQTT", e.toString());
             }
         }
+
+        JSONObject brokerData = Util.readBrokerData(context);
+        boolean useCertificate = false;
+        try{
+            useCertificate = brokerData.getBoolean("crt");
+        } catch (JSONException e) {
+        }
+
         client =  new MqttAndroidClient(context, broker, clientId, persistence);
 
         showDialog(context, "Connecting", "Connecting to MQTT broker...", 10000);
@@ -309,6 +326,20 @@ public class MqttController {
             if(!username.isEmpty()) {
                 options.setPassword(password.toCharArray());
                 options.setUserName(username);
+            }
+
+            if(useCertificate) {
+                SslUtil sslUtil;
+                try{
+                    sslUtil = SslUtil.getInstance();
+                } catch(RuntimeException e) {
+                    sslUtil = SslUtil.newInstance(context);
+                }
+                options.setConnectionTimeout(60);
+                options.setKeepAliveInterval(60);
+                //TODO: Add certificate and keystore. See http://rijware.com/accessing-a-secure-mqtt-broker-with-android/
+                //options.setSocketFactory(sslUtil.getSocketFactory(rawCertificateResourceId, keystorePassword));
+                options.setCleanSession(true);
             }
 
             client.connect(options, context, new IMqttActionListener() {

@@ -200,13 +200,14 @@ public class Util {
         return null;
     }
 
-    public static void saveBrokerData(Context context, String ip, String port, String username, String password){
+    public static void saveBrokerData(Context context, String ip, String port, String username, String password, boolean useCrt){
         JSONObject object = new JSONObject();
         try{
             object.put("ip", ip);
             object.put("port", port);
             object.put("username", username);
             object.put("password", password);
+            object.put("crt", useCrt);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -218,7 +219,7 @@ public class Util {
         try {
             object = new JSONObject(readFile(context, "broker.json"));
         } catch (JSONException e) {
-            saveBrokerData(context, "", "", "", "");
+            saveBrokerData(context, "", "", "", "", false);
             try {
                 object = new JSONObject(readFile(context, "broker.json"));
             } catch (JSONException e1) {

@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Switch;
@@ -198,6 +199,7 @@ public class Settings extends BaseMqttEventActivity{
         final EditText brokerPort = (EditText) findViewById(R.id.brokerPort);
         final EditText brokerUser = (EditText) findViewById(R.id.brkUsername);
         final EditText brokerPass = (EditText) findViewById(R.id.brkPassword);
+        final CheckBox brokerCrt = (CheckBox) findViewById(R.id.brkUseCrt);
 
         try {
             JSONObject loginSettingsFile = Util.readLoginData(this);
@@ -209,6 +211,7 @@ public class Settings extends BaseMqttEventActivity{
             brokerPort.setText(brokerSettings.getString("port"));
             brokerUser.setText(brokerSettings.getString("username"));
             brokerPass.setText(brokerSettings.getString("password"));
+            brokerCrt.setChecked(brokerSettings.getBoolean("crt"));
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -227,12 +230,12 @@ public class Settings extends BaseMqttEventActivity{
         brokerSettings.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 //publish email/password
-                Util.saveBrokerData(Settings.context, brokerIP.getText().toString(), brokerPort.getText().toString(), brokerUser.getText().toString(), brokerPass.getText().toString());
+                Util.saveBrokerData(Settings.context, brokerIP.getText().toString(), brokerPort.getText().toString(), brokerUser.getText().toString(), brokerPass.getText().toString(), brokerCrt.isChecked());
                 Toast toast = Toast.makeText(getApplicationContext(), "Trying to connect to broker", Toast.LENGTH_SHORT);
                 toast.show();
 
                 try {
-                    JSONObject file =Util.readBrokerData(Settings.context);
+                    JSONObject file = Util.readBrokerData(Settings.context);
                     mqttController.connect("tcp://" + file.getString("ip") + ":" + file.getString("port"), "Homewizard++", file.getString("username"), file.getString("password"), Settings.context);
                 } catch (JSONException e) {
                     //TODO: Fix broker data instead of showing misleading toasts
@@ -267,6 +270,7 @@ public class Settings extends BaseMqttEventActivity{
         final EditText brokerPort = (EditText) findViewById(R.id.brokerPort);
         final EditText brokerUser = (EditText) findViewById(R.id.brkUsername);
         final EditText brokerPass = (EditText) findViewById(R.id.brkPassword);
+        final CheckBox brokerCrt = (CheckBox) findViewById(R.id.brkUseCrt);
 
         try {
             JSONObject loginSettingsFile = Util.readLoginData(this);
@@ -279,6 +283,7 @@ public class Settings extends BaseMqttEventActivity{
             brokerPort.setText(brokerSettings.getString("port"));
             brokerUser.setText(brokerSettings.getString("username"));
             brokerPass.setText(brokerSettings.getString("password"));
+            brokerCrt.setChecked(brokerSettings.getBoolean("crt"));
 
         } catch (Exception e) {
             e.printStackTrace();
