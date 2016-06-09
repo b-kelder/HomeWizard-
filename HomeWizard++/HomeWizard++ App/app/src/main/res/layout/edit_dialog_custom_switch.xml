@@ -6,6 +6,15 @@
     android:paddingTop="10dp">
 
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Edit device"
+        android:id="@+id/textView38"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="10dp"
+        android:textSize="25dp" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -18,7 +27,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/editCustomSwitchName"
-        android:hint="Name" />
+        android:hint="Name"
+        android:layout_marginBottom="10dp" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -32,7 +42,8 @@
         android:layout_height="wrap_content"
         android:id="@+id/editCustomSwitchTopic"
         android:layout_gravity="center_horizontal"
-        android:hint="Topic" />
+        android:hint="Topic"
+        android:layout_marginBottom="10dp" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -46,7 +57,8 @@
         android:layout_height="wrap_content"
         android:id="@+id/editCustomSwitchOn"
         android:layout_gravity="center_horizontal"
-        android:hint="Payload On" />
+        android:hint="Payload On"
+        android:layout_marginBottom="10dp" />
 
     <TextView
         android:layout_width="wrap_content"

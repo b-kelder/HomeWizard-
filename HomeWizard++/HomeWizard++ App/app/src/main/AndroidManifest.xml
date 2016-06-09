@@ -44,7 +44,7 @@
         //The devices manage activity
         <activity
             android:name=".Managelights"
-            android:label="@string/title_activity_managelights"
+            android:label="Device manager"
             android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
@@ -85,7 +85,7 @@
         //Add hue bridge
         <activity
             android:name=".AddHueBridge"
-            android:label="Add a hue bridge"
+            android:label="Add hue bridge"
             android:parentActivityName=".AddChoice"
             android:screenOrientation="portrait">
             <meta-data
