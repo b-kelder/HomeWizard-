@@ -169,7 +169,9 @@ class DeviceAdapter extends ArrayAdapter<BaseSwitch> {
                     swBar.setEnabled(!homewizardSwitch.isUpdating());
                 } else {
                     //CustomSwitch
-                    swBar.setMax(100);
+                    CustomSwitch customSwitch = (CustomSwitch)sw;
+
+                    swBar.setMax(Integer.parseInt(customSwitch.getPayloadOff()));
                     swBar.setProgress(sw.getDimmer());
                     swBar.setEnabled(true);
                 }

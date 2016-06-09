@@ -100,12 +100,4 @@ public class CustomSwitch extends BaseSwitch {
     public void setRGB(String rgb){
         this.rgb = rgb;
     }
-
-    public String getPayloadButton(){
-        return payloadOn;
-    }
-
-    public void setPayloadButton(String payloadButton){
-        this.payloadOn = payloadButton;
-    }
 }

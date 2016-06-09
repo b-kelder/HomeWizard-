@@ -38,16 +38,14 @@ public class AddCustomMqtt extends AppCompatActivity {
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 if(b) {
                     payloadOn.setVisibility(View.GONE);
-                    payloadOff.setVisibility(View.GONE);
-                    payloadOffText.setVisibility(View.GONE);
+                    payloadOffText.setText("Max Value:");
                     payloadOnText.setVisibility(View.GONE);
                     isRGB.setEnabled(false);
                     isButton.setEnabled(false);
                     isText.setEnabled(false);
                 } else {
                     payloadOn.setVisibility(View.VISIBLE);
-                    payloadOff.setVisibility(View.VISIBLE);
-                    payloadOffText.setVisibility(View.VISIBLE);
+                    payloadOffText.setText("MQTT Payload (switch state off):");
                     payloadOnText.setVisibility(View.VISIBLE);
                     isRGB.setEnabled(true);
                     isButton.setEnabled(true);
@@ -115,10 +113,11 @@ public class AddCustomMqtt extends AppCompatActivity {
 
         addHMWZ.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                if (!customName.getText().toString().isEmpty() && !customTopic.getText().toString().isEmpty() && !payloadOff.getText().toString().isEmpty() && !payloadOn.getText().toString().isEmpty()
-                        || (!customName.getText().toString().isEmpty() && !customTopic.getText().toString().isEmpty()) && isDimmer.isChecked()
-                        || (!customName.getText().toString().isEmpty() && !customTopic.getText().toString().isEmpty()) && isText.isChecked()) {
+                String regexStr = "^[0-9]*$";
 
+                if (!customName.getText().toString().isEmpty() && !customTopic.getText().toString().isEmpty() && !payloadOff.getText().toString().isEmpty() && !payloadOn.getText().toString().isEmpty()
+                        || (!customName.getText().toString().isEmpty() && !customTopic.getText().toString().isEmpty()) && isDimmer.isChecked() && payloadOff.getText().toString().trim().matches(regexStr)
+                        || (!customName.getText().toString().isEmpty() && !customTopic.getText().toString().isEmpty()) && isText.isChecked()) {
                     String type = "switch";
                     if(isDimmer.isChecked()) {
                         type = "dimmer";

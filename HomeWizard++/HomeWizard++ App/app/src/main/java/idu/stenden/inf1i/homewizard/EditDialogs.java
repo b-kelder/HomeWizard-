@@ -66,8 +66,7 @@ public class EditDialogs {
         if(customSwitch.getType().equals("dimmer")) {
             onView.setVisibility(View.GONE);
             onText.setVisibility(View.GONE);
-            offView.setVisibility(View.GONE);
-            offText.setVisibility(View.GONE);
+            offText.setText("Max Value:");
         } else if(customSwitch.getType().equals("button")) {
             offText.setText("Button text:");
             onText.setText("MQTT Payload:");
