@@ -68,23 +68,29 @@ def homewizard_logon(username, password):
 # and connect directly via url. In this case password should be the homewizard's password
 # Returns None on failure
 #
-def homewizard_connect(username, password, local=False):
+def homewizard_connect(username, password, local=False, ip=None):
     # TODO: Remove this
     if(HARDCODED_CONNECT):
-        return "http://192.168.1.104/1234567890"
-    
+        #return "http://192.168.1.104/1234567890"
+        pass
+
     if(local):
-        try:
-            response = urllib.request.urlopen("http://gateway.homewizard.nl/discovery.php")
-        except urllib.request.URLError:
-            print("Could not reach http://gateway.homewizard.nl/discovery.php")
-            return None
+        if ip is None:
+            try:
+                response = urllib.request.urlopen("http://gateway.homewizard.nl/discovery.php")
+            except urllib.request.URLError:
+                print("Could not reach http://gateway.homewizard.nl/discovery.php")
+                return None
+            else:
+                data = json.loads(response.read().decode("utf-8"))
+                if(data["status"] == "ok" and data["ip"] != ""):
+                    url = "http://" + data["ip"] + "/" + password
+                    print("Got local HomeWizard url", url)
+                    return url
         else:
-            data = json.loads(response.read().decode("utf-8"))
-            if(data["status"] == "ok" and data["ip"] != ""):
-                url = "http://" + data["ip"] + "/" + password
-                print("Got local HomeWizard url", url)
-                return url
+            url = "http://" + ip + "/" + password
+            print("Got local HomeWizard url", url)
+            return url
     else:
         jsonData = homewizard_logon(username, password)
         if(jsonData != None):
@@ -122,14 +128,14 @@ def on_message(client, userdata, msg):
     
     if(msg.topic.startswith(homewizardBaseTopic)):
         print(get_time_string(), "Recieved message for HomeWizard at", msg.topic, str(msg.payload))
-        # Start a thread
+        # Process each message in a seperate thread to minimise waiting for IO (url requests)
         if homewizardBaseUrl is not None:
             threading.Thread(target = process_message, args = (client, msg, 1)).start()
         else:
             publish_fail_msg(client, msg, 4)
             
     elif(msg.topic.startswith(hydraStatusTopic)):
-        # Respond to STS with HYD to indicate we are still running
+        # get-status returns some data about our status
         if(msg.payload.decode("utf-8") == "get-status"):
             serial = ""
             if homewizardBaseUrl is not None:
@@ -155,9 +161,10 @@ def on_message(client, userdata, msg):
 # This is used when trying to log into the HomeWizard
 #
 def publish_auth_fail_msg(client, error):
-    # The format of this json object is similar to the HomeWizard's own errors
+    # The format of this object is similar to the HomeWizard's own errors
     errorMsg = {70: 'Could not login to HomeWizard',
-                71: 'Invalid payload'}
+                71: 'Invalid payload',
+                72: 'Already connected to HomeWizard'}
     
     data = {'status': 'failed_hydra',
             'error': error,
@@ -173,8 +180,8 @@ def publish_auth_fail_msg(client, error):
 # and we have no response from the HomeWizard
 #
 def publish_fail_msg(client, msg, error):
-    # The format of this json object is similar to the HomeWizard's own errors
-    errorMsg = {1: 'Url does not exist',
+    # The format of this object is similar to the HomeWizard's own errors
+    errorMsg = {1: 'HomeWizard url could not be reached',
                 2: 'Cannot login to HomeWizard',
                 3: 'Connection to HomeWizard was lost',
                 4: 'Not logged in to any HomeWizard'}
@@ -209,23 +216,26 @@ def process_auth_request(client, msg):
 
         if(loginData["type"] == "login"):
             print(get_time_string(), "Recieved connection request for HomeWizard")
-            urlResult = homewizard_connect(loginData["email"], loginData["password"], False)
-            if urlResult is None:
-                # 7X errors are login errors
-                print(get_time_string(), "Could not connect to HomeWizard")
-                publish_auth_fail_msg(client, 70)
-            else:
-                # Publish result                
-                data = {'status': 'ok',
-                    'request':{'route': 'hydralogin'},
-                    'serial': get_serial(urlResult)}
-                string = json.dumps(data)
-                client.publish(hydraAuthTopic + "/results", string, BASE_QOS)
-                homewizardBaseUrl = urlResult
+            if homewizardBaseUrl is None:
+                urlResult = homewizard_connect(loginData["email"], loginData["password"], False)
+                if urlResult is None:
+                    print(get_time_string(), "Could not connect to HomeWizard")
+                    publish_auth_fail_msg(client, 70)
+                else:
+                    # Publish result
+                    data = {'status': 'ok',
+                        'request':{'route': 'hydralogin'},
+                        'serial': get_serial(urlResult)}
+                    string = json.dumps(data)
+                    client.publish(hydraAuthTopic + "/results", string, BASE_QOS)                
 
-                # Update globals
-                username = loginData["email"]
-                password = loginData["password"]
+                    # Update globals
+                    homewizardBaseUrl = urlResult
+                    username = loginData["email"]
+                    password = loginData["password"]
+            else:
+                print(get_time_string(), "Already connected to HomeWizard!")
+                publish_auth_fail_msg(client, 72)
                 
         elif(loginData["type"] == "disconnect"):
             print(get_time_string(), "Recieved disconnect request for HomeWizard")
@@ -249,7 +259,7 @@ def process_auth_request(client, msg):
 #
 def homewizard_reconnect():
     global homewizardBaseUrl
-    homewizardBaseUrl = homewizard_connect(username, password, local)
+    homewizardBaseUrl = homewizard_connect(username, password, local, ip)
 
 
 #
@@ -259,8 +269,8 @@ def hue_connect(ip):
     global hueBridge
     hueBridge = phue.Bridge(ip)
     try:
-         # WARNING: If Hue data is SAVED, then this will always succeed, even if the Hue isn't actually on the network!
-        hueBridge.connect()             # Press on the Hue button before this here
+         # Note: If Hue data is saved, then this will always succeed, even if the Hue isn't actually on the network!
+        hueBridge.connect()             # Press on the Hue button before this line runs
     except:
         print("Error connecting to Hue", ip, "Check if it's connected to the network and make sure the button is pressed.")
         errorData = {
@@ -276,12 +286,14 @@ def hue_connect(ip):
             "username": hueBridge.username}
         client.publish(hueBaseReturnTopic + "/connect", json.dumps(errorData))
 
+
 #
 # Processes an incoming message for the Philips Hue
 #
 # Actions:
 # get-lights                    returns a list of all lights
 # set-light                     sets light settings, takes a json object with params for set_light function
+# set-name                      sets light name, takes a json object with light id and name
 # connect                       connects to a Hue bridge with the IP in the payload
 #
 def process_hue_message(client, msg):
@@ -294,33 +306,39 @@ def process_hue_message(client, msg):
         print("Processing HUE message")
         print(msg.payload.decode("utf-8"))
         if(action == "get-lights"):
-            lights = hueBridge.get_light_objects("id")  # Get Hue lights data
-            lightData = []
-            for index in lights:
-                l = lights[index]
-                if(l.type == "Extended color light"):
-                    ld = {"name": l.name,
-                          "id": index,
-                          "type": l.type,
-                          "on": l.on,
-                          "colormode": l.colormode,
-                          "brightness": l.brightness,
-                          "hue": l.hue,
-                          "saturation": l.saturation,
-                          "xy": l.xy,
-                          "colortemp": l.colortemp,
-                          "colortemp_k": l.colortemp_k
-                          }
-                else:
-                    ld = {"name": l.name,
-                          "id": index,
-                          "type": l.type,
-                          "on": l.on,
-                          "brightness": l.brightness
-                          }
-                lightData.append(ld)
-            jsonData = json.dumps(lightData)
-            client.publish(hueBaseReturnTopic + "/" + action, jsonData)
+            try:
+                lights = hueBridge.get_light_objects("id")  # Get Hue lights data
+            except Exception as e:
+                print("Error on HUE get-lights")
+            else:
+                lightData = []
+                for index in lights:
+                    l = lights[index]
+                    # Make a nice package of the light's status
+                    # TODO: Add proper support for other light types
+                    if(l.type == "Extended color light"):
+                        ld = {"name": l.name,
+                              "id": index,
+                              "type": l.type,
+                              "on": l.on,
+                              "colormode": l.colormode,
+                              "brightness": l.brightness,
+                              "hue": l.hue,
+                              "saturation": l.saturation,
+                              "xy": l.xy,
+                              "colortemp": l.colortemp,
+                              "colortemp_k": l.colortemp_k
+                              }
+                    else:
+                        ld = {"name": l.name,
+                              "id": index,
+                              "type": l.type,
+                              "on": l.on,
+                              "brightness": l.brightness
+                              }
+                    lightData.append(ld)
+                jsonData = json.dumps(lightData)
+                client.publish(hueBaseReturnTopic + "/" + action, jsonData)
         elif(action == "set-light"):                # Payload has to be a json string containing first and second param 
             try:                                    # hueBridge.set_light(lights, command)
                 jsonData = json.loads(msg.payload.decode("utf-8"))
@@ -330,9 +348,8 @@ def process_hue_message(client, msg):
                 hueBridge.set_light(lights, command)
             except Exception as e:
                 print("Error on HUE set-light payload")
-                print(e.message)
         elif(action == "set-name"):                # Payload has to be a json object with light (id) and name (new name)
-            try:                                    # hueBridge.set_light(lights, command)
+            try:
                 jsonData = json.loads(msg.payload.decode("utf-8"))
                 light = jsonData["light"]
                 name = jsonData["name"]
@@ -340,10 +357,9 @@ def process_hue_message(client, msg):
                 hueBridge.set_light(light, "name", name)
             except Exception as e:
                 print("Error on HUE set-name payload")
-                print(e.message)
     else:
-        print("Processing HUE message, no Hue")
         # Not connected to HUE
+        print("Processing HUE message, but no Hue")
         errorData = {
             "status": "hydra_failed",
             "error": 99,
@@ -360,25 +376,24 @@ def process_message(client, msg, attempt):
     global homewizardBaseUrl
     global reconnectThread
 
-    # FAIL STATE 3: ATTEMPT LIMIT REACHED
+    # Fail 3: Several attempts failed, just end here
     if(attempt > 3):
         print(get_time_string(), "Hit attempt limit for message at", msg.topic, str(msg.payload))
         publish_fail_msg(client, msg, 3)
         return
     
     try:
-        # url is base url plus topic minus the base topic
+        # url consists of topic plus payload. Keep this in mind when sending messages. Slash is added between payload and topic.
         url = homewizardBaseUrl + msg.topic.replace(homewizardBaseTopic, "") + "/" + msg.payload.decode("utf-8")
         response = urllib.request.urlopen(url)    
     except urllib.request.URLError:
-        # FAIL STATE 1: URL DOES NOT EXIST
+        # Fail 1: Can not reach url
         print(get_time_string(), "HomeWizard url could not be reached for", msg.topic, str(msg.payload))
         publish_fail_msg(client, msg, 1)
     except http.client.RemoteDisconnected as e:
         print(get_time_string(), e)
         publish_fail_msg(client, msg, 3)
     else:
-        # TODO: QoS?
         # Publish result on base return topic with same topic as incoming message
         print(get_time_string(), "Processed message for HomeWizard at", msg.topic, str(msg.payload))
         result = response.read().decode("utf-8")
@@ -404,7 +419,7 @@ def process_message(client, msg, attempt):
                 reconnectThread.join()
                 
                 if homewizardBaseUrl is None:
-                    # FAIL STATE 2: FAILED AND CAN'T LOGIN
+                    # Fail 2: Can't reconnect
                     print(get_time_string(), "Could not reconnect to HomeWizard")
                     publish_fail_msg(client, msg, 2)
                 else:
@@ -438,6 +453,7 @@ hueBridge = None
 username = None
 password = None
 local = False
+ip = None
 brokerAddr = None
 brokerPort = None
 brokerUser = None
@@ -461,14 +477,14 @@ reconnectThread = None
 if __name__ == '__main__':
     
     
-    print("Snake Hydra Protocol Translator - V0.4")
+    print("Snake Hydra Protocol Translator - V0.45")
     print("--------------------------------------")
 
     # Parse params
     argv = sys.argv[1:]
 
     try:
-        opts, args = getopt.getopt(argv,"hb:s:x:")#u:p:l
+        opts, args = getopt.getopt(argv,"hb:s:x:p:i:l")#u:p:l
     except getopt.GetoptError:
         print("Type -h for help")
         sys.exit()
@@ -478,18 +494,19 @@ if __name__ == '__main__':
                 if opt == '-h':
                     print("Snake Hydra help")
 ##                    print("-u USERNAME -- Username for the HomeWizard account")
-##                    print("-p PASSWORD -- Password for the HomeWizard (account)")
+                    print("-p PASSWORD -- Password for the HomeWizard (account)")
                     print("-b IP:PORT  -- IP and Port for MQTT broker")
                     print("-s PATH     -- Path to MQTT server TSL certificate")
                     print("-x USER:PW  -- Username and password for MQTT server")
                     print("-l          -- Connection to HomeWizard local instead of via cloud")
+                    print("-i IP       -- Optional HomeWizard IP for local connection")
                     sys.exit()
 ##                elif opt in ("-u"):
 ##                    username = arg
-##                elif opt in ("-p"):
-##                    password = arg
-##                elif opt in ("-l"):
-##                    local = True
+                elif opt in ("-p"):
+                    password = arg
+                elif opt in ("-l"):
+                    local = True
                 elif opt in ("-b"):
                     brokerAddr = arg.split(':')[0]
                     brokerPort = int(arg.split(':')[1])
@@ -499,11 +516,18 @@ if __name__ == '__main__':
                 elif opt in ("-x"):
                     brokerUser = arg.split(':')[0]
                     brokerPass = arg.split(':')[1]
+                elif opt in ("-i"):
+                    ip = arg;
             except:
                 print("Something went wrong trying to parse the arguments. Please check and try again")
                 print("Type -h for help")
                 sys.exit()
-                
+
+        if local:
+            if password is None:
+                print("Password required for local HomeWizard")
+                sys.exit()
+
 ##        if username is not None:
 ##            if password is None:
 ##                print("Password required for username", username)
@@ -521,27 +545,39 @@ if __name__ == '__main__':
             print("MQTT Broker address and port IP:PORT required")
             sys.exit()
 
+    # Local connect
+    if local:
+        if ip is None:
+            homewizardBaseUrl = homewizard_connect(None, password, local)
+            if homewizardBaseUrl is None:
+                print("Could not connect to HomeWizard")
+                sys.exit()
+        else:
+            homewizardBaseUrl = homewizard_connect(None, password, local, ip)
+            if homewizardBaseUrl is None:
+                print("Could not connect to HomeWizard at ip", ip)
+                sys.exit()
+
     #homewizardBaseUrl = homewizard_connect(username, password, local)
     #if homewizardBaseUrl is None:
     #    print("Could not connect to HomeWizard")
     #    sys.exit()
 
-    # Start MQTT client
+    # MQTT client setup
     client = mqtt.Client()
     client.on_connect = on_connect
     client.on_message = on_message
     if brokerUser is not None:
         client.username_pw_set(brokerUser, brokerPass)
 
-    # TODO: Better error handling
     try:
         if(tls):
-            ####
+            # Get absolute certificate file path
             import os
-            script_dir = os.path.dirname(__file__) #<-- absolute dir the script is in
+            script_dir = os.path.dirname(__file__)
             client.tls_set(os.path.join(script_dir, certFile))
             print("Using cert", certFile)
-            ####
+            
         client.connect(brokerAddr, brokerPort, 60)
     except socket.gaierror:
         print("Could not connect to server at", brokerAddr)
@@ -550,14 +586,19 @@ if __name__ == '__main__':
         print("Check server address")
     except ConnectionAbortedError:
         print("Connection aborted")
+    except Exception as e:
+        print("Encountered unexpected exception on startup")
+        print(e)
     else:
         client.loop_start()
 
+        # User input
         inputstring = ""
         inp_norm = inputstring.lower()
         while(inp_norm not in('quit', 'exit')):
             inputstring = input("")
             inp_norm = inputstring.lower()
+            
             if(inp_norm == "status"):
                 print("Status report")
                 print("URL:", homewizardBaseUrl)
@@ -567,12 +608,12 @@ if __name__ == '__main__':
                     print("Hue: Not connected")
                 print("broker:", brokerAddr, ":", brokerPort)
             else:
+                # DEBUG: Treat input as python code
                 try:
                     exec(inputstring)
                 except Exception as e:
                     print(e)
-
-        # Clean up
+        #
         client.disconnect()
 
 
