@@ -98,7 +98,6 @@ class DeviceEditAdapter extends ArrayAdapter<BaseSwitch> {
 
                         if(HomewizardSwitch.class.isInstance(sw))
                         {
-                            //
                             EditDialogs.showHomeWizardSwitchDialog(getContext(), (HomewizardSwitch)sw);
                         }
                         else if(CustomSwitch.class.isInstance(sw))

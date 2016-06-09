@@ -55,6 +55,8 @@ public class EditDialogs {
         final TextView topicView = (TextView) dialog.findViewById(R.id.editCustomSwitchTopic);
         final TextView onView = (TextView) dialog.findViewById(R.id.editCustomSwitchOn);
         final TextView offView = (TextView) dialog.findViewById(R.id.editCustomSwitchOff);
+        final TextView offText = (TextView) dialog.findViewById(R.id.editCustomSwitchOffText);
+        final TextView onText = (TextView) dialog.findViewById(R.id.editCustomSwitchOnText);
 
         nameView.setText(customSwitch.getName());
         topicView.setText(customSwitch.getTopic());
@@ -64,6 +66,9 @@ public class EditDialogs {
         if(customSwitch.getType().equals("dimmer")) {
             onView.setEnabled(false);
             offView.setEnabled(false);
+        } else if(customSwitch.getType().equals("button")) {
+            offText.setText("Button text:");
+            onText.setText("MQTT Payload:");
         }
 
         //// Apply button

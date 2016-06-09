@@ -43,6 +43,11 @@ public class CustomSwitch extends BaseSwitch {
         MqttController.getInstance().publish(topic, "" + rgb);
     }
 
+    @Override
+    public void sendButton() {
+        MqttController.getInstance().publish(topic, "" + payloadOn);
+    }
+
     public String getTopic() {
         return topic;
     }
@@ -92,5 +97,13 @@ public class CustomSwitch extends BaseSwitch {
 
     public void setRGB(String rgb){
         this.rgb = rgb;
+    }
+
+    public String getPayloadButton(){
+        return payloadOn;
+    }
+
+    public void setPayloadButton(String payloadButton){
+        this.payloadOn = payloadButton;
     }
 }

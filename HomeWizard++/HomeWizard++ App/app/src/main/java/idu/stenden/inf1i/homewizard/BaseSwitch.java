@@ -20,6 +20,9 @@ public abstract class BaseSwitch {
     public void sendRGB() {
     }
 
+    public void sendButton() {
+    }
+
     public boolean respondToInput() {
         return respondToInput;
     }

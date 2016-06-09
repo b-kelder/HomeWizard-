@@ -44,7 +44,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:text="MQTT Topic"
+            android:text="MQTT Topic:"
             android:id="@+id/textView6"
             android:layout_below="@+id/customName"
             android:layout_alignParentStart="true" />
@@ -61,8 +61,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:text="MQTT Payload (switch state off)"
-            android:id="@+id/textView7"
+            android:text="MQTT Payload (switch state off):"
+            android:id="@+id/payLoadOffText"
             android:layout_below="@+id/customDimmer"
             android:layout_alignParentStart="true"
             android:layout_marginTop="10dp" />
@@ -71,7 +71,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/payloadStateoff"
-            android:layout_below="@+id/textView7"
+            android:layout_below="@+id/payLoadOffText"
             android:layout_alignParentStart="true"
             android:layout_alignEnd="@+id/customMqttTopic" />
 
@@ -79,8 +79,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:text="MQTT Payload (switch state on)"
-            android:id="@+id/textView8"
+            android:text="MQTT Payload (switch state on):"
+            android:id="@+id/payLoadOnText"
             android:layout_below="@+id/payloadStateoff"
             android:layout_alignParentStart="true" />
 
@@ -88,7 +88,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/payloadStateon"
-            android:layout_below="@+id/textView8"
+            android:layout_below="@+id/payLoadOnText"
             android:layout_alignParentStart="true"
             android:layout_alignEnd="@+id/payloadStateoff" />
 
@@ -106,22 +106,31 @@
             android:layout_alignParentStart="true" />
 
         <CheckBox
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Is dimmer"
-        android:id="@+id/customDimmer"
-        android:layout_below="@+id/customMqttTopic"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="10dp" />
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Is dimmer"
+            android:id="@+id/customDimmer"
+            android:layout_below="@+id/customMqttTopic"
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="10dp" />
 
         <CheckBox
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Is RGB"
             android:id="@+id/customRGB"
-            android:layout_above="@+id/textView7"
-            android:layout_centerHorizontal="true"
-            android:checked="false" />
+            android:checked="false"
+            android:layout_alignTop="@+id/customDimmer"
+            android:layout_centerHorizontal="true" />
+
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Is button"
+            android:id="@+id/customButton"
+            android:checked="false"
+            android:layout_above="@+id/payLoadOffText"
+            android:layout_alignEnd="@+id/customMqttTopic" />
 
     </RelativeLayout>
 </ScrollView>

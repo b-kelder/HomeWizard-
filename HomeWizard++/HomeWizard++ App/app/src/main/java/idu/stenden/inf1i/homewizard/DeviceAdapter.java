@@ -29,11 +29,12 @@ import idu.stenden.inf1i.homewizard.ColorPickerDialog.OnColorChangedListener;
 
 class DeviceAdapter extends ArrayAdapter<BaseSwitch> {
 
-    private static final int VIEWTYPE_SWITCH    = 0;
-    private static final int VIEWTYPE_DIMMER    = 1;
-    private static final int VIEWTYPE_COLORPICKER = 2;
-    private static final int VIEWTYPE_HUE       = 3;
-    private static final int VIEWTYPE_SEPARATOR = 4;
+    private static final int VIEWTYPE_SWITCH        = 0;
+    private static final int VIEWTYPE_DIMMER        = 1;
+    private static final int VIEWTYPE_COLORPICKER   = 2;
+    private static final int VIEWTYPE_HUE           = 3;
+    private static final int VIEWTYPE_BUTTON        = 4;
+    private static final int VIEWTYPE_SEPARATOR     = 5;
     private static final int VIEWTYPE_COUNT = VIEWTYPE_SEPARATOR + 1;
     final Context context = getContext();
 
@@ -55,6 +56,8 @@ class DeviceAdapter extends ArrayAdapter<BaseSwitch> {
             return VIEWTYPE_COLORPICKER;
         }if(sw.getType().equals("hue")){
             return VIEWTYPE_HUE;
+        }if(sw.getType().equals("button")){
+            return VIEWTYPE_BUTTON;
         }if(sw.getType().equals("separator")){
             return VIEWTYPE_SEPARATOR;
         } else {
@@ -87,6 +90,9 @@ class DeviceAdapter extends ArrayAdapter<BaseSwitch> {
                     break;
                 case VIEWTYPE_HUE:
                     convertView = LayoutInflater.from(getContext()).inflate(R.layout.row_hue, parent, false);
+                    break;
+                case VIEWTYPE_BUTTON:
+                    convertView = LayoutInflater.from(getContext()).inflate(R.layout.row_button, parent, false);
                     break;
                 case VIEWTYPE_SEPARATOR:
                     convertView = LayoutInflater.from(getContext()).inflate(R.layout.row_seperator, parent, false);
@@ -440,6 +446,24 @@ class DeviceAdapter extends ArrayAdapter<BaseSwitch> {
 
                     }
                 });
+
+            } break;
+            case VIEWTYPE_BUTTON: {
+                //Treat it as a switch
+                swName = (TextView) convertView.findViewById(R.id.rowButtonTextView);
+                final Button swButton = (Button) convertView.findViewById(R.id.rowButtonButton);
+                final CustomSwitch customSwitch = (CustomSwitch)sw;
+
+                //set button text
+                swButton.setText(customSwitch.getPayloadOff());
+
+                swButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        customSwitch.sendButton();
+                    }
+                });
+
 
             } break;
             case VIEWTYPE_SEPARATOR: {
