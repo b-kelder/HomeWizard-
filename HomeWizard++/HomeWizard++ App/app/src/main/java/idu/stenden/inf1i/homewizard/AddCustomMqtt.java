@@ -52,7 +52,7 @@ public class AddCustomMqtt extends AppCompatActivity {
                     }if(isRGB.isChecked()) {
                         type = "colorpicker";
                     }
-					AppDataContainer.getInstance().addCustomSwitch(new CustomSwitch(customName.getText().toString(), customTopic.getText().toString(), payloadOn.getText().toString(), payloadOff.getText().toString(), type, false, 0, null));
+					AppDataContainer.getInstance().addCustomSwitch(new CustomSwitch(customName.getText().toString(), customTopic.getText().toString(), payloadOn.getText().toString(), payloadOff.getText().toString(), type, false, 0, "0,0,0"));
                     AppDataContainer.getInstance().notifyDataSetChanged();
 					AppDataContainer.getInstance().save();
 

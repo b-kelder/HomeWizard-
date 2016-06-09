@@ -1,6 +1,7 @@
 package idu.stenden.inf1i.homewizard;
 
 import android.graphics.Color;
+import android.util.Log;
 
 /**
  * Created by Wouter on 26-05-16.
@@ -9,7 +10,7 @@ public class CustomSwitch extends BaseSwitch {
     private String topic;
     private String payloadOn;
     private String payloadOff;
-    private String rgb;
+    private String rgb = "0,0,0";
 
     public CustomSwitch(String name, String type) {
         this.name = name;
@@ -80,8 +81,12 @@ public class CustomSwitch extends BaseSwitch {
 
     public int getRGBInt(){
         int color;
-        String[] vals = rgb.split(",");
-        color = Color.rgb(Integer.parseInt(vals[0]), Integer.parseInt(vals[1]), Integer.parseInt(vals[1]));
+        try {
+            String[] vals = rgb.split(",");
+            color = Color.rgb(Integer.parseInt(vals[0]), Integer.parseInt(vals[1]), Integer.parseInt(vals[1]));
+        } catch(Exception e){
+            color = Color.rgb(255,255,255);
+        }
         return color;
     }
 
