@@ -25,6 +25,7 @@ public class AddCustomMqtt extends AppCompatActivity {
 
         final Context toastContext = this;
         final CheckBox isDimmer = (CheckBox) findViewById(R.id.customDimmer);
+        final CheckBox isRGB = (CheckBox) findViewById(R.id.customRGB);
         Button addHMWZ = (Button) findViewById(R.id.customAddBtn);
 
         isDimmer.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -48,8 +49,10 @@ public class AddCustomMqtt extends AppCompatActivity {
                     String type = "switch";
                     if(isDimmer.isChecked()) {
                         type = "dimmer";
+                    }if(isRGB.isChecked()) {
+                        type = "colorpicker";
                     }
-					AppDataContainer.getInstance().addCustomSwitch(new CustomSwitch(customName.getText().toString(), customTopic.getText().toString(), payloadOn.getText().toString(), payloadOff.getText().toString(), type, false, 0));
+					AppDataContainer.getInstance().addCustomSwitch(new CustomSwitch(customName.getText().toString(), customTopic.getText().toString(), payloadOn.getText().toString(), payloadOff.getText().toString(), type, false, 0, null));
                     AppDataContainer.getInstance().notifyDataSetChanged();
 					AppDataContainer.getInstance().save();
 

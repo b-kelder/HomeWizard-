@@ -17,6 +17,9 @@ public abstract class BaseSwitch {
     public void sendDimmer() {
     }
 
+    public void sendRGB() {
+    }
+
     public boolean respondToInput() {
         return respondToInput;
     }
@@ -61,5 +64,4 @@ public abstract class BaseSwitch {
     public void setDimmer(String dimmer) {
         this.dimmer = Integer.parseInt(dimmer);
     }
-
 }

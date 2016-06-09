@@ -7,13 +7,14 @@ public class CustomSwitch extends BaseSwitch {
     private String topic;
     private String payloadOn;
     private String payloadOff;
+    private String rgb;
 
     public CustomSwitch(String name, String type) {
         this.name = name;
         this.type = type;
     }
 
-    public CustomSwitch(String name, String topic, String payloadOn, String payloadOff, String type, boolean status, int dimmer){
+    public CustomSwitch(String name, String topic, String payloadOn, String payloadOff, String type, boolean status, int dimmer, String rgb){
         this.name = name;
         this.topic = topic;
         this.payloadOff = payloadOff;
@@ -21,6 +22,7 @@ public class CustomSwitch extends BaseSwitch {
         this.type = type;
         this.status = status;
         this.dimmer = dimmer;
+        this.rgb = rgb;
     }
 
     @Override
@@ -31,6 +33,11 @@ public class CustomSwitch extends BaseSwitch {
     @Override
     public void sendDimmer() {
         MqttController.getInstance().publish(topic, "" + dimmer);
+    }
+
+    @Override
+    public void sendRGB() {
+        MqttController.getInstance().publish(topic, "" + rgb);
     }
 
     public String getTopic() {
@@ -63,5 +70,13 @@ public class CustomSwitch extends BaseSwitch {
 
     public void setPayloadOff(String payloadOff) {
         this.payloadOff = payloadOff;
+    }
+
+    public String getRGB(){
+        return rgb;
+    }
+
+    public void setRGB(String rgb){
+        this.rgb = rgb;
     }
 }

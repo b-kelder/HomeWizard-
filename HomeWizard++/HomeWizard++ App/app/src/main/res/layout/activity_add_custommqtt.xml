@@ -106,13 +106,22 @@
             android:layout_alignParentStart="true" />
 
         <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Is dimmer"
+        android:id="@+id/customDimmer"
+        android:layout_below="@+id/customMqttTopic"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="10dp" />
+
+        <CheckBox
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Is dimmer"
-            android:id="@+id/customDimmer"
-            android:layout_below="@+id/customMqttTopic"
-            android:layout_alignParentStart="true"
-            android:layout_marginTop="10dp" />
+            android:text="Is RGB"
+            android:id="@+id/customRGB"
+            android:layout_above="@+id/textView7"
+            android:layout_centerHorizontal="true"
+            android:checked="false" />
 
     </RelativeLayout>
 </ScrollView>
