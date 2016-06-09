@@ -99,7 +99,7 @@ public class EditDialogs {
                 customSwitch.setTopic(topicView.getText().toString());
                 customSwitch.setPayloadOn(onView.getText().toString());
                 customSwitch.setPayloadOff(offView.getText().toString());
-                customSwitch.setMaxDimmerValue(dimmerView.getText().toString());
+                //customSwitch.setMaxDimmerValue(dimmerView.getText().toString());
 
                 AppDataContainer.getInstance().notifyDataSetChanged();
                 dialog.dismiss();

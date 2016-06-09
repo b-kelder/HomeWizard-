@@ -222,7 +222,7 @@ class DeviceAdapter extends ArrayAdapter<BaseSwitch> {
                 final Button swButton = (Button) convertView.findViewById(R.id.rowHueButton);
                 final CustomSwitch customSwitch = (CustomSwitch)sw;
 
-                swSeekbar.setMax(255);
+                swSeekbar.setMax(customSwitch.getMaxDimmerValue());
                 swSeekbar.setProgress(customSwitch.getDimmer());
                 swButton.setTextColor(customSwitch.getRGBInt());
                 swSwitch.setChecked(sw.getStatus());
