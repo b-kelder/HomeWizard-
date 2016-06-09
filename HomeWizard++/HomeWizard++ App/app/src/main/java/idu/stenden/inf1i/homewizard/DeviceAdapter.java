@@ -288,7 +288,6 @@ class DeviceAdapter extends ArrayAdapter<BaseSwitch> {
                 final SeekBar swSeekbar = (SeekBar) convertView.findViewById(R.id.seekBarHue);
                 final Button swButton = (Button) convertView.findViewById(R.id.rowHueButton);
                 final HueSwitch hueSwitch = (HueSwitch)sw;
-                final CustomSwitch customSwitch = (CustomSwitch)sw;
                 final boolean isColorLight = hueSwitch.isColorLight();
 
                 swSeekbar.setMax(255);
@@ -343,7 +342,6 @@ class DeviceAdapter extends ArrayAdapter<BaseSwitch> {
                         if(!sw.respondToInput()) {
                             return;
                         }
-                        if(HueSwitch.class.isInstance(sw)) {
                             JSONObject payload = new JSONObject();
                             try {
                                 payload.put("lights", hueSwitch.getId());
@@ -357,11 +355,7 @@ class DeviceAdapter extends ArrayAdapter<BaseSwitch> {
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
-                        } else {
-                        //CustomSwitch
-                            customSwitch.setStatus(isChecked);
-                            customSwitch.sendStatus();
-                        }
+
 
 
                         sw.setStatus(isChecked);
@@ -398,7 +392,7 @@ class DeviceAdapter extends ArrayAdapter<BaseSwitch> {
                                 int g = (color >> 8) & 0xFF;
                                 int b = (color >> 0) & 0xFF;
 
-                                if(HueSwitch.class.isInstance(sw)) {
+
                                     float[] hsv = new float[3];
                                     Color.RGBToHSV(r, g, b, hsv);
 
@@ -407,11 +401,6 @@ class DeviceAdapter extends ArrayAdapter<BaseSwitch> {
 
                                     MqttController.getInstance().publish("HYDRA/HUE/set-light", pld);
                                     hueSwitch.setXy(new float[]{xyB[0], xyB[1]});
-                                } else {
-                                    //CustomSwitch
-                                    customSwitch.setRGB(r+","+g+","+b);
-                                    customSwitch.sendRGB();
-                                }
                             }
                         }, color);
                         colorPickerDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
@@ -432,7 +421,7 @@ class DeviceAdapter extends ArrayAdapter<BaseSwitch> {
 
                     @Override
                     public void onStopTrackingTouch(SeekBar seekBar) {
-                        if(HueSwitch.class.isInstance(sw)) {
+                        
                             JSONObject payload = new JSONObject();
                             try {
                                 payload.put("lights", hueSwitch.getId());
@@ -448,13 +437,7 @@ class DeviceAdapter extends ArrayAdapter<BaseSwitch> {
                             }
 
                             hueSwitch.setBrightness((int) Math.ceil(swSeekbar.getProgress()));
-                        }else {
-                            //CustomSwitch
-                            int dimValue = seekBar.getProgress();
 
-                            customSwitch.setDimmer(dimValue);
-                            customSwitch.sendDimmer();
-                        }
                     }
                 });
 
