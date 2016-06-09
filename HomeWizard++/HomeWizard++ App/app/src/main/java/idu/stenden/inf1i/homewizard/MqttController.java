@@ -15,21 +15,12 @@ import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
-import org.eclipse.paho.client.mqttv3.internal.security.SSLSocketFactoryFactory;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
-
-import javax.net.SocketFactory;
-import javax.net.ssl.SSLSocketFactory;
 
 /**
  * Created by Wouter on 19/05/2016.
@@ -145,11 +136,17 @@ public class MqttController {
                     try {
                         json = new JSONObject(message.toString());
                         if (json.getString("status").equals("ok")) {
-                            Toast.makeText(context, "Login success", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(context, "HomeWizard connected", Toast.LENGTH_SHORT).show();
                             publish("HYDRA/HMWZ", "get-sensors");
                         } else {
-                            Toast toast = Toast.makeText(context, "Login failed", Toast.LENGTH_SHORT);
-                            toast.show();
+                            if(json.getInt("error") == 72){
+                                // HomeWizard was already connected, use it anyway.
+                                Toast.makeText(context, "HomeWizard connected", Toast.LENGTH_SHORT).show();
+                                publish("HYDRA/HMWZ", "get-sensors");
+                            } else {
+                                Toast toast = Toast.makeText(context, "HomeWizard login failed", Toast.LENGTH_SHORT);
+                                toast.show();
+                            }
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -337,8 +334,8 @@ public class MqttController {
                 }
                 options.setConnectionTimeout(60);
                 options.setKeepAliveInterval(60);
-                //TODO: Add certificate and keystore. See http://rijware.com/accessing-a-secure-mqtt-broker-with-android/
-                //options.setSocketFactory(sslUtil.getSocketFactory(rawCertificateResourceId, keystorePassword));
+
+                options.setSocketFactory(sslUtil.getSocketFactory(R.raw.pi, SslUtil.PASSWORD));
                 options.setCleanSession(true);
             }
 
@@ -402,6 +399,8 @@ public class MqttController {
                     toast.show();
 
                     dismissConnectingDialog();
+
+                    Log.e("MqttController", exception.toString());
                 }
             });
         } catch (Exception e) {

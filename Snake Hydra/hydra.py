@@ -326,8 +326,7 @@ def process_hue_message(client, msg):
                               "hue": l.hue,
                               "saturation": l.saturation,
                               "xy": l.xy,
-                              "colortemp": l.colortemp,
-                              "colortemp_k": l.colortemp_k
+                              "colortemp": l.colortemp
                               }
                     else:
                         ld = {"name": l.name,

@@ -32,7 +32,7 @@ public class SetupStep2 extends AppCompatActivity {
         brokerSettings.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 //publish email/password
-                Util.saveBrokerData(context, brokerIP.getText().toString(), brokerPort.getText().toString(), brokerUser.getText().toString(), brokerPass.getText().toString());
+                Util.saveBrokerData(context, brokerIP.getText().toString(), brokerPort.getText().toString(), brokerUser.getText().toString(), brokerPass.getText().toString(), false);
                 startActivity(new Intent(getApplicationContext(), SetupStep3.class));
             }
         });
