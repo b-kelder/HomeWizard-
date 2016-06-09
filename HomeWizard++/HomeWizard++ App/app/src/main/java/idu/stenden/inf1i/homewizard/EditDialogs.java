@@ -65,7 +65,7 @@ public class EditDialogs {
         topicView.setText(customSwitch.getTopic());
         onView.setText(customSwitch.getPayloadOn());
         offView.setText(customSwitch.getPayloadOff());
-        //dimmerView.setText(customSwitch.getMaxDimmerValue());
+        dimmerView.setText(""+customSwitch.getMaxDimmerValue());
 
         if(customSwitch.getType().equals("dimmer")) {
             onView.setVisibility(View.GONE);
@@ -99,7 +99,7 @@ public class EditDialogs {
                 customSwitch.setTopic(topicView.getText().toString());
                 customSwitch.setPayloadOn(onView.getText().toString());
                 customSwitch.setPayloadOff(offView.getText().toString());
-                //customSwitch.setMaxDimmerValue(dimmerView.getText().toString());
+                customSwitch.setMaxDimmerValue(dimmerView.getText().toString());
 
                 AppDataContainer.getInstance().notifyDataSetChanged();
                 dialog.dismiss();
