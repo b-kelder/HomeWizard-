@@ -64,11 +64,18 @@ public class EditDialogs {
         offView.setText(customSwitch.getPayloadOff());
 
         if(customSwitch.getType().equals("dimmer")) {
-            onView.setEnabled(false);
-            offView.setEnabled(false);
+            onView.setVisibility(View.GONE);
+            onText.setVisibility(View.GONE);
+            offView.setVisibility(View.GONE);
+            offText.setVisibility(View.GONE);
         } else if(customSwitch.getType().equals("button")) {
             offText.setText("Button text:");
             onText.setText("MQTT Payload:");
+        } else if(customSwitch.getType().equals("text")) {
+            onView.setVisibility(View.GONE);
+            onText.setVisibility(View.GONE);
+            offView.setVisibility(View.GONE);
+            offText.setVisibility(View.GONE);
         }
 
         //// Apply button

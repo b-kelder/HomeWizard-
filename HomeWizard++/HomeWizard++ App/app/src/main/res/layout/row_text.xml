@@ -5,24 +5,31 @@
     android:layout_height="match_parent">
 
     <TextView xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/rowButtonTextView"
+        android:id="@+id/rowTextTextView"
         android:layout_width="314dp"
         android:layout_height="wrap_content"
         android:padding="10dp"
         android:textSize="16sp"
         android:layout_alignParentTop="true"
         android:layout_alignParentStart="true"
-        android:layout_toStartOf="@+id/rowTextButton">
-    </TextView>
+        android:layout_alignEnd="@+id/rowTextButton"/>
 
     <Button
         style="?android:attr/buttonStyleSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="New Button"
-        android:id="@+id/rowButtonButtonText"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignBottom="@+id/rowTextTextView" />
+        android:text="Send"
+        android:id="@+id/rowTextButton"
+        android:layout_below="@+id/rowTextTextView"
+        android:layout_alignParentEnd="true" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/rowTextEditText"
+        android:layout_alignBottom="@+id/rowTextButton"
+        android:layout_alignParentStart="true"
+        android:layout_toStartOf="@+id/rowTextButton"
+        android:singleLine="true" />
 
 </RelativeLayout>

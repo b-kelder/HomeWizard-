@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -34,7 +35,8 @@ class DeviceAdapter extends ArrayAdapter<BaseSwitch> {
     private static final int VIEWTYPE_COLORPICKER   = 2;
     private static final int VIEWTYPE_HUE           = 3;
     private static final int VIEWTYPE_BUTTON        = 4;
-    private static final int VIEWTYPE_SEPARATOR     = 5;
+    private static final int VIEWTYPE_TEXT          = 5;
+    private static final int VIEWTYPE_SEPARATOR     = 6;
     private static final int VIEWTYPE_COUNT = VIEWTYPE_SEPARATOR + 1;
     final Context context = getContext();
 
@@ -58,6 +60,8 @@ class DeviceAdapter extends ArrayAdapter<BaseSwitch> {
             return VIEWTYPE_HUE;
         }if(sw.getType().equals("button")){
             return VIEWTYPE_BUTTON;
+        }if(sw.getType().equals("text")){
+            return VIEWTYPE_TEXT;
         }if(sw.getType().equals("separator")){
             return VIEWTYPE_SEPARATOR;
         } else {
@@ -93,6 +97,9 @@ class DeviceAdapter extends ArrayAdapter<BaseSwitch> {
                     break;
                 case VIEWTYPE_BUTTON:
                     convertView = LayoutInflater.from(getContext()).inflate(R.layout.row_button, parent, false);
+                    break;
+                case VIEWTYPE_TEXT:
+                    convertView = LayoutInflater.from(getContext()).inflate(R.layout.row_text, parent, false);
                     break;
                 case VIEWTYPE_SEPARATOR:
                     convertView = LayoutInflater.from(getContext()).inflate(R.layout.row_seperator, parent, false);
@@ -449,9 +456,8 @@ class DeviceAdapter extends ArrayAdapter<BaseSwitch> {
 
             } break;
             case VIEWTYPE_BUTTON: {
-                //Treat it as a switch
                 swName = (TextView) convertView.findViewById(R.id.rowButtonTextView);
-                final Button swButton = (Button) convertView.findViewById(R.id.rowButtonButton);
+                final Button swButton = (Button) convertView.findViewById(R.id.rowButtonButtonText);
                 final CustomSwitch customSwitch = (CustomSwitch)sw;
 
                 //set button text
@@ -463,8 +469,19 @@ class DeviceAdapter extends ArrayAdapter<BaseSwitch> {
                         customSwitch.sendButton();
                     }
                 });
+            } break;
+            case VIEWTYPE_TEXT: {
+                swName = (TextView) convertView.findViewById(R.id.rowTextTextView);
+                final Button swButton = (Button) convertView.findViewById(R.id.rowTextButton);
+                final CustomSwitch customSwitch = (CustomSwitch)sw;
+                final EditText editText = (EditText) convertView.findViewById(R.id.rowTextEditText);
 
-
+                swButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        customSwitch.sendText(editText.getText().toString());
+                    }
+                });
             } break;
             case VIEWTYPE_SEPARATOR: {
                 swName = (TextView) convertView.findViewById(R.id.rowSepText);

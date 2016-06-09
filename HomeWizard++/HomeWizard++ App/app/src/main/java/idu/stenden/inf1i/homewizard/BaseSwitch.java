@@ -17,12 +17,6 @@ public abstract class BaseSwitch {
     public void sendDimmer() {
     }
 
-    public void sendRGB() {
-    }
-
-    public void sendButton() {
-    }
-
     public boolean respondToInput() {
         return respondToInput;
     }

@@ -121,7 +121,7 @@
             android:id="@+id/customRGB"
             android:checked="false"
             android:layout_alignTop="@+id/customDimmer"
-            android:layout_centerHorizontal="true" />
+            android:layout_toEndOf="@+id/customDimmer" />
 
         <CheckBox
             android:layout_width="wrap_content"
@@ -129,8 +129,16 @@
             android:text="Is button"
             android:id="@+id/customButton"
             android:checked="false"
-            android:layout_above="@+id/payLoadOffText"
-            android:layout_alignEnd="@+id/customMqttTopic" />
+            android:layout_alignTop="@+id/customRGB"
+            android:layout_toEndOf="@+id/customRGB" />
+        <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Is text"
+        android:id="@+id/customText"
+        android:checked="false"
+            android:layout_alignTop="@+id/customButton"
+            android:layout_toEndOf="@+id/customButton" />
 
     </RelativeLayout>
 </ScrollView>

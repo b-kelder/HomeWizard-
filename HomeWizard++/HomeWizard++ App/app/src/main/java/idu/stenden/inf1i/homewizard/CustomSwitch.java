@@ -38,14 +38,16 @@ public class CustomSwitch extends BaseSwitch {
         MqttController.getInstance().publish(topic, "" + dimmer);
     }
 
-    @Override
     public void sendRGB() {
         MqttController.getInstance().publish(topic, "" + rgb);
     }
 
-    @Override
     public void sendButton() {
         MqttController.getInstance().publish(topic, "" + payloadOn);
+    }
+
+    public void sendText(String textPayload) {
+        MqttController.getInstance().publish(topic, "" + textPayload);
     }
 
     public String getTopic() {
