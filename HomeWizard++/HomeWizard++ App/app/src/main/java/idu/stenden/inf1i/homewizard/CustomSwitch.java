@@ -1,5 +1,7 @@
 package idu.stenden.inf1i.homewizard;
 
+import android.graphics.Color;
+
 /**
  * Created by Wouter on 26-05-16.
  */
@@ -74,6 +76,13 @@ public class CustomSwitch extends BaseSwitch {
 
     public String getRGB(){
         return rgb;
+    }
+
+    public int getRGBInt(){
+        int color;
+        String[] vals = rgb.split(",");
+        color = Color.rgb(Integer.parseInt(vals[0]), Integer.parseInt(vals[1]), Integer.parseInt(vals[1]));
+        return color;
     }
 
     public void setRGB(String rgb){

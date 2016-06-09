@@ -208,8 +208,8 @@ class DeviceAdapter extends ArrayAdapter<BaseSwitch> {
                 final CustomSwitch customSwitch = (CustomSwitch)sw;
 
                 swSeekbar.setMax(255);
-
-
+                swSeekbar.setProgress(customSwitch.getDimmer());
+                swButton.setTextColor(customSwitch.getRGBInt());
                 swSwitch.setChecked(sw.getStatus());
 
                 if(sw.getStatus() == false) {
