@@ -281,10 +281,17 @@ public class MqttController {
 
     public void connect(String broker, String clientId, String username, String password, Context context){
         setContext(context);
-        connect(broker, "HMwzPluSplUS", username, password);
+        JSONObject brokerData = Util.readBrokerData(context);
+        boolean useCertificate = false;
+        try{
+            useCertificate = brokerData.getBoolean("crt");
+        } catch (JSONException e) {
+        }
+        String brokerUrl = (useCertificate) ? "ssl://" + broker : "tcp://" + broker;
+        connect(brokerUrl, "HMwzPluSplUS", username, password, useCertificate);
     }
 
-    private void connect(String broker, String clientId, String username, String password){
+    private void connect(String broker, String clientId, String username, String password, boolean useCertificate){
         MemoryPersistence persistence = new MemoryPersistence();
         if(client != null){
             try {
@@ -304,13 +311,6 @@ public class MqttController {
             } catch (Exception e) {
                 Log.e("MQTT", e.toString());
             }
-        }
-
-        JSONObject brokerData = Util.readBrokerData(context);
-        boolean useCertificate = false;
-        try{
-            useCertificate = brokerData.getBoolean("crt");
-        } catch (JSONException e) {
         }
 
         client =  new MqttAndroidClient(context, broker, clientId, persistence);
@@ -335,7 +335,7 @@ public class MqttController {
                 options.setConnectionTimeout(60);
                 options.setKeepAliveInterval(60);
 
-                options.setSocketFactory(sslUtil.getSocketFactory(R.raw.pi, SslUtil.PASSWORD));
+                options.setSocketFactory(sslUtil.getSocketFactory(R.raw.tls_default_key, SslUtil.PASSWORD));
                 options.setCleanSession(true);
             }
 
@@ -395,7 +395,7 @@ public class MqttController {
 
                 @Override
                 public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
-                    Toast toast = Toast.makeText(context, "Failed to connect to broker", Toast.LENGTH_SHORT);
+                    Toast toast = Toast.makeText(context, "Connection failed", Toast.LENGTH_SHORT);
                     toast.show();
 
                     dismissConnectingDialog();

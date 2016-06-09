@@ -91,9 +91,8 @@
             android:layout_height="2dip"
             android:background="#715F5F"
             android:id="@+id/view2"
-            android:layout_below="@+id/bkrConfirmBtn"
-            android:layout_alignParentStart="true"
-            android:layout_marginTop="25dp" />
+            android:layout_below="@+id/brkUseCrt"
+            android:layout_alignParentStart="true" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -208,9 +207,9 @@
         <CheckBox
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Use CRT"
+            android:text="Use Pi Certificate"
             android:id="@+id/brkUseCrt"
-            android:layout_above="@+id/view2"
-            android:layout_toEndOf="@+id/brokerPort" />
+            android:layout_below="@+id/brokerPort"
+            android:layout_alignParentStart="true" />
     </RelativeLayout>
 </ScrollView>

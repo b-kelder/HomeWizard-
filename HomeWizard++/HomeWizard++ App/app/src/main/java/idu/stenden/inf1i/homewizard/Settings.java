@@ -231,12 +231,9 @@ public class Settings extends BaseMqttEventActivity{
             public void onClick(View v) {
                 //publish email/password
                 Util.saveBrokerData(Settings.context, brokerIP.getText().toString(), brokerPort.getText().toString(), brokerUser.getText().toString(), brokerPass.getText().toString(), brokerCrt.isChecked());
-                Toast toast = Toast.makeText(getApplicationContext(), "Trying to connect to broker", Toast.LENGTH_SHORT);
-                toast.show();
-
                 try {
                     JSONObject file = Util.readBrokerData(Settings.context);
-                    mqttController.connect("tcp://" + file.getString("ip") + ":" + file.getString("port"), "Homewizard++", file.getString("username"), file.getString("password"), Settings.context);
+                    mqttController.connect(file.getString("ip") + ":" + file.getString("port"), "Homewizard++", file.getString("username"), file.getString("password"), Settings.context);
                 } catch (JSONException e) {
                     //TODO: Fix broker data instead of showing misleading toasts
                     Toast toaster = Toast.makeText(getApplicationContext(), "Unable to connect to broker", Toast.LENGTH_SHORT);

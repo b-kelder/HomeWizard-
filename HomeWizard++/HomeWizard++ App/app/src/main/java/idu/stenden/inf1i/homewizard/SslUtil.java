@@ -106,37 +106,22 @@ public class SslUtil {
         if ( ( null == result) && ( null != mContext ) ) {					// not cached so need to load server certificate
 
             try {
-                /*KeyStore keystoreTrust = KeyStore.getInstance("BKS");		// Bouncy Castle
+                KeyStore keystoreTrust = KeyStore.getInstance("BKS");		// Bouncy Castle
 
                 keystoreTrust.load(mContext.getResources().openRawResource(certificateId), certificatePassword.toCharArray());
 
                 TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
 
-                trustManagerFactory.init(keystoreTrust);*/
+                trustManagerFactory.init(keystoreTrust);
 
-                Security.addProvider(new BouncyCastleProvider());
+                SSLContext sslContext = SSLContext.getInstance("TLS");
 
-                // load CA certificate
-                /*PemReader reader = new PemReader(new InputStreamReader(new ByteArrayInputStream(Files.readAllBytes(Paths.get(caCrtFile)))));
-                X509Certificate caCert = (X509Certificate)reader.readPemObject();
-                reader.close();*/
-                java.security.cert.CertificateFactory certificateFactory = java.security.cert.CertificateFactory.getInstance("X.509");
-                InputStream inputStream = mContext.getResources().openRawResource(certificateId);
-                X509Certificate caCert = (X509Certificate)certificateFactory.generateCertificate(inputStream);
-                inputStream.close();
+                sslContext.init(null, trustManagerFactory.getTrustManagers(), new SecureRandom());
 
-                // CA certificate is used to authenticate server
-                KeyStore caKs = KeyStore.getInstance(KeyStore.getDefaultType());
-                caKs.load(null, null);
-                caKs.setCertificateEntry("ca-certificate", caCert);
-                TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-                tmf.init(caKs);
-
-                SSLContext sslContext = SSLContext.getInstance("TLSv1");
-                sslContext.init(null, tmf.getTrustManagers(), null);
                 result = sslContext.getSocketFactory();
 
                 mSocketFactoryMap.put( certificateId, result);	// cache for reuse
+
             }
             catch ( Exception ex ) {
                 // log exception
