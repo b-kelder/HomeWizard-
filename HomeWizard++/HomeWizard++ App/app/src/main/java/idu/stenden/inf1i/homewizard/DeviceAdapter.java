@@ -171,7 +171,7 @@ class DeviceAdapter extends ArrayAdapter<BaseSwitch> {
                     //CustomSwitch
                     CustomSwitch customSwitch = (CustomSwitch)sw;
 
-                    swBar.setMax(Integer.parseInt(customSwitch.getPayloadOff()));
+                    swBar.setMax(customSwitch.getMaxDimmerValue());
                     swBar.setProgress(sw.getDimmer());
                     swBar.setEnabled(true);
                 }

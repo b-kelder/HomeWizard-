@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -43,7 +44,7 @@ public class EditDialogs {
         });
     }
 
-    public static void showCustomSwitchDialog(Context context, final CustomSwitch customSwitch) {
+    public static void showCustomSwitchDialog(final Context context, final CustomSwitch customSwitch) {
         final Dialog dialog = new Dialog(context);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.edit_dialog_custom_switch);
@@ -57,24 +58,35 @@ public class EditDialogs {
         final TextView offView = (TextView) dialog.findViewById(R.id.editCustomSwitchOff);
         final TextView offText = (TextView) dialog.findViewById(R.id.editCustomSwitchOffText);
         final TextView onText = (TextView) dialog.findViewById(R.id.editCustomSwitchOnText);
+        final TextView dimmerText = (TextView) dialog.findViewById(R.id.editCustomSwitchMaxDimmerText);
+        final TextView dimmerView = (TextView) dialog.findViewById(R.id.editCustomSwitchMaxDimmer);
 
         nameView.setText(customSwitch.getName());
         topicView.setText(customSwitch.getTopic());
         onView.setText(customSwitch.getPayloadOn());
         offView.setText(customSwitch.getPayloadOff());
+        //dimmerView.setText(customSwitch.getMaxDimmerValue());
 
         if(customSwitch.getType().equals("dimmer")) {
             onView.setVisibility(View.GONE);
             onText.setVisibility(View.GONE);
-            offText.setText("Max Value:");
+            offText.setVisibility(View.GONE);
+            offView.setVisibility(View.GONE);
         } else if(customSwitch.getType().equals("button")) {
             offText.setText("Button text:");
             onText.setText("MQTT Payload:");
+            dimmerText.setVisibility(View.GONE);
+            dimmerView.setVisibility(View.GONE);
         } else if(customSwitch.getType().equals("text")) {
             onView.setVisibility(View.GONE);
             onText.setVisibility(View.GONE);
             offView.setVisibility(View.GONE);
             offText.setVisibility(View.GONE);
+            dimmerText.setVisibility(View.GONE);
+            dimmerView.setVisibility(View.GONE);
+        }else if(customSwitch.getType().equals("switch")) {
+            dimmerText.setVisibility(View.GONE);
+            dimmerView.setVisibility(View.GONE);
         }
 
         //// Apply button
@@ -87,6 +99,7 @@ public class EditDialogs {
                 customSwitch.setTopic(topicView.getText().toString());
                 customSwitch.setPayloadOn(onView.getText().toString());
                 customSwitch.setPayloadOff(offView.getText().toString());
+                customSwitch.setMaxDimmerValue(dimmerView.getText().toString());
 
                 AppDataContainer.getInstance().notifyDataSetChanged();
                 dialog.dismiss();

@@ -19,7 +19,8 @@
             android:focusable="true"
             android:focusableInTouchMode="true"
             android:layout_width="0px"
-            android:layout_height="0px"/>
+            android:layout_height="0px"
+            android:id="@+id/linearLayout" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -100,10 +101,10 @@
             android:id="@+id/customAddBtn"
             android:background="@color/design_textinput_error_color_light"
             android:textColor="@color/abc_primary_text_material_dark"
-            android:layout_below="@+id/payloadStateon"
-            android:layout_marginTop="15dp"
-            android:layout_alignEnd="@+id/payloadStateon"
-            android:layout_alignParentStart="true" />
+            android:layout_below="@+id/AddMaxDimmerValue"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="25dp"
+            android:layout_toEndOf="@+id/linearLayout" />
 
         <CheckBox
             android:layout_width="wrap_content"
@@ -139,6 +140,23 @@
         android:checked="false"
             android:layout_alignTop="@+id/customButton"
             android:layout_toEndOf="@+id/customButton" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="Max Dimmer Value:"
+            android:id="@+id/AddMaxDimmerText"
+            android:layout_below="@+id/payloadStateon"
+            android:layout_alignParentStart="true" />
+
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/AddMaxDimmerValue"
+            android:layout_below="@+id/AddMaxDimmerText"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentEnd="true" />
 
     </RelativeLayout>
 </ScrollView>

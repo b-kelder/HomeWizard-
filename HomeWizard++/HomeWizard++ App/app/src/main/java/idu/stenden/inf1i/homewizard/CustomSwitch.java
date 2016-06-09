@@ -1,6 +1,7 @@
 package idu.stenden.inf1i.homewizard;
 
 import android.graphics.Color;
+import android.graphics.Interpolator;
 import android.util.Log;
 
 /**
@@ -11,13 +12,14 @@ public class CustomSwitch extends BaseSwitch {
     private String payloadOn;
     private String payloadOff;
     private String rgb = "0,0,0";
+    private int maxDimmerValue = 100;
 
     public CustomSwitch(String name, String type) {
         this.name = name;
         this.type = type;
     }
 
-    public CustomSwitch(String name, String topic, String payloadOn, String payloadOff, String type, boolean status, int dimmer, String rgb){
+    public CustomSwitch(String name, String topic, String payloadOn, String payloadOff, String type, boolean status, int dimmer, String rgb, String maxDimmerValue){
         this.name = name;
         this.topic = topic;
         this.payloadOff = payloadOff;
@@ -26,6 +28,7 @@ public class CustomSwitch extends BaseSwitch {
         this.status = status;
         this.dimmer = dimmer;
         this.rgb = rgb;
+        this.maxDimmerValue = Integer.parseInt(maxDimmerValue);
     }
 
     @Override
@@ -73,6 +76,15 @@ public class CustomSwitch extends BaseSwitch {
     public void setPayloadOn(String payloadOn) {
         this.payloadOn = payloadOn;
     }
+
+    public int getMaxDimmerValue() {
+        return maxDimmerValue;
+    }
+
+    public void setMaxDimmerValue(String maxDimmerValue) {
+        this.maxDimmerValue = Integer.parseInt(maxDimmerValue);
+    }
+
 
     public String getPayloadOff() {
         return payloadOff;
