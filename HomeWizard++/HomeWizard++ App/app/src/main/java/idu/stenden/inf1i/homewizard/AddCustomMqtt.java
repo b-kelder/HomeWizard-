@@ -148,7 +148,12 @@ public class AddCustomMqtt extends AppCompatActivity {
                     }if(isText.isChecked()) {
                         type = "text";
                     }
-					AppDataContainer.getInstance().addCustomSwitch(new CustomSwitch(customName.getText().toString(), customTopic.getText().toString(), payloadOn.getText().toString(), payloadOff.getText().toString(), type, false, 0, "0,0,0", maxDimmerValue.getText().toString()));
+
+                    String dimmerAntiError = "0";
+                    if(!maxDimmerValue.getText().toString().isEmpty()){
+                        dimmerAntiError = maxDimmerValue.getText().toString();
+                    }
+					AppDataContainer.getInstance().addCustomSwitch(new CustomSwitch(customName.getText().toString(), customTopic.getText().toString(), payloadOn.getText().toString(), payloadOff.getText().toString(), type, false, 0, "0,0,0", dimmerAntiError));
                     AppDataContainer.getInstance().notifyDataSetChanged();
 					AppDataContainer.getInstance().save();
 

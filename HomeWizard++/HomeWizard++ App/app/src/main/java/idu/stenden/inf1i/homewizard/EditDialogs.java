@@ -116,7 +116,8 @@ public class EditDialogs {
                             //save button/switch data
                             customSwitch.setName(nameView.getText().toString());
                             customSwitch.setTopic(topicView.getText().toString());
-                            customSwitch.setMaxDimmerValue(dimmerView.getText().toString());
+                            customSwitch.setPayloadOn(onView.getText().toString());
+                            customSwitch.setPayloadOff(offView.getText().toString());
                         } else {
                             error = true;
                         }
