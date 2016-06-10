@@ -95,14 +95,61 @@ public class EditDialogs {
             @Override
             public void onClick(View view) {
                 // Store data in object
-                customSwitch.setName(nameView.getText().toString());
-                customSwitch.setTopic(topicView.getText().toString());
-                customSwitch.setPayloadOn(onView.getText().toString());
-                customSwitch.setPayloadOff(offView.getText().toString());
-                customSwitch.setMaxDimmerValue(dimmerView.getText().toString());
+                Boolean error = false;
+                //check if name and topic fields are not empty
+                if(!nameView.getText().toString().isEmpty() && !topicView.getText().toString().isEmpty()) {
+                    //If dimmer
+                    if (customSwitch.getType().equals("dimmer")) {
+                        //check if max dimmer field is not empty
+                        if (!dimmerView.getText().toString().isEmpty()) {
+                            //save dimmer data
+                            customSwitch.setName(nameView.getText().toString());
+                            customSwitch.setTopic(topicView.getText().toString());
+                            customSwitch.setMaxDimmerValue(dimmerView.getText().toString());
+                        } else {
+                            error = true;
+                        }
+                    //If button or switch
+                    } else if (customSwitch.getType().equals("button") || customSwitch.getType().equals("switch")) {
+                        //check if the off (Button text) and on (Button payload) fields are not empty
+                        if (!offView.getText().toString().isEmpty() && !onView.getText().toString().isEmpty()) {
+                            //save button/switch data
+                            customSwitch.setName(nameView.getText().toString());
+                            customSwitch.setTopic(topicView.getText().toString());
+                            customSwitch.setMaxDimmerValue(dimmerView.getText().toString());
+                        } else {
+                            error = true;
+                        }
+                    //if text field
+                    } else if(customSwitch.getType().equals("text")) {
+                        //save text field data
+                        customSwitch.setName(nameView.getText().toString());
+                        customSwitch.setTopic(topicView.getText().toString());
+                    }
+                    //if colorpicker
+                      else if(customSwitch.getType().equals("colorpicker")) {
+                        //check if max dimmer value, off and on text are not empty
+                        if (!dimmerView.getText().toString().isEmpty() && !offView.getText().toString().isEmpty() && !onView.getText().toString().isEmpty()) {
+                            //save colorpicker data
+                            customSwitch.setName(nameView.getText().toString());
+                            customSwitch.setTopic(topicView.getText().toString());
+                            customSwitch.setPayloadOn(onView.getText().toString());
+                            customSwitch.setPayloadOff(offView.getText().toString());
+                            customSwitch.setMaxDimmerValue(dimmerView.getText().toString());
+                        } else {
+                            error = true;
+                        }
+                    }
+                } else {
+                    error = true;
+                }
 
-                AppDataContainer.getInstance().notifyDataSetChanged();
-                dialog.dismiss();
+                if (error){
+                    Toast.makeText(context, "Fields can not be empty", Toast.LENGTH_SHORT).show();
+                } else {
+                    AppDataContainer.getInstance().notifyDataSetChanged();
+                    dialog.dismiss();
+                }
             }
         });
     }
