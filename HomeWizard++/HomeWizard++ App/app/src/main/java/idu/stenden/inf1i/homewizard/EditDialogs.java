@@ -155,7 +155,7 @@ public class EditDialogs {
         });
     }
 
-    public static void showHueDialog(Context context, final HueSwitch hueSwitch) {
+    public static void showHueDialog(final Context context, final HueSwitch hueSwitch) {
         final Dialog dialog = new Dialog(context);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.edit_dialog_hmwz_switch);
@@ -171,22 +171,25 @@ public class EditDialogs {
         applyButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if(!nameView.getText().toString().isEmpty()) {
+                    JSONObject payload = new JSONObject();
+                    try {
+                        payload.put("light", hueSwitch.getId());
+                        payload.put("name", nameView.getText().toString());
+                    } catch (JSONException e) {
+                        Log.e("EditDialogs", e.getMessage());
+                    }
 
-                JSONObject payload = new JSONObject();
-                try {
-                    payload.put("light", hueSwitch.getId());
-                    payload.put("name", nameView.getText().toString());
-                } catch (JSONException e) {
-                    Log.e("EditDialogs", e.getMessage());
+                    MqttController.getInstance().publish("HYDRA/HUE/set-name", payload.toString());
+
+                    // Store data in object
+                    hueSwitch.setName(nameView.getText().toString());
+
+                    AppDataContainer.getInstance().notifyDataSetChanged();
+                    dialog.dismiss();
+                } else {
+                    Toast.makeText(context, "Please fill in the field.", Toast.LENGTH_SHORT).show();
                 }
-
-                MqttController.getInstance().publish("HYDRA/HUE/set-name", payload.toString());
-
-                // Store data in object
-                hueSwitch.setName(nameView.getText().toString());
-
-                AppDataContainer.getInstance().notifyDataSetChanged();
-                dialog.dismiss();
             }
         });
     }
