@@ -92,7 +92,8 @@
             android:background="#715F5F"
             android:id="@+id/view2"
             android:layout_below="@+id/brkUseCrt"
-            android:layout_alignParentStart="true" />
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="25dp" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -128,10 +129,11 @@
             android:layout_height="35dp"
             android:text="Apply"
             android:id="@+id/bkrConfirmBtn"
-            android:layout_below="@+id/brokerIP"
-            android:layout_alignParentEnd="true"
             android:textColor="@color/abc_primary_text_material_dark"
-            android:background="@color/design_textinput_error_color_light" />
+            android:background="@color/design_textinput_error_color_light"
+            android:layout_alignBaseline="@+id/brkUseCrt"
+            android:layout_alignBottom="@+id/brkUseCrt"
+            android:layout_alignParentEnd="true" />
 
         <Switch
             android:layout_width="wrap_content"
@@ -207,7 +209,7 @@
         <CheckBox
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Use Pi Certificate"
+            android:text="Use secure connection"
             android:id="@+id/brkUseCrt"
             android:layout_below="@+id/brokerPort"
             android:layout_alignParentStart="true" />

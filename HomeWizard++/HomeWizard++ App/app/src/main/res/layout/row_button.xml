@@ -12,14 +12,14 @@
         android:textSize="16sp"
         android:layout_alignParentTop="true"
         android:layout_alignParentStart="true"
-        android:layout_toStartOf="@+id/rowTextButton">
+        android:layout_toStartOf="@+id/rowButtonButtonText">
     </TextView>
 
     <Button
         style="?android:attr/buttonStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="New Button"
+        android:layout_width="80dp"
+        android:layout_height="40dp"
+        android:text="Button"
         android:id="@+id/rowButtonButtonText"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
