@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.json.JSONException;
@@ -29,9 +30,13 @@ public class SetupStep3 extends BaseMqttEventActivity {
         Button loginbutton = (Button) findViewById(R.id.btnNextStep3);
         loginbutton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                Util.saveLoginData(context, emailField.getText().toString(), passwordField.getText().toString());
-                Util.saveFirstSetup(context, false);
-                startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                if(!emailField.getText().toString().isEmpty() && passwordField.getText().toString().isEmpty()) {
+                    Util.saveLoginData(context, emailField.getText().toString(), passwordField.getText().toString());
+                    Util.saveFirstSetup(context, false);
+                    startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                } else {
+                    Toast.makeText(context, "One or more of the required fields are empty", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 

@@ -32,8 +32,12 @@ public class SetupStep2 extends AppCompatActivity {
         brokerSettings.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 //publish email/password
-                Util.saveBrokerData(context, brokerIP.getText().toString(), brokerPort.getText().toString(), brokerUser.getText().toString(), brokerPass.getText().toString(), false);
-                startActivity(new Intent(getApplicationContext(), SetupStep3.class));
+                if(!brokerIP.getText().toString().isEmpty() && !brokerPort.getText().toString().isEmpty()) {
+                    Util.saveBrokerData(context, brokerIP.getText().toString(), brokerPort.getText().toString(), brokerUser.getText().toString(), brokerPass.getText().toString(), false);
+                    startActivity(new Intent(getApplicationContext(), SetupStep3.class));
+                } else {
+                    Toast.makeText(context, "One or more of the required fields are empty", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
@@ -41,7 +45,7 @@ public class SetupStep2 extends AppCompatActivity {
         skipBtn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Util.saveFirstSetup(context, false);
-                startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                startActivity(new Intent(getApplicationContext(), SetupStep3.class));
             }
         });
     }
