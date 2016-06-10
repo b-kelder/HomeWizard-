@@ -48,7 +48,8 @@
             android:text="MQTT Topic:"
             android:id="@+id/textView6"
             android:layout_below="@+id/customName"
-            android:layout_alignParentStart="true" />
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="10dp" />
 
         <EditText
             android:layout_width="wrap_content"
@@ -83,7 +84,8 @@
             android:text="MQTT Payload (switch state on):"
             android:id="@+id/payLoadOnText"
             android:layout_below="@+id/payloadStateoff"
-            android:layout_alignParentStart="true" />
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="10dp" />
 
         <EditText
             android:layout_width="wrap_content"
@@ -103,7 +105,7 @@
             android:textColor="@color/abc_primary_text_material_dark"
             android:layout_below="@+id/AddMaxDimmerValue"
             android:layout_alignParentEnd="true"
-            android:layout_marginTop="25dp"
+            android:layout_marginTop="10dp"
             android:layout_toEndOf="@+id/linearLayout" />
 
         <CheckBox
@@ -148,9 +150,11 @@
             android:text="Max Dimmer Value:"
             android:id="@+id/AddMaxDimmerText"
             android:layout_below="@+id/payloadStateon"
-            android:layout_alignParentStart="true" />
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="10dp" />
 
         <EditText
+            android:inputType="number"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/AddMaxDimmerValue"

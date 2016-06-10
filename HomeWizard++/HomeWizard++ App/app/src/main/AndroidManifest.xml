@@ -66,7 +66,7 @@
         //Add homewizz light/switch/dimmer
         <activity
             android:name=".AddHomewizardlight"
-            android:label="Add Homewizard device"
+            android:label="Homewizard device"
             android:parentActivityName=".AddChoice"
             android:screenOrientation="portrait">
             <meta-data
@@ -76,7 +76,7 @@
         //Add custom MQTT device
         <activity
             android:name=".AddCustomMqtt"
-            android:label="Add custom device"
+            android:label="Custom device"
             android:parentActivityName=".AddChoice"
             android:screenOrientation="portrait">
             <meta-data
@@ -86,7 +86,7 @@
         //Add hue bridge
         <activity
             android:name=".AddHueBridge"
-            android:label="Add hue bridge"
+            android:label="Hue bridge"
             android:parentActivityName=".AddChoice"
             android:screenOrientation="portrait">
             <meta-data
