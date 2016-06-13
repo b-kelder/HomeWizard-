@@ -63,6 +63,7 @@ public class AddHomewizardlight extends BaseMqttEventActivity {
                         mqttController.publish("HYDRA/HMWZ/sw/add", name + "/switch/" + code + "/0");
                     }
 
+                    Toast.makeText(getApplicationContext(), "Device added", Toast.LENGTH_SHORT).show();
 
                     finish();
                     //This just adds to the activity stack, we don't want that!

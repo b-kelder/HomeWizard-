@@ -3,7 +3,10 @@ package idu.stenden.inf1i.homewizard;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.CountDownTimer;
+import android.support.design.widget.Snackbar;
 import android.util.Log;
+import android.view.View;
+import android.view.ViewConfiguration;
 import android.widget.Toast;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
@@ -99,7 +102,7 @@ public class MqttController {
                         JSONObject jsonObject = new JSONObject(message.toString());
                         if(jsonObject.getString("status").equals("ok")) {
                             publish("HYDRA/HMWZ", "get-sensors");
-                            Toast.makeText(context, "Removed device", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(context, "Device removed", Toast.LENGTH_SHORT).show();
                         } else {
                             Toast.makeText(context, "Error removing device", Toast.LENGTH_SHORT).show();
                         }
@@ -112,7 +115,7 @@ public class MqttController {
                         JSONObject jsonObject = new JSONObject(message.toString());
                         if(jsonObject.getString("status").equals("ok")) {
                             publish("HYDRA/HMWZ", "get-sensors");
-                            Toast.makeText(context, "Added device", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(context, "Device added", Toast.LENGTH_SHORT).show();
                         } else {
                             Toast.makeText(context, "Error adding device", Toast.LENGTH_SHORT).show();
                         }
@@ -274,8 +277,6 @@ public class MqttController {
 
             Util.saveLoginData(context, email, password);
             this.publish("HYDRA/AUTH", "{\"email\":\"" + email + "\", \"password\":\"" + password + "\", \"type\":\"login\"}");
-            //Toast toast = Toast.makeText(context, "Trying to log in", Toast.LENGTH_SHORT);
-            //toast.show();
         }
     }
 
@@ -342,9 +343,6 @@ public class MqttController {
             client.connect(options, context, new IMqttActionListener() {
                 @Override
                 public void onSuccess(IMqttToken asyncActionToken) {
-                    Toast toast = Toast.makeText(context, "Connected to broker", Toast.LENGTH_SHORT);
-                    toast.show();
-
                     client.setCallback(new MqttCallback() {
                         @Override
                         public void connectionLost(Throwable cause) {
@@ -353,8 +351,6 @@ public class MqttController {
 
                         @Override
                         public void messageArrived(String topic, MqttMessage message) throws Exception {
-                            //Toast toast = Toast.makeText(context, topic + " " + message.toString(), Toast.LENGTH_LONG);
-                            //toast.show();
                             Log.e("MQTT", "Recieved message on topic " + topic + " - " + message.toString());
                             for (MqttControllerMessageCallbackListener listener : messageListeners) {
                                 try {

@@ -235,7 +235,6 @@ public class Settings extends BaseMqttEventActivity{
                     JSONObject file = Util.readBrokerData(Settings.context);
                     mqttController.connect(file.getString("ip") + ":" + file.getString("port"), "Homewizard++", file.getString("username"), file.getString("password"), Settings.context);
                 } catch (JSONException e) {
-                    //TODO: Fix broker data instead of showing misleading toasts
                     Toast toaster = Toast.makeText(getApplicationContext(), "Unable to connect to broker", Toast.LENGTH_SHORT);
                     toaster.show();
                     e.printStackTrace();

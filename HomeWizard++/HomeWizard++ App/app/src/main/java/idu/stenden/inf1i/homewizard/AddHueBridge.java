@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.json.JSONException;
@@ -47,6 +48,9 @@ public class AddHueBridge extends AppCompatActivity {
                         if(status.equals("ok")){
                             try {
                                 Util.saveHueData(context, bridgeIP.getText().toString(), json.getString("username"));
+
+                                Toast.makeText(getApplicationContext(), "Device added", Toast.LENGTH_SHORT).show();
+
                                 finish();
                                 startActivity(new Intent(getApplicationContext(), AddChoice.class));
                             } catch (JSONException e) {

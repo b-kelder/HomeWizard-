@@ -16,13 +16,9 @@ public class BaseMqttEventActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-        
-        //if(!eventHandlersAdded) {
-			//eventHandlersAdded = true;
-            //Toast.makeText(getApplicationContext(), "Added event handlers", Toast.LENGTH_SHORT).show();
+
             removeEventListeners();
             addEventListeners();
-		//}
     }
 
     protected void addEventListener(MqttControllerMessageCallbackListener listener){

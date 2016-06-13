@@ -188,7 +188,7 @@ public class EditDialogs {
                     AppDataContainer.getInstance().notifyDataSetChanged();
                     dialog.dismiss();
                 } else {
-                    Toast.makeText(context, "Please fill in the field.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "Fields can not be empty", Toast.LENGTH_SHORT).show();
                 }
             }
         });

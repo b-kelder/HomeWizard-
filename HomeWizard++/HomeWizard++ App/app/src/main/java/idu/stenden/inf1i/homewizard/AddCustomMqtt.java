@@ -157,7 +157,7 @@ public class AddCustomMqtt extends AppCompatActivity {
                     AppDataContainer.getInstance().notifyDataSetChanged();
 					AppDataContainer.getInstance().save();
 
-                    Toast.makeText(toastContext, "Custom device added", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(toastContext, "Device added", Toast.LENGTH_SHORT).show();
 
                     finish();
                 } else {

@@ -134,7 +134,7 @@ class DeviceEditAdapter extends ArrayAdapter<BaseSwitch> {
                             AppDataContainer.getInstance().removeCustomSwitch(customSwitch);
                             AppDataContainer.getInstance().notifyDataSetChanged();
                             AppDataContainer.getInstance().save();
-                            Toast.makeText(getContext(), "Custom device removed", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getContext(), "Device removed", Toast.LENGTH_SHORT).show();
                             delete.dismiss();
                         }
                     }
