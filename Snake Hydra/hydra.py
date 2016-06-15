@@ -19,8 +19,6 @@ import sys, getopt
 import phue
 
 BASE_QOS = 2
-# TODO: Remove this
-HARDCODED_CONNECT = True
 
 
 # Returns a string with the current date and time
@@ -69,10 +67,6 @@ def homewizard_logon(username, password):
 # Returns None on failure
 #
 def homewizard_connect(username, password, local=False, ip=None):
-    # TODO: Remove this
-    if(HARDCODED_CONNECT):
-        #return "http://192.168.1.104/1234567890"
-        pass
 
     if(local):
         if ip is None:
