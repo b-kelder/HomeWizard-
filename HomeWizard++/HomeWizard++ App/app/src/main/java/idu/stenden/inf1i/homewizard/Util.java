@@ -193,7 +193,6 @@ public class Util {
         } catch (Exception e) {
             saveCustomSwitch(context, new ArrayList<CustomSwitch>());
             readCustomSwitch(context);
-            Log.e("FUCK", "FUCK");  //TODO: change this to something more professional
         }
         return null;
     }
