@@ -93,8 +93,6 @@ class DeviceEditAdapter extends ArrayAdapter<BaseSwitch> {
 
                 btnChange.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View v) {
-                        //MqttController.getInstance().publish("", "");
-                        //TODO: Popup dialog with options for name change
 
                         if(HomewizardSwitch.class.isInstance(sw))
                         {
@@ -152,8 +150,6 @@ class DeviceEditAdapter extends ArrayAdapter<BaseSwitch> {
                 name.setText(sw.getName());
             } break;
         }
-
-
 
         return convertView;
     }

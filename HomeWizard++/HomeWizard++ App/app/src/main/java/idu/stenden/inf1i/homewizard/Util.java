@@ -162,8 +162,6 @@ public class Util {
         writeFile(context, "firstSetup.json", object.toString());
     }
 
-
-
     public static JSONObject readFirstSetup(Context context){
         JSONObject object = null;
         try {
@@ -195,7 +193,7 @@ public class Util {
         } catch (Exception e) {
             saveCustomSwitch(context, new ArrayList<CustomSwitch>());
             readCustomSwitch(context);
-            Log.e("FUCK", "FUCK");
+            Log.e("FUCK", "FUCK");  //TODO: change this to something more professional
         }
         return null;
     }

@@ -81,7 +81,6 @@ public class MainActivity extends BaseMqttEventActivity implements NavigationVie
         appDataContainer.save();
     }
 
-
 	@Override
 	protected void addEventListeners() {
 		addEventListener(new MqttControllerMessageCallbackListener() {

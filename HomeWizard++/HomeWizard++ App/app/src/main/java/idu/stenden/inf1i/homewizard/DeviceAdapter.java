@@ -242,8 +242,6 @@ class DeviceAdapter extends ArrayAdapter<BaseSwitch> {
                         customSwitch.setStatus(isChecked);
                         customSwitch.sendStatus();
 
-
-
                         sw.setStatus(isChecked);
                         if(sw.getStatus() == false) {
                             swSeekbar.setEnabled(false);

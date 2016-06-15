@@ -1,7 +1,5 @@
 package idu.stenden.inf1i.homewizard;
 
-// TODO: Clean up imports here
-
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
@@ -10,7 +8,6 @@ import java.util.ArrayList;
 public class BaseMqttEventActivity extends AppCompatActivity {
 
     protected ArrayList<MqttControllerMessageCallbackListener> listeners = new ArrayList<>();
-    //protected boolean eventHandlersAdded = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
