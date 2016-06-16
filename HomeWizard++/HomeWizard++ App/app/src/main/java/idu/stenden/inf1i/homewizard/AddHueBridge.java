@@ -13,11 +13,13 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class AddHueBridge extends AppCompatActivity {
+public class AddHueBridge extends AppCompatActivity
+{
     Context context;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_hue_bridge);
         context = this;
@@ -25,43 +27,54 @@ public class AddHueBridge extends AppCompatActivity {
         //Load IP
         JSONObject jsonObject = Util.readHueData(this);
         String ip;
-        try{
+        try
+        {
             ip = jsonObject.getString("ip");
-        } catch (JSONException e) {
+        } catch (JSONException e)
+        {
             ip = "";
         }
         final EditText bridgeIP = (EditText) findViewById(R.id.hueBridgeIP);
         bridgeIP.setText(ip);
 
         Button nextBtn = (Button) findViewById(R.id.btnHueBridgeConnect);
-        nextBtn.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
+        nextBtn.setOnClickListener(new View.OnClickListener()
+        {
+            public void onClick(View v)
+            {
 
                 MqttController.getInstance().publish("HYDRA/HUE/connect", bridgeIP.getText().toString());
                 MqttController.getInstance().subscribe("HYDRA/HUERETURN/connect");
 
-                MqttController.getInstance().addMessageListener(new MqttControllerMessageCallbackListener() {
+                MqttController.getInstance().addMessageListener(new MqttControllerMessageCallbackListener()
+                {
                     @Override
-                    public void onMessageArrived(String topic, MqttMessage message) {
+                    public void onMessageArrived(String topic, MqttMessage message)
+                    {
                         JSONObject json = null;
                         String status = null;
-                        try {
+                        try
+                        {
                             json = new JSONObject(message.toString());
                             status = json.getString("status");
 
-                        } catch (JSONException e) {
+                        } catch (JSONException e)
+                        {
                             e.printStackTrace();
                         }
 
-                        if(status.equals("ok")){
-                            try {
+                        if(status.equals("ok"))
+                        {
+                            try
+                            {
                                 Util.saveHueData(context, bridgeIP.getText().toString(), json.getString("username"));
 
                                 Toast.makeText(getApplicationContext(), "Device added", Toast.LENGTH_SHORT).show();
 
                                 finish();
                                 startActivity(new Intent(getApplicationContext(), AddChoice.class));
-                            } catch (JSONException e) {
+                            } catch (JSONException e)
+                            {
                                 e.printStackTrace();
                             }
                         }

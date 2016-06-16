@@ -56,15 +56,9 @@ public class AddHomewizardlight extends BaseMqttEventActivity {
                     String name = HMWZlightname.getText().toString().trim().replace(" ", "+");
                     String code = HMWZlightcode.getText().toString().trim().replace(" ", "+");
                     if(HMWZlightdimmer.isChecked()) {
-                        if(mqttController.publish("HYDRA/HMWZ/sw/add", name + "/dimmer/" + code + "/0"))
-                        {
-                            Toast.makeText(getApplicationContext(), "Device added", Toast.LENGTH_SHORT).show();
-                        }
+                        mqttController.publish("HYDRA/HMWZ/sw/add", name + "/dimmer/" + code + "/0");
                     } else {
-                        if(mqttController.publish("HYDRA/HMWZ/sw/add", name + "/switch/" + code + "/0"))
-                        {
-                            Toast.makeText(getApplicationContext(), "Device added", Toast.LENGTH_SHORT).show();
-                        }
+                        mqttController.publish("HYDRA/HMWZ/sw/add", name + "/switch/" + code + "/0");
                     }
 
                     finish();
@@ -85,7 +79,7 @@ public class AddHomewizardlight extends BaseMqttEventActivity {
                     try {
                         JSONObject jsonObject = new JSONObject(message.toString());
                         String route = jsonObject.getJSONObject("request").getString("route");
-                        if(route.equals("/sw")){
+                        if(route.equals("/sw/generatekaku")){
                             try {
                                 String code = jsonObject.getJSONObject("response").getString("code");
                                 EditText HMWZlightcode = (EditText) findViewById(R.id.HMWZlightcode);
