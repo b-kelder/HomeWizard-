@@ -15,40 +15,49 @@ import android.content.Context;
 import android.util.Log;
 
 
-public class SslUtil {
+public class SslUtil
+{
 
     public static String PASSWORD = "everyoneloveshydra";
 
-    private static SslUtil		mInstance = null;
-    private Context					mContext = null;
+    private static SslUtil mInstance = null;
+    private Context mContext = null;
     private HashMap<Integer, SSLSocketFactory> mSocketFactoryMap = new HashMap<Integer, SSLSocketFactory>();
 
-    public SslUtil(Context context) {
+    public SslUtil(Context context)
+    {
         mContext = context;
     }
 
-    public static SslUtil getInstance( ) {
-        if ( null == mInstance ) {
+    public static SslUtil getInstance()
+    {
+        if (null == mInstance)
+        {
             throw new RuntimeException("first call must be to SslUtility.newInstance(Context) ");
         }
         return mInstance;
     }
 
-    public static SslUtil newInstance( Context context ) {
-        if ( null == mInstance ) {
-            mInstance = new SslUtil( context );
+    public static SslUtil newInstance(Context context)
+    {
+        if (null == mInstance)
+        {
+            mInstance = new SslUtil(context);
         }
         return mInstance;
     }
 
-    public SSLSocketFactory getSocketFactory(int certificateId, String certificatePassword ) {
+    public SSLSocketFactory getSocketFactory(int certificateId, String certificatePassword)
+    {
 
-        SSLSocketFactory result = mSocketFactoryMap.get(certificateId);  	// check to see if already created
+        SSLSocketFactory result = mSocketFactoryMap.get(certificateId);    // check to see if already created
 
-        if ( ( null == result) && ( null != mContext ) ) {					// not cached so need to load server certificate
+        if ((null == result) && (null != mContext))
+        {                    // not cached so need to load server certificate
 
-            try {
-                KeyStore keystoreTrust = KeyStore.getInstance("BKS");		// Bouncy Castle
+            try
+            {
+                KeyStore keystoreTrust = KeyStore.getInstance("BKS");        // Bouncy Castle
 
                 keystoreTrust.load(mContext.getResources().openRawResource(certificateId), certificatePassword.toCharArray());
 
@@ -62,10 +71,11 @@ public class SslUtil {
 
                 result = sslContext.getSocketFactory();
 
-                mSocketFactoryMap.put( certificateId, result);	// cache for reuse
+                mSocketFactoryMap.put(certificateId, result);    // cache for reuse
 
             }
-            catch ( Exception ex ) {
+            catch (Exception ex)
+            {
                 // log exception
                 Log.e("SslUtil", ex.toString());
             }

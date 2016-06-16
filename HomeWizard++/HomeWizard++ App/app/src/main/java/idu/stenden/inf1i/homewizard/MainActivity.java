@@ -18,7 +18,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class MainActivity extends BaseMqttEventActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends BaseMqttEventActivity implements NavigationView.OnNavigationItemSelectedListener
+{
 
     private MqttController mqttController;
     private AppDataContainer appDataContainer;
@@ -28,8 +29,8 @@ public class MainActivity extends BaseMqttEventActivity implements NavigationVie
     public static Context context;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-
+    protected void onCreate(Bundle savedInstanceState)
+    {
         context = this;
 
         super.onCreate(savedInstanceState);
@@ -38,20 +39,24 @@ public class MainActivity extends BaseMqttEventActivity implements NavigationVie
         setSupportActionBar(toolbar);
 
         appDataContainer = AppDataContainer.getInstance();
-		appDataContainer.setSaveContext(this);
-		//Load data on app startup
-		appDataContainer.load();
+        appDataContainer.setSaveContext(this);
+        //Load data on app startup
+        appDataContainer.load();
 
         //MQTT
         mqttController = MqttController.getInstance();
         mqttController.setContext(getApplicationContext());
 
-        try {
+        try
+        {
             JSONObject file = Util.readBrokerData(this);
-            if(!mqttController.isConnected()){
+            if (!mqttController.isConnected())
+            {
                 mqttController.connect(file.getString("ip") + ":" + file.getString("port"), "Homewizard++", file.getString("username"), file.getString("password"), this);
             }
-        } catch (JSONException e) {
+        }
+        catch (JSONException e)
+        {
             e.printStackTrace();
         }
 
@@ -72,115 +77,143 @@ public class MainActivity extends BaseMqttEventActivity implements NavigationVie
     }
 
     @Override
-    public void onDestroy(){
+    public void onDestroy()
+    {
         super.onDestroy();
 
         //Save before exit
         appDataContainer.save();
     }
 
-	@Override
-	protected void addEventListeners() {
-		addEventListener(new MqttControllerMessageCallbackListener() {
-			@Override
+    @Override
+    protected void addEventListeners()
+    {
+        addEventListener(new MqttControllerMessageCallbackListener()
+        {
+            @Override
             /// Updates the array adapter and the listview
-			public void onMessageArrived(String topic, MqttMessage message) {
-				try {
-					JSONObject json = new JSONObject(message.toString());
-					json = json.getJSONObject("request");
-					String route = json.getString("route");
+            public void onMessageArrived(String topic, MqttMessage message)
+            {
+                try
+                {
+                    JSONObject json = new JSONObject(message.toString());
+                    json = json.getJSONObject("request");
+                    String route = json.getString("route");
 
-					if (route.equals("/get-sensors")) {
-						appDataContainer.clearHomewizardSwitches();
+                    if (route.equals("/get-sensors"))
+                    {
+                        appDataContainer.clearHomewizardSwitches();
                         appDataContainer.getDeviceAdapter().clear();
-						json = new JSONObject(message.toString());
-						json = json.getJSONObject("response");
-						JSONArray array = json.getJSONArray("switches");
-						for (int i = 0; i < array.length(); i++) {
-							JSONObject switches = array.getJSONObject(i);
+                        json = new JSONObject(message.toString());
+                        json = json.getJSONObject("response");
+                        JSONArray array = json.getJSONArray("switches");
+                        for (int i = 0; i < array.length(); i++)
+                        {
+                            JSONObject switches = array.getJSONObject(i);
 
-							String name = switches.getString("name");
+                            String name = switches.getString("name");
                             String type = switches.getString("type");
-							String status = switches.getString("status");
-							String id = switches.getString("id");
+                            String status = switches.getString("status");
+                            String id = switches.getString("id");
                             HomewizardSwitch hmwzSwitch = new HomewizardSwitch(name, type, status, id);
-                            if(type.equals("dimmer")){
+                            if (type.equals("dimmer"))
+                            {
                                 hmwzSwitch.setDimmer(switches.getString("dimlevel"));
-                            } else if(type.equals("hue")) {
-                                //NOPE
+                            }
+                            else if (type.equals("hue"))
+                            {
                                 continue;
                             }
-							appDataContainer.addHomewizardSwitch(hmwzSwitch);
-						}
-						appDataContainer.getDeviceAdapter().notifyDataSetChanged();
+                            appDataContainer.addHomewizardSwitch(hmwzSwitch);
+                        }
+                        appDataContainer.getDeviceAdapter().notifyDataSetChanged();
                         mainListView.invalidate();
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
+                    }
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
 
     @Override
-    public void onBackPressed() {
+    public void onBackPressed()
+    {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
+        if (drawer.isDrawerOpen(GravityCompat.START))
+        {
             drawer.closeDrawer(GravityCompat.START);
-        } else {
+        }
+        else
+        {
             super.onBackPressed();
         }
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_refresh) {
-            try {
+        if (id == R.id.action_refresh)
+        {
+            try
+            {
                 JSONObject file = Util.readBrokerData(this);
-                if(!mqttController.isConnected()){
+                if (!mqttController.isConnected())
+                {
                     mqttController.connect("tcp://" + file.getString("ip") + ":" + file.getString("port"), "Homewizard++", file.getString("username"), file.getString("password"), this);
-                } else {
+                }
+                else
+                {
                     mqttController.publish("HYDRA/HMWZ", "get-sensors");
                     //Refresh HUE
                     JSONObject jsonObject = Util.readHueData(this);
-                    if (!jsonObject.getString("ip").isEmpty()) {
+                    if (!jsonObject.getString("ip").isEmpty())
+                    {
                         mqttController.publish("HYDRA/HUE/connect", jsonObject.getString("ip"));
                     }
                 }
-            } catch (JSONException e) {
+            }
+            catch (JSONException e)
+            {
                 Log.e("MainActivity", e.getMessage());
             }
-
-
         }
-
         return super.onOptionsItemSelected(item);
     }
 
 
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
+    public boolean onNavigationItemSelected(MenuItem item)
+    {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_settings) {
+        if (id == R.id.nav_settings)
+        {
             startActivity(new Intent(MainActivity.this, Settings.class));
-        } else if (id == R.id.nav_lights) {
+        }
+        else if (id == R.id.nav_lights)
+        {
             startActivity(new Intent(MainActivity.this, Managelights.class));
-        }else if(id == R.id.nav_help){
+        }
+        else if (id == R.id.nav_help)
+        {
             startActivity(new Intent(MainActivity.this, HelpPage.class));
         }
 

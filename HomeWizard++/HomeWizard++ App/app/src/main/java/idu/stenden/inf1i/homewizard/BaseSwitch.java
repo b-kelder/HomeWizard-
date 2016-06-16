@@ -11,54 +11,67 @@ public abstract class BaseSwitch {
 
     protected boolean respondToInput;
 
-    public void sendStatus() {
+    public void sendStatus()
+    {
     }
 
-    public void sendDimmer() {
+    public void sendDimmer()
+    {
     }
 
-    public boolean respondToInput() {
+    public boolean respondToInput()
+    {
         return respondToInput;
     }
 
-    public void setRespondToInput(boolean respondToInput) {
+    public void setRespondToInput(boolean respondToInput)
+    {
         this.respondToInput = respondToInput;
     }
 
-    public String getName(){
+    public String getName()
+    {
         return name;
     }
 
-    public boolean getStatus(){
+    public boolean getStatus()
+    {
         return status;
     }
 
-    public void setName(String name){
+    public void setName(String name)
+    {
         this.name = name;
     }
 
-    public void setStatus(boolean status){
+    public void setStatus(boolean status)
+    {
         this.status = status;
     }
 
 
-    public String getType() {
+    public String getType()
+    {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(String type)
+    {
         this.type = type;
     }
 
-    public int getDimmer() {
+    public int getDimmer()
+    {
         return dimmer;
     }
 
-    public void setDimmer(int dimmer) {
+    public void setDimmer(int dimmer)
+    {
         this.dimmer = dimmer;
     }
 
-    public void setDimmer(String dimmer) {
+    public void setDimmer(String dimmer)
+    {
         this.dimmer = Integer.parseInt(dimmer);
     }
 }

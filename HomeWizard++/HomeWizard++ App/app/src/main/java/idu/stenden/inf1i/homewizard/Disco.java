@@ -5,18 +5,22 @@ import android.graphics.Color;
 /**
  * Created by Wouter on 03-06-16.
  */
-public class Disco {
+public class Disco
+{
     public static boolean isDisco = false;
 
-    public static void doDisco(int lightId) {
-        if(isDisco) {
+    public static void doDisco(int lightId)
+    {
+        if (isDisco)
+        {
             return;
         }
         isDisco = true;
 
         int index = 0;
         int loops = 0;
-        while(true) {
+        while (true)
+        {
             int[] colors = {
                     0xFFFF0000,
                     0xFFFF00FF,
@@ -38,30 +42,38 @@ public class Disco {
 
 
             float[] xyB = Util.RGBtoXYB(color);
-            final String pld = "{\"lights\":" + lightId + ", \"command\":{\"xy\": [" + String.valueOf(xyB[0]) + "," + String.valueOf(xyB[1]) + "]}, \"bri\": " + String.valueOf((int)Math.ceil(xyB[2] * 255f)) + "}";
+            final String pld = "{\"lights\":" + lightId + ", \"command\":{\"xy\": [" + String.valueOf(xyB[0]) + "," + String.valueOf(xyB[1]) + "]}, \"bri\": " + String.valueOf((int) Math.ceil(xyB[2] * 255f)) + "}";
 
 
-            if(!MqttController.getInstance().publish("HYDRA/HUE/set-light", pld, false)) {
+            if (!MqttController.getInstance().publish("HYDRA/HUE/set-light", pld, false))
+            {
                 isDisco = false;
                 return;
             }
 
 
-            if(index < colors.length - 1) {
+            if (index < colors.length - 1)
+            {
                 index++;
-            } else {
+            }
+            else
+            {
                 index = 0;
                 loops++;
 
-                if(loops > 5) {
+                if (loops > 5)
+                {
                     isDisco = false;
                     return;
                 }
             }
 
-            try {
+            try
+            {
                 Thread.sleep(1000);
-            } catch (InterruptedException e) {
+            }
+            catch (InterruptedException e)
+            {
             }
         }
     }

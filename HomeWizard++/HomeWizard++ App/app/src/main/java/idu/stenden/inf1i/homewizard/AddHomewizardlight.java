@@ -12,12 +12,14 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class AddHomewizardlight extends BaseMqttEventActivity {
+public class AddHomewizardlight extends BaseMqttEventActivity
+{
 
     private MqttController mqttController;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_homewizardlight);
 
@@ -30,9 +32,11 @@ public class AddHomewizardlight extends BaseMqttEventActivity {
 
         Button generateKaku = (Button) findViewById(R.id.HMWZlightgenerate);
 
-        generateKaku.setOnClickListener(new View.OnClickListener() {
+        generateKaku.setOnClickListener(new View.OnClickListener()
+        {
             @Override
-            public void onClick(View view) {
+            public void onClick(View view)
+            {
                 MqttController controller = MqttController.getInstance();
                 controller.publish("HYDRA/HMWZ/sw", "generatekaku");
             }
@@ -40,9 +44,11 @@ public class AddHomewizardlight extends BaseMqttEventActivity {
 
         Button learnKaku = (Button) findViewById(R.id.HMWZlightaddlearn);
 
-        learnKaku.setOnClickListener(new View.OnClickListener() {
+        learnKaku.setOnClickListener(new View.OnClickListener()
+        {
             @Override
-            public void onClick(View view) {
+            public void onClick(View view)
+            {
                 MqttController controller = MqttController.getInstance();
                 controller.publish("HYDRA/HMWZ/sw", "learn");
             }
@@ -50,17 +56,23 @@ public class AddHomewizardlight extends BaseMqttEventActivity {
 
         Button addHMWZ = (Button) findViewById(R.id.HMWZlightadd);
 
-        addHMWZ.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                if (!HMWZlightname.getText().toString().isEmpty() && !HMWZlightcode.getText().toString().isEmpty()) {
+        addHMWZ.setOnClickListener(new View.OnClickListener()
+        {
+            public void onClick(View v)
+            {
+                if (!HMWZlightname.getText().toString().isEmpty() && !HMWZlightcode.getText().toString().isEmpty())
+                {
                     String name = HMWZlightname.getText().toString().trim().replace(" ", "+");
                     String code = HMWZlightcode.getText().toString().trim().replace(" ", "+");
-                    if(HMWZlightdimmer.isChecked()) {
+                    if(HMWZlightdimmer.isChecked())
+                    {
                         if(mqttController.publish("HYDRA/HMWZ/sw/add", name + "/dimmer/" + code + "/0"))
                         {
                             Toast.makeText(getApplicationContext(), "Device added", Toast.LENGTH_SHORT).show();
                         }
-                    } else {
+                    }
+                    else
+                    {
                         if(mqttController.publish("HYDRA/HMWZ/sw/add", name + "/switch/" + code + "/0"))
                         {
                             Toast.makeText(getApplicationContext(), "Device added", Toast.LENGTH_SHORT).show();
@@ -68,7 +80,9 @@ public class AddHomewizardlight extends BaseMqttEventActivity {
                     }
 
                     finish();
-                } else {
+                }
+                else
+                {
                     Toast toaster = Toast.makeText(getApplicationContext(), "Fields cannot be empty", Toast.LENGTH_SHORT);
                     toaster.show();
                 }
@@ -77,28 +91,38 @@ public class AddHomewizardlight extends BaseMqttEventActivity {
     }
 
     @Override
-    protected void addEventListeners() {
-        addEventListener(new MqttControllerMessageCallbackListener() {
+    protected void addEventListeners()
+    {
+        addEventListener(new MqttControllerMessageCallbackListener()
+        {
             @Override
-            public void onMessageArrived(String topic, MqttMessage message) {
-                if(topic.equals("HYDRA/HMWZRETURN/sw")){
-                    try {
+            public void onMessageArrived(String topic, MqttMessage message)
+            {
+                if(topic.equals("HYDRA/HMWZRETURN/sw"))
+                {
+                    try
+                    {
                         JSONObject jsonObject = new JSONObject(message.toString());
                         String route = jsonObject.getJSONObject("request").getString("route");
-                        if(route.equals("/sw")){
-                            try {
+                        if(route.equals("/sw"))
+                        {
+                            try
+                            {
                                 String code = jsonObject.getJSONObject("response").getString("code");
                                 EditText HMWZlightcode = (EditText) findViewById(R.id.HMWZlightcode);
                                 HMWZlightcode.setText(code);
-                            } catch (Exception e) {
+                            }
+                            catch (Exception e)
+                            {
                                 Log.e("AddHomewizardlight", e.getMessage());
                             }
                         }
 
-                    } catch (JSONException e) {
+                    }
+                    catch (JSONException e)
+                    {
                         e.printStackTrace();
                     }
-
                 }
             }
         });

@@ -28,61 +28,80 @@ import idu.stenden.inf1i.homewizard.ColorPickerDialog.OnColorChangedListener;
  */
 
 
-class DeviceAdapter extends ArrayAdapter<BaseSwitch> {
+class DeviceAdapter extends ArrayAdapter<BaseSwitch>
+{
 
-    private static final int VIEWTYPE_SWITCH        = 0;
-    private static final int VIEWTYPE_DIMMER        = 1;
-    private static final int VIEWTYPE_COLORPICKER   = 2;
-    private static final int VIEWTYPE_HUE           = 3;
-    private static final int VIEWTYPE_BUTTON        = 4;
-    private static final int VIEWTYPE_TEXT          = 5;
-    private static final int VIEWTYPE_SEPARATOR     = 6;
+    private static final int VIEWTYPE_SWITCH = 0;
+    private static final int VIEWTYPE_DIMMER = 1;
+    private static final int VIEWTYPE_COLORPICKER = 2;
+    private static final int VIEWTYPE_HUE = 3;
+    private static final int VIEWTYPE_BUTTON = 4;
+    private static final int VIEWTYPE_TEXT = 5;
+    private static final int VIEWTYPE_SEPARATOR = 6;
     private static final int VIEWTYPE_COUNT = VIEWTYPE_SEPARATOR + 1;
     final Context context = getContext();
 
-    public DeviceAdapter(Context context, int resource) {
+    public DeviceAdapter(Context context, int resource)
+    {
         super(context, resource);
     }
 
-    public DeviceAdapter(Context context, int resource, int textViewResourceId, List<?> objects) {
+    public DeviceAdapter(Context context, int resource, int textViewResourceId, List<?> objects)
+    {
         super(context, resource, textViewResourceId, (List<BaseSwitch>) objects);
     }
 
     @Override
-    public int getItemViewType(int position){
+    public int getItemViewType(int position)
+    {
         Log.e("DeviceAdapter", "getItemViewType, " + position);
         BaseSwitch sw = getItem(position);
-        if(sw.getType().equals("dimmer")){
+        if (sw.getType().equals("dimmer"))
+        {
             return VIEWTYPE_DIMMER;
-        }if(sw.getType().equals("colorpicker")){
+        }
+        if (sw.getType().equals("colorpicker"))
+        {
             return VIEWTYPE_COLORPICKER;
-        }if(sw.getType().equals("hue")){
+        }
+        if (sw.getType().equals("hue"))
+        {
             return VIEWTYPE_HUE;
-        }if(sw.getType().equals("button")){
+        }
+        if (sw.getType().equals("button"))
+        {
             return VIEWTYPE_BUTTON;
-        }if(sw.getType().equals("text")){
+        }
+        if (sw.getType().equals("text"))
+        {
             return VIEWTYPE_TEXT;
-        }if(sw.getType().equals("separator")){
+        }
+        if (sw.getType().equals("separator"))
+        {
             return VIEWTYPE_SEPARATOR;
-        } else {
+        }
+        else
+        {
             return VIEWTYPE_SWITCH;
         }
     }
 
     @Override
-    public int getViewTypeCount(){
+    public int getViewTypeCount()
+    {
         return VIEWTYPE_COUNT;
     }
 
     @Override
-    public View getView(final int position, View convertView, ViewGroup parent) {
-
+    public View getView(final int position, View convertView, ViewGroup parent)
+    {
         final BaseSwitch sw = getItem(position);
         int viewType = getItemViewType(position);
 
-
-        if(convertView == null) {
-            switch(viewType) {
+        if (convertView == null)
+        {
+            switch (viewType)
+            {
                 case VIEWTYPE_DIMMER:
                     convertView = LayoutInflater.from(getContext()).inflate(R.layout.row_dim, parent, false);
                     break;
@@ -115,32 +134,41 @@ class DeviceAdapter extends ArrayAdapter<BaseSwitch> {
         // Stop the switch from sending an update when we set the UI correctly
         sw.setRespondToInput(false);
 
-        switch(viewType) {
-            case VIEWTYPE_DIMMER: {
+        switch (viewType)
+        {
+            case VIEWTYPE_DIMMER:
+            {
                 //Treat it as a dimmer
                 swName = (TextView) convertView.findViewById(R.id.rowDimTextView);
                 swBar = (SeekBar) convertView.findViewById(R.id.rowDimSeekBar);
 
-                swBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                swBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener()
+                {
                     @Override
-                    public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                    public void onProgressChanged(SeekBar seekBar, int i, boolean b)
+                    {
                         //Not relevant
                     }
 
                     @Override
-                    public void onStartTrackingTouch(SeekBar seekBar) {
+                    public void onStartTrackingTouch(SeekBar seekBar)
+                    {
                         //Not relevant
                     }
 
                     @Override
-                    public void onStopTrackingTouch(SeekBar seekBar) {
-                        if(!sw.respondToInput()) {
+                    public void onStopTrackingTouch(SeekBar seekBar)
+                    {
+                        if (!sw.respondToInput())
+                        {
                             return;
                         }
-                        if(HomewizardSwitch.class.isInstance(sw)) {
-                            HomewizardSwitch homewizardSwitch = (HomewizardSwitch)sw;
+                        if (HomewizardSwitch.class.isInstance(sw))
+                        {
+                            HomewizardSwitch homewizardSwitch = (HomewizardSwitch) sw;
                             //User stopped touching, set correct dim level
-                            if(!homewizardSwitch.isUpdating()) {
+                            if (!homewizardSwitch.isUpdating())
+                            {
                                 int dimValue = seekBar.getProgress();
 
                                 seekBar.setEnabled(false);
@@ -151,7 +179,9 @@ class DeviceAdapter extends ArrayAdapter<BaseSwitch> {
                                 homewizardSwitch.sendDimmer();
                                 homewizardSwitch.setUpdating(true);
                             }
-                        } else {
+                        }
+                        else
+                        {
                             //CustomSwitch
                             int dimValue = seekBar.getProgress();
 
@@ -161,43 +191,55 @@ class DeviceAdapter extends ArrayAdapter<BaseSwitch> {
                     }
                 });
 
-                if(HomewizardSwitch.class.isInstance(sw)) {
-                    HomewizardSwitch homewizardSwitch = (HomewizardSwitch)sw;
+                if (HomewizardSwitch.class.isInstance(sw))
+                {
+                    HomewizardSwitch homewizardSwitch = (HomewizardSwitch) sw;
                     swBar.setMax(100);
                     swBar.setProgress(homewizardSwitch.getDimmer());
 
                     swBar.setEnabled(!homewizardSwitch.isUpdating());
-                } else {
+                }
+                else
+                {
                     //CustomSwitch
-                    CustomSwitch customSwitch = (CustomSwitch)sw;
+                    CustomSwitch customSwitch = (CustomSwitch) sw;
 
                     swBar.setMax(customSwitch.getMaxDimmerValue());
                     swBar.setProgress(sw.getDimmer());
                     swBar.setEnabled(true);
                 }
 
-            } break;
-            case VIEWTYPE_SWITCH: {
+            }
+            break;
+            case VIEWTYPE_SWITCH:
+            {
                 //Treat it as a switch
                 swName = (TextView) convertView.findViewById(R.id.rowTextView);
                 swSwitch = (Switch) convertView.findViewById(R.id.rowSwitch);
 
-                swSwitch.setOnCheckedChangeListener((new CompoundButton.OnCheckedChangeListener() {
-                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                        if(!sw.respondToInput()) {
+                swSwitch.setOnCheckedChangeListener((new CompoundButton.OnCheckedChangeListener()
+                {
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
+                    {
+                        if (!sw.respondToInput())
+                        {
                             return;
                         }
-                        if(HomewizardSwitch.class.isInstance(sw)) {
+                        if (HomewizardSwitch.class.isInstance(sw))
+                        {
                             HomewizardSwitch homewizardSwitch = (HomewizardSwitch) sw;
                             //If we're not still waiting for a response from a previous toggle
-                            if (!homewizardSwitch.isUpdating()) {
+                            if (!homewizardSwitch.isUpdating())
+                            {
                                 buttonView.setEnabled(false);
 
                                 homewizardSwitch.setStatus(isChecked);
                                 homewizardSwitch.sendStatus();
                                 homewizardSwitch.setUpdating(true);
                             }
-                        } else {
+                        }
+                        else
+                        {
                             //CustomSwitch
                             sw.setStatus(isChecked);
                             sw.sendStatus();
@@ -205,37 +247,48 @@ class DeviceAdapter extends ArrayAdapter<BaseSwitch> {
                     }
                 }));
 
-                if(HomewizardSwitch.class.isInstance(sw)) {
+                if (HomewizardSwitch.class.isInstance(sw))
+                {
                     HomewizardSwitch homewizardSwitch = (HomewizardSwitch) sw;
                     swSwitch.setChecked(sw.getStatus());
                     swSwitch.setEnabled(!homewizardSwitch.isUpdating());
-                } else {
+                }
+                else
+                {
                     //CustomSwitch
                     swSwitch.setChecked(sw.getStatus());
                     swSwitch.setEnabled(true);
                 }
-            } break;
-            case VIEWTYPE_COLORPICKER: {
+            }
+            break;
+            case VIEWTYPE_COLORPICKER:
+            {
                 swName = (TextView) convertView.findViewById(R.id.rowHueTextView);
                 swSwitch = (Switch) convertView.findViewById(R.id.rowHueSwitch);
                 final SeekBar swSeekbar = (SeekBar) convertView.findViewById(R.id.seekBarHue);
                 final Button swButton = (Button) convertView.findViewById(R.id.rowHueButton);
-                final CustomSwitch customSwitch = (CustomSwitch)sw;
+                final CustomSwitch customSwitch = (CustomSwitch) sw;
 
                 swSeekbar.setMax(customSwitch.getMaxDimmerValue());
                 swSeekbar.setProgress(customSwitch.getDimmer());
                 swButton.setTextColor(customSwitch.getRGBInt());
                 swSwitch.setChecked(sw.getStatus());
 
-                if(sw.getStatus() == false) {
+                if (sw.getStatus() == false)
+                {
                     swSeekbar.setEnabled(false);
-                } else {
+                }
+                else
+                {
                     swSeekbar.setEnabled(true);
                 }
 
-                swSwitch.setOnCheckedChangeListener((new CompoundButton.OnCheckedChangeListener() {
-                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                        if(!sw.respondToInput()) {
+                swSwitch.setOnCheckedChangeListener((new CompoundButton.OnCheckedChangeListener()
+                {
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
+                    {
+                        if (!sw.respondToInput())
+                        {
                             return;
                         }
 
@@ -243,28 +296,35 @@ class DeviceAdapter extends ArrayAdapter<BaseSwitch> {
                         customSwitch.sendStatus();
 
                         sw.setStatus(isChecked);
-                        if(sw.getStatus() == false) {
+                        if (sw.getStatus() == false)
+                        {
                             swSeekbar.setEnabled(false);
-                        } else {
+                        }
+                        else
+                        {
                             swSeekbar.setEnabled(true);
                         }
                     }
                 }));
 
-                swButton.setOnClickListener(new View.OnClickListener() {
-                    public void onClick(View v) {
+                swButton.setOnClickListener(new View.OnClickListener()
+                {
+                    public void onClick(View v)
+                    {
                         int color = 0xFFFFFFFF;
 
-                        ColorPickerDialog colorPickerDialog = new ColorPickerDialog(context, new OnColorChangedListener() {
+                        ColorPickerDialog colorPickerDialog = new ColorPickerDialog(context, new OnColorChangedListener()
+                        {
                             @Override
-                            public void colorChanged(int color) {
+                            public void colorChanged(int color)
+                            {
                                 swButton.setTextColor(color);
 
                                 int r = (color >> 16) & 0xFF;
                                 int g = (color >> 8) & 0xFF;
                                 int b = (color >> 0) & 0xFF;
 
-                                customSwitch.setRGB(r+","+g+","+b);
+                                customSwitch.setRGB(r + "," + g + "," + b);
                                 customSwitch.sendRGB();
                             }
                         }, color);
@@ -273,19 +333,23 @@ class DeviceAdapter extends ArrayAdapter<BaseSwitch> {
                     }
                 });
 
-                swSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                swSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener()
+                {
                     @Override
-                    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser)
+                    {
 
                     }
 
                     @Override
-                    public void onStartTrackingTouch(SeekBar seekBar) {
+                    public void onStartTrackingTouch(SeekBar seekBar)
+                    {
 
                     }
 
                     @Override
-                    public void onStopTrackingTouch(SeekBar seekBar) {
+                    public void onStopTrackingTouch(SeekBar seekBar)
+                    {
                         int dimValue = seekBar.getProgress();
 
                         customSwitch.setDimmer(dimValue);
@@ -293,20 +357,23 @@ class DeviceAdapter extends ArrayAdapter<BaseSwitch> {
                     }
                 });
 
-            } break;
-            case VIEWTYPE_HUE: {
+            }
+            break;
+            case VIEWTYPE_HUE:
+            {
                 //Treat it as a HUE
                 swName = (TextView) convertView.findViewById(R.id.rowHueTextView);
                 swSwitch = (Switch) convertView.findViewById(R.id.rowHueSwitch);
                 final SeekBar swSeekbar = (SeekBar) convertView.findViewById(R.id.seekBarHue);
                 final Button swButton = (Button) convertView.findViewById(R.id.rowHueButton);
-                final HueSwitch hueSwitch = (HueSwitch)sw;
+                final HueSwitch hueSwitch = (HueSwitch) sw;
                 final boolean isColorLight = hueSwitch.isColorLight();
 
                 swSeekbar.setMax(255);
                 swSeekbar.setProgress(hueSwitch.getBrightness());
 
-                if(isColorLight) {
+                if (isColorLight)
+                {
                     float[] xyB = {
                             hueSwitch.getXy()[0],
                             hueSwitch.getXy()[1],
@@ -315,32 +382,44 @@ class DeviceAdapter extends ArrayAdapter<BaseSwitch> {
                     int color = Util.XYBtoRGB(xyB);
                     swButton.setTextColor(color);
                     swButton.setEnabled(true);
-                } else {
+                }
+                else
+                {
                     swButton.setEnabled(false);
                     swButton.setTextColor(0x00000000);
                 }
 
                 swSwitch.setChecked(sw.getStatus());
 
-                if(sw.getStatus() == false) {
-                    if(isColorLight) {
+                if (sw.getStatus() == false)
+                {
+                    if (isColorLight)
+                    {
                         swButton.setEnabled(false);
                     }
                     swSeekbar.setEnabled(false);
-                } else {
-                    if(isColorLight) {
+                }
+                else
+                {
+                    if (isColorLight)
+                    {
                         swButton.setEnabled(true);
                     }
                     swSeekbar.setEnabled(true);
                 }
 
-                swName.setOnClickListener(new View.OnClickListener() {
+                swName.setOnClickListener(new View.OnClickListener()
+                {
                     @Override
-                    public void onClick(View view) {
-                        if(AppDataContainer.getInstance().findCustomSwitchByName("Disco Fever") != null && hueSwitch.getHueType().equals("Extended color light")) {
-                            Thread discoThread = new Thread(new Runnable() {
+                    public void onClick(View view)
+                    {
+                        if (AppDataContainer.getInstance().findCustomSwitchByName("Disco Fever") != null && hueSwitch.getHueType().equals("Extended color light"))
+                        {
+                            Thread discoThread = new Thread(new Runnable()
+                            {
                                 @Override
-                                public void run() {
+                                public void run()
+                                {
                                     Disco.doDisco(hueSwitch.getId());
                                 }
                             });
@@ -350,35 +429,45 @@ class DeviceAdapter extends ArrayAdapter<BaseSwitch> {
                     }
                 });
 
-                swSwitch.setOnCheckedChangeListener((new CompoundButton.OnCheckedChangeListener() {
-                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                        if(!sw.respondToInput()) {
+                swSwitch.setOnCheckedChangeListener((new CompoundButton.OnCheckedChangeListener()
+                {
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
+                    {
+                        if (!sw.respondToInput())
+                        {
                             return;
                         }
-                            JSONObject payload = new JSONObject();
-                            try {
-                                payload.put("lights", hueSwitch.getId());
+                        JSONObject payload = new JSONObject();
+                        try
+                        {
+                            payload.put("lights", hueSwitch.getId());
 
-                                JSONObject command = new JSONObject();
-                                command.put("on", isChecked);
-                                payload.put("command", command);
+                            JSONObject command = new JSONObject();
+                            command.put("on", isChecked);
+                            payload.put("command", command);
 
-                                MqttController.getInstance().publish("HYDRA/HUE/set-light", payload.toString());
+                            MqttController.getInstance().publish("HYDRA/HUE/set-light", payload.toString());
 
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-
+                        }
+                        catch (JSONException e)
+                        {
+                            e.printStackTrace();
+                        }
 
 
                         sw.setStatus(isChecked);
-                        if(sw.getStatus() == false) {
-                            if(isColorLight) {
+                        if (sw.getStatus() == false)
+                        {
+                            if (isColorLight)
+                            {
                                 swButton.setEnabled(false);
                             }
                             swSeekbar.setEnabled(false);
-                        } else {
-                            if(isColorLight) {
+                        }
+                        else
+                        {
+                            if (isColorLight)
+                            {
                                 swButton.setEnabled(true);
                             }
                             swSeekbar.setEnabled(true);
@@ -386,13 +475,17 @@ class DeviceAdapter extends ArrayAdapter<BaseSwitch> {
                     }
                 }));
 
-                swButton.setOnClickListener(new View.OnClickListener() {
-                    public void onClick(View v) {
+                swButton.setOnClickListener(new View.OnClickListener()
+                {
+                    public void onClick(View v)
+                    {
                         int color = 0xFFFFFFFF;
 
-                        ColorPickerDialog colorPickerDialog = new ColorPickerDialog(context, new OnColorChangedListener() {
+                        ColorPickerDialog colorPickerDialog = new ColorPickerDialog(context, new OnColorChangedListener()
+                        {
                             @Override
-                            public void colorChanged(int color) {
+                            public void colorChanged(int color)
+                            {
                                 swButton.setTextColor(color);
 
                                 int r = (color >> 16) & 0xFF;
@@ -400,14 +493,14 @@ class DeviceAdapter extends ArrayAdapter<BaseSwitch> {
                                 int b = (color >> 0) & 0xFF;
 
 
-                                    float[] hsv = new float[3];
-                                    Color.RGBToHSV(r, g, b, hsv);
+                                float[] hsv = new float[3];
+                                Color.RGBToHSV(r, g, b, hsv);
 
-                                    float[] xyB = Util.RGBtoXYB(color);
-                                    String pld = "{\"lights\":" + hueSwitch.getId() + ", \"command\":{\"xy\": [" + String.valueOf(xyB[0]) + "," + String.valueOf(xyB[1]) + "]}, \"bri\": " + String.valueOf((int) Math.ceil(xyB[2] * 255f)) + "}";
+                                float[] xyB = Util.RGBtoXYB(color);
+                                String pld = "{\"lights\":" + hueSwitch.getId() + ", \"command\":{\"xy\": [" + String.valueOf(xyB[0]) + "," + String.valueOf(xyB[1]) + "]}, \"bri\": " + String.valueOf((int) Math.ceil(xyB[2] * 255f)) + "}";
 
-                                    MqttController.getInstance().publish("HYDRA/HUE/set-light", pld);
-                                    hueSwitch.setXy(new float[]{xyB[0], xyB[1]});
+                                MqttController.getInstance().publish("HYDRA/HUE/set-light", pld);
+                                hueSwitch.setXy(new float[]{xyB[0], xyB[1]});
                             }
                         }, color);
                         colorPickerDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
@@ -415,72 +508,91 @@ class DeviceAdapter extends ArrayAdapter<BaseSwitch> {
                     }
                 });
 
-                swSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                swSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener()
+                {
                     @Override
-                    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser)
+                    {
 
                     }
 
                     @Override
-                    public void onStartTrackingTouch(SeekBar seekBar) {
+                    public void onStartTrackingTouch(SeekBar seekBar)
+                    {
 
                     }
 
                     @Override
-                    public void onStopTrackingTouch(SeekBar seekBar) {
-                        
-                            JSONObject payload = new JSONObject();
-                            try {
-                                payload.put("lights", hueSwitch.getId());
+                    public void onStopTrackingTouch(SeekBar seekBar)
+                    {
 
-                                JSONObject command = new JSONObject();
-                                command.put("bri", (int) Math.ceil(swSeekbar.getProgress()));
+                        JSONObject payload = new JSONObject();
+                        try
+                        {
+                            payload.put("lights", hueSwitch.getId());
 
-                                payload.put("command", command);
+                            JSONObject command = new JSONObject();
+                            command.put("bri", (int) Math.ceil(swSeekbar.getProgress()));
 
-                                MqttController.getInstance().publish("HYDRA/HUE/set-light", payload.toString());
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
+                            payload.put("command", command);
 
-                            hueSwitch.setBrightness((int) Math.ceil(swSeekbar.getProgress()));
+                            MqttController.getInstance().publish("HYDRA/HUE/set-light", payload.toString());
+                        }
+                        catch (JSONException e)
+                        {
+                            e.printStackTrace();
+                        }
+
+                        hueSwitch.setBrightness((int) Math.ceil(swSeekbar.getProgress()));
 
                     }
                 });
 
-            } break;
-            case VIEWTYPE_BUTTON: {
+            }
+            break;
+            case VIEWTYPE_BUTTON:
+            {
                 swName = (TextView) convertView.findViewById(R.id.rowButtonTextView);
                 final Button swButton = (Button) convertView.findViewById(R.id.rowButtonButtonText);
-                final CustomSwitch customSwitch = (CustomSwitch)sw;
+                final CustomSwitch customSwitch = (CustomSwitch) sw;
 
                 //set button text
                 swButton.setText(customSwitch.getPayloadOff());
 
-                swButton.setOnClickListener(new View.OnClickListener() {
+                swButton.setOnClickListener(new View.OnClickListener()
+                {
                     @Override
-                    public void onClick(View v) {
+                    public void onClick(View v)
+                    {
                         customSwitch.sendButton();
                     }
                 });
-            } break;
-            case VIEWTYPE_TEXT: {
+            }
+            break;
+            case VIEWTYPE_TEXT:
+            {
                 swName = (TextView) convertView.findViewById(R.id.rowTextTextView);
                 final Button swButton = (Button) convertView.findViewById(R.id.rowTextButton);
-                final CustomSwitch customSwitch = (CustomSwitch)sw;
+                final CustomSwitch customSwitch = (CustomSwitch) sw;
                 final EditText editText = (EditText) convertView.findViewById(R.id.rowTextEditText);
 
-                swButton.setOnClickListener(new View.OnClickListener() {
+                swButton.setOnClickListener(new View.OnClickListener()
+                {
                     @Override
-                    public void onClick(View v) {
+                    public void onClick(View v)
+                    {
                         customSwitch.sendText(editText.getText().toString());
                     }
                 });
-            } break;
-            case VIEWTYPE_SEPARATOR: {
+            }
+            break;
+            case VIEWTYPE_SEPARATOR:
+            {
                 swName = (TextView) convertView.findViewById(R.id.rowSepText);
-            }break;
-            default: {
+            }
+            break;
+            default:
+            {
                 // Shouldn't ever happen but stops the compiler from complaining
                 swName = null;
             }
@@ -493,11 +605,11 @@ class DeviceAdapter extends ArrayAdapter<BaseSwitch> {
 
         return convertView;
     }
-	
-	@Override
-	public void clear() {
-        Log.i("DeviceAdapter", "Clearing DeviceAdapter");
-		super.clear();
-	}
 
+    @Override
+    public void clear()
+    {
+        Log.i("DeviceAdapter", "Clearing DeviceAdapter");
+        super.clear();
+    }
 }

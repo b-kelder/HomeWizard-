@@ -20,7 +20,8 @@ import java.util.Date;
 import android.app.Dialog;
 import android.view.View.OnClickListener;
 
-public class Settings extends BaseMqttEventActivity{
+public class Settings extends BaseMqttEventActivity
+{
 
     //fields
     private MqttController mqttController;
@@ -35,7 +36,8 @@ public class Settings extends BaseMqttEventActivity{
     public static Context context;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
 
         context = this;
 
@@ -55,13 +57,14 @@ public class Settings extends BaseMqttEventActivity{
             loginTimestamp = getLoginAttempts.getLong("timestamp");
             counter = getLoginAttempts.getInt("attempts");
         }
-        catch(Exception e)
+        catch (Exception e)
         {
             e.printStackTrace();
         }
 
         //  if adminpin is enabled and pin is not empty, show dialog
-        if(adminPinEnabled && !adminPin.isEmpty()) {
+        if (adminPinEnabled && !adminPin.isEmpty())
+        {
             final Dialog login = new Dialog(this);
 
             login.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -73,19 +76,28 @@ public class Settings extends BaseMqttEventActivity{
             final Button btnCancel = (Button) login.findViewById(R.id.btnCancel);
             final EditText txtPassword = (EditText) login.findViewById(R.id.txtPassword);
 
-            btnLogin.setOnClickListener(new OnClickListener() {
+            btnLogin.setOnClickListener(new OnClickListener()
+            {
                 @Override
-                public void onClick(View v) {
-                    if (txtPassword.getText().toString().trim().length() > 0) {
-                        if(loginEnabled) {
-                            if (txtPassword.getText().toString().equals(adminPin)) {
+                public void onClick(View v)
+                {
+                    if (txtPassword.getText().toString().trim().length() > 0)
+                    {
+                        if (loginEnabled)
+                        {
+                            if (txtPassword.getText().toString().equals(adminPin))
+                            {
                                 login.dismiss();
                                 Util.saveLoginAttempts(context, 0, 2, true); // On login, reset login-attempts
-                            } else if (counter == 0) {
+                            }
+                            else if (counter == 0)
+                            {
                                 Toast.makeText(Settings.this, "Login disabled. To many failed attempts. Try again in 60 seconds.", Toast.LENGTH_LONG).show();
                                 Util.saveLoginAttempts(context, new Date().getTime(), 0, false); // set login to false and attempts to 0
                                 finish();
-                            } else {
+                            }
+                            else
+                            {
                                 Toast.makeText(Settings.this, "Incorrect pin - " + counter + " attempt(s) left", Toast.LENGTH_LONG).show();
                                 // subtract 1 from current counter, and save
                                 counter--;
@@ -98,25 +110,29 @@ public class Settings extends BaseMqttEventActivity{
                             long timespan = Math.abs((System.currentTimeMillis() - 60000 - loginTimestamp) / 1000); // display timer for when login is re-enabled
 
                             // when 60 seconds passed (in miliseconds), re-enable login
-                            if(System.currentTimeMillis() - 60000 > loginTimestamp)
+                            if (System.currentTimeMillis() - 60000 > loginTimestamp)
                             {
                                 Util.saveLoginAttempts(context, 0, 2, true); // set login to true and reset attempts
-                                Toast.makeText(Settings.this, "Login attempts resetting." , Toast.LENGTH_LONG).show();
+                                Toast.makeText(Settings.this, "Login attempts resetting.", Toast.LENGTH_LONG).show();
                                 finish();
                             }
                             else
                             {
-                                Toast.makeText(Settings.this, "Login is disabled for " + timespan + " seconds." , Toast.LENGTH_LONG).show();
+                                Toast.makeText(Settings.this, "Login is disabled for " + timespan + " seconds.", Toast.LENGTH_LONG).show();
                             }
                         }
-                    } else {
+                    }
+                    else
+                    {
                         Toast.makeText(Settings.this, "Please enter a pin code", Toast.LENGTH_LONG).show();
                     }
                 }
             });
-            btnCancel.setOnClickListener(new OnClickListener() {
+            btnCancel.setOnClickListener(new OnClickListener()
+            {
                 @Override
-                public void onClick(View v) {
+                public void onClick(View v)
+                {
                     finish();
                 }
             });
@@ -127,22 +143,23 @@ public class Settings extends BaseMqttEventActivity{
         final Switch adminPinButton = (Switch) findViewById(R.id.adminEnabled);
         final EditText adminPinTxt = (EditText) findViewById(R.id.editAdminPin);
         final Button applyPin = (Button) findViewById(R.id.applyAdminPin);
-        applyPin.setOnClickListener(new View.OnClickListener() {
+        applyPin.setOnClickListener(new View.OnClickListener()
+        {
             public void onClick(View v)
             {
                 try
                 {
-                    if(!adminPinTxt.getText().toString().isEmpty())
+                    if (!adminPinTxt.getText().toString().isEmpty())
                     {
                         Util.saveAdminPin(Settings.context, adminPinTxt.getText().toString(), true);
                         Toast.makeText(Settings.this, "Pin code saved", Toast.LENGTH_LONG).show();
                     }
-                    else if(adminPinTxt.getText().toString().isEmpty() && adminPinButton.isChecked())
+                    else if (adminPinTxt.getText().toString().isEmpty() && adminPinButton.isChecked())
                     {
                         Toast.makeText(Settings.this, "Please enter a code", Toast.LENGTH_LONG).show();
                     }
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     e.printStackTrace();
                 }
@@ -150,13 +167,18 @@ public class Settings extends BaseMqttEventActivity{
         });
 
         // this will disable inputs and buttons when they shouldn't be used. Triggered when enable switch is clicked.
-        adminPinButton.setOnCheckedChangeListener((new CompoundButton.OnCheckedChangeListener() {
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked){
+        adminPinButton.setOnCheckedChangeListener((new CompoundButton.OnCheckedChangeListener()
+        {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
+            {
+                if (isChecked)
+                {
                     adminPinTxt.setEnabled(true); // enable pin text input
                     applyPin.setEnabled(true); // enable apply pin button
-                } else {
-                    if(!adminPin.isEmpty())
+                }
+                else
+                {
+                    if (!adminPin.isEmpty())
                     {
                         Util.saveAdminPin(Settings.context, "", false);
                         Toast.makeText(Settings.this, "Pin code disabled", Toast.LENGTH_LONG).show();
@@ -168,7 +190,7 @@ public class Settings extends BaseMqttEventActivity{
         }));
 
         // this will disable inputs and buttons when it shouldn't be used based on config from json file
-        if(adminPinEnabled)
+        if (adminPinEnabled)
         {
             adminPinTxt.setEnabled(true);       // enable pin text input
             applyPin.setEnabled(true);          // enable apply pin button
@@ -194,7 +216,8 @@ public class Settings extends BaseMqttEventActivity{
         final EditText brokerPass = (EditText) findViewById(R.id.brkPassword);
         final CheckBox brokerCrt = (CheckBox) findViewById(R.id.brkUseCrt);
 
-        try {
+        try
+        {
             JSONObject loginSettingsFile = Util.readLoginData(this);
             emailField.setText(loginSettingsFile.getString("email"));
             passwordField.setText(loginSettingsFile.getString("password"));
@@ -206,16 +229,21 @@ public class Settings extends BaseMqttEventActivity{
             brokerPass.setText(brokerSettings.getString("password"));
             brokerCrt.setChecked(brokerSettings.getBoolean("crt"));
 
-        } catch (Exception e) {
+        }
+        catch (Exception e)
+        {
             e.printStackTrace();
         }
 
         //set button functionaliteit
         Button loginbutton = (Button) findViewById(R.id.loginButton);
-        loginbutton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
+        loginbutton.setOnClickListener(new View.OnClickListener()
+        {
+            public void onClick(View v)
+            {
                 //publish email/password
-                if(!emailField.getText().toString().isEmpty() && !passwordField.getText().toString().isEmpty()) {
+                if (!emailField.getText().toString().isEmpty() && !passwordField.getText().toString().isEmpty())
+                {
                     mqttController.loginHomeWizard(emailField.getText().toString(), passwordField.getText().toString(), Settings.context);
                 }
                 else
@@ -226,14 +254,19 @@ public class Settings extends BaseMqttEventActivity{
         });
 
         Button brokerSettings = (Button) findViewById(R.id.bkrConfirmBtn);
-        brokerSettings.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
+        brokerSettings.setOnClickListener(new View.OnClickListener()
+        {
+            public void onClick(View v)
+            {
                 //publish email/password
                 Util.saveBrokerData(Settings.context, brokerIP.getText().toString(), brokerPort.getText().toString(), brokerUser.getText().toString(), brokerPass.getText().toString(), brokerCrt.isChecked());
-                try {
+                try
+                {
                     JSONObject file = Util.readBrokerData(Settings.context);
                     mqttController.connect(file.getString("ip") + ":" + file.getString("port"), "Homewizard++", file.getString("username"), file.getString("password"), Settings.context);
-                } catch (JSONException e) {
+                }
+                catch (JSONException e)
+                {
                     Toast toaster = Toast.makeText(getApplicationContext(), "Unable to connect to broker", Toast.LENGTH_SHORT);
                     toaster.show();
                     e.printStackTrace();
@@ -243,8 +276,10 @@ public class Settings extends BaseMqttEventActivity{
 
         //set button functionaliteit
         Button clearbutton = (Button) findViewById(R.id.clearBtn);
-        clearbutton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
+        clearbutton.setOnClickListener(new View.OnClickListener()
+        {
+            public void onClick(View v)
+            {
                 Util.saveLoginData(Settings.context, emailField.getText().toString(), passwordField.getText().toString());
                 emailField.setText("");
                 passwordField.setText("");
@@ -255,7 +290,8 @@ public class Settings extends BaseMqttEventActivity{
     }
 
     @Override
-    public void onResume(){
+    public void onResume()
+    {
         super.onResume();
 
         //Load stuff from files
@@ -267,7 +303,8 @@ public class Settings extends BaseMqttEventActivity{
         final EditText brokerPass = (EditText) findViewById(R.id.brkPassword);
         final CheckBox brokerCrt = (CheckBox) findViewById(R.id.brkUseCrt);
 
-        try {
+        try
+        {
             JSONObject loginSettingsFile = Util.readLoginData(this);
             serial = loginSettingsFile.getString("serial");
             emailField.setText(loginSettingsFile.getString("email"));
@@ -280,35 +317,45 @@ public class Settings extends BaseMqttEventActivity{
             brokerPass.setText(brokerSettings.getString("password"));
             brokerCrt.setChecked(brokerSettings.getBoolean("crt"));
 
-        } catch (Exception e) {
+        }
+        catch (Exception e)
+        {
             e.printStackTrace();
         }
     }
 
-	@Override
-	protected void addEventListeners(){
-		//als er een bericht terug word ontvangen
+    @Override
+    protected void addEventListeners()
+    {
+        //als er een bericht terug word ontvangen
         final EditText emailField = (EditText) findViewById(R.id.emailField);
         final EditText passwordField = (EditText) findViewById(R.id.passwordField);
 
-		addEventListener(new MqttControllerMessageCallbackListener() {
+        addEventListener(new MqttControllerMessageCallbackListener()
+        {
             @Override
             /// Stores last successful login data and serial
-            public void onMessageArrived(String topic, MqttMessage message) {
+            public void onMessageArrived(String topic, MqttMessage message)
+            {
 
-                if (topic.equals("HYDRA/AUTH/results")) {
+                if (topic.equals("HYDRA/AUTH/results"))
+                {
                     //haal serial code uit json bericht
                     JSONObject json = null;
-                    try {
+                    try
+                    {
                         json = new JSONObject(message.toString());
-                        if (json.getString("status").equals("ok")) {
+                        if (json.getString("status").equals("ok"))
+                        {
                             Util.saveLoginData(Settings.context, emailField.getText().toString(), passwordField.getText().toString());
                         }
-                    } catch (JSONException e) {
+                    }
+                    catch (JSONException e)
+                    {
                         e.printStackTrace();
                     }
                 }
             }
         });
-	}
+    }
 }

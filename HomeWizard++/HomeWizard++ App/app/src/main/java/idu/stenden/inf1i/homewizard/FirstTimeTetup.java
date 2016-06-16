@@ -10,33 +10,41 @@ import android.widget.Button;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class FirstTimeTetup extends AppCompatActivity {
+public class FirstTimeTetup extends AppCompatActivity
+{
 
     Boolean firstSetup;
     public static Context context;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_first_time_setup);
 
         context = this;
 
         JSONObject firstSetupFile = Util.readFirstSetup(this);
-        try {
+        try
+        {
             firstSetup = firstSetupFile.getBoolean("FirstSetup");
-        } catch (JSONException e) {
+        }
+        catch (JSONException e)
+        {
             e.printStackTrace();
         }
 
-        if (firstSetup == false){
+        if (firstSetup == false)
+        {
             startActivity(new Intent(getApplicationContext(), MainActivity.class));
             finish();
         }
 
         Button skipBtn = (Button) findViewById(R.id.btnStep1Skip);
-        skipBtn.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
+        skipBtn.setOnClickListener(new View.OnClickListener()
+        {
+            public void onClick(View v)
+            {
                 startActivity(new Intent(getApplicationContext(), MainActivity.class));
                 Util.saveFirstSetup(context, false);
                 finish();
@@ -44,8 +52,10 @@ public class FirstTimeTetup extends AppCompatActivity {
         });
 
         Button nextBtn = (Button) findViewById(R.id.btnStep1);
-        nextBtn.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
+        nextBtn.setOnClickListener(new View.OnClickListener()
+        {
+            public void onClick(View v)
+            {
                 startActivity(new Intent(getApplicationContext(), SetupStep2.class));
                 finish();
             }

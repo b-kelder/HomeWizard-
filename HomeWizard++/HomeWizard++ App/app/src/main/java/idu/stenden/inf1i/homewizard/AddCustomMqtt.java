@@ -11,10 +11,12 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class AddCustomMqtt extends AppCompatActivity {
+public class AddCustomMqtt extends AppCompatActivity
+{
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_custommqtt);
 
@@ -37,10 +39,13 @@ public class AddCustomMqtt extends AppCompatActivity {
         maxDimmerValue.setVisibility(View.GONE);
         maxDimmerText.setVisibility(View.GONE);
 
-        isDimmer.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        isDimmer.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
+        {
             @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if(b) {
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b)
+            {
+                if(b)
+                {
                     maxDimmerValue.setVisibility(View.VISIBLE);
                     maxDimmerText.setVisibility(View.VISIBLE);
 
@@ -51,7 +56,9 @@ public class AddCustomMqtt extends AppCompatActivity {
                     isRGB.setEnabled(false);
                     isButton.setEnabled(false);
                     isText.setEnabled(false);
-                } else {
+                }
+                else
+                {
                     maxDimmerValue.setVisibility(View.GONE);
                     maxDimmerText.setVisibility(View.GONE);
 
@@ -66,17 +73,22 @@ public class AddCustomMqtt extends AppCompatActivity {
             }
         });
 
-        isRGB.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        isRGB.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
+        {
             @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if(b) {
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b)
+            {
+                if(b)
+                {
                     maxDimmerValue.setVisibility(View.VISIBLE);
                     maxDimmerText.setVisibility(View.VISIBLE);
 
                     isDimmer.setEnabled(false);
                     isButton.setEnabled(false);
                     isText.setEnabled(false);
-                } else {
+                }
+                else
+                {
                     maxDimmerValue.setVisibility(View.GONE);
                     maxDimmerText.setVisibility(View.GONE);
 
@@ -87,16 +99,21 @@ public class AddCustomMqtt extends AppCompatActivity {
             }
         });
 
-        isButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        isButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
+        {
             @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if(b) {
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b)
+            {
+                if(b)
+                {
                     isDimmer.setEnabled(false);
                     isRGB.setEnabled(false);
                     isText.setEnabled(false);
                     payloadOffText.setText("Button text:");
                     payloadOnText.setText("MQTT Payload:");
-                } else {
+                }
+                else
+                {
                     isDimmer.setEnabled(true);
                     isRGB.setEnabled(true);
                     isText.setEnabled(true);
@@ -106,10 +123,13 @@ public class AddCustomMqtt extends AppCompatActivity {
             }
         });
 
-        isText.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        isText.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
+        {
             @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if(b) {
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b)
+            {
+                if(b)
+                {
                     payloadOn.setVisibility(View.GONE);
                     payloadOff.setVisibility(View.GONE);
                     payloadOffText.setVisibility(View.GONE);
@@ -117,7 +137,9 @@ public class AddCustomMqtt extends AppCompatActivity {
                     isDimmer.setEnabled(false);
                     isRGB.setEnabled(false);
                     isButton.setEnabled(false);
-                } else {
+                }
+                else
+                {
                     payloadOn.setVisibility(View.VISIBLE);
                     payloadOff.setVisibility(View.VISIBLE);
                     payloadOffText.setVisibility(View.VISIBLE);
@@ -129,27 +151,38 @@ public class AddCustomMqtt extends AppCompatActivity {
             }
         });
 
-        addHMWZ.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
+        addHMWZ.setOnClickListener(new View.OnClickListener()
+        {
+            public void onClick(View v)
+            {
                 String regexStr = "^[0-9]*$";
 
                 if (!customName.getText().toString().isEmpty() && !customTopic.getText().toString().isEmpty() && !payloadOff.getText().toString().isEmpty() && !payloadOn.getText().toString().isEmpty()
                         || (!customName.getText().toString().isEmpty() && !maxDimmerValue.getText().toString().isEmpty() && !customTopic.getText().toString().isEmpty()) && isDimmer.isChecked() && maxDimmerValue.getText().toString().trim().matches(regexStr)
                         || (!customName.getText().toString().isEmpty() && !customTopic.getText().toString().isEmpty()) && isText.isChecked()
-                        || (!customName.getText().toString().isEmpty() && !customTopic.getText().toString().isEmpty() && !payloadOff.getText().toString().isEmpty() && !payloadOn.getText().toString().isEmpty() && !maxDimmerValue.getText().toString().isEmpty() && maxDimmerValue.getText().toString().trim().matches(regexStr) )) {
+                        || (!customName.getText().toString().isEmpty() && !customTopic.getText().toString().isEmpty() && !payloadOff.getText().toString().isEmpty() && !payloadOn.getText().toString().isEmpty() && !maxDimmerValue.getText().toString().isEmpty() && maxDimmerValue.getText().toString().trim().matches(regexStr) ))
+                {
                     String type = "switch";
-                    if(isDimmer.isChecked()) {
+                    if(isDimmer.isChecked())
+                    {
                         type = "dimmer";
-                    }if(isRGB.isChecked()) {
+                    }
+                    if(isRGB.isChecked())
+                    {
                         type = "colorpicker";
-                    }if(isButton.isChecked()) {
+                    }
+                    if(isButton.isChecked())
+                    {
                         type = "button";
-                    }if(isText.isChecked()) {
+                    }
+                    if(isText.isChecked())
+                    {
                         type = "text";
                     }
 
                     String dimmerAntiError = "0";
-                    if(!maxDimmerValue.getText().toString().isEmpty()){
+                    if(!maxDimmerValue.getText().toString().isEmpty())
+                    {
                         dimmerAntiError = maxDimmerValue.getText().toString();
                     }
 					AppDataContainer.getInstance().addCustomSwitch(new CustomSwitch(customName.getText().toString(), customTopic.getText().toString(), payloadOn.getText().toString(), payloadOff.getText().toString(), type, false, 0, "0,0,0", dimmerAntiError));
@@ -159,7 +192,9 @@ public class AddCustomMqtt extends AppCompatActivity {
                     Toast.makeText(toastContext, "Device added", Toast.LENGTH_SHORT).show();
 
                     finish();
-                } else {
+                }
+                else
+                {
                     Toast toaster = Toast.makeText(getApplicationContext(), "Fields cannot be empty", Toast.LENGTH_SHORT);
                     toaster.show();
                 }

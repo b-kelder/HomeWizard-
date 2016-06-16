@@ -5,21 +5,24 @@ import android.support.v7.app.AppCompatActivity;
 
 import java.util.ArrayList;
 
-public class BaseMqttEventActivity extends AppCompatActivity {
+public class BaseMqttEventActivity extends AppCompatActivity
+{
 
     protected ArrayList<MqttControllerMessageCallbackListener> listeners = new ArrayList<>();
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
 
-            removeEventListeners();
-            addEventListeners();
+        removeEventListeners();
+        addEventListeners();
     }
 
-    protected void addEventListener(MqttControllerMessageCallbackListener listener){
-        if(MqttController.getInstance().hasMessageListener(listener)){
+    protected void addEventListener(MqttControllerMessageCallbackListener listener)
+    {
+        if(MqttController.getInstance().hasMessageListener(listener))
+        {
             MqttController.getInstance().removeMessageListener(listener);
         }
         listeners.add(listener);
@@ -27,19 +30,23 @@ public class BaseMqttEventActivity extends AppCompatActivity {
     }
 	
 	/// Override this with your event handlers
-	protected void addEventListeners(){
+	protected void addEventListeners()
+    {
 		
 	}
 
     /// Should remove all of those event handlers
-    protected void removeEventListeners(){
-        for(MqttControllerMessageCallbackListener m : listeners){
+    protected void removeEventListeners()
+    {
+        for(MqttControllerMessageCallbackListener m : listeners)
+        {
             MqttController.getInstance().removeMessageListener(m);
         }
     }
 
     @Override
-    public void onDestroy(){
+    public void onDestroy()
+    {
         super.onDestroy();
         removeEventListeners();
     }

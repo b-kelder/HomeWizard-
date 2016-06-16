@@ -4,12 +4,14 @@ package idu.stenden.inf1i.homewizard;
  * Created by Bram on 19/05/2016.
  */
 
-public class HomewizardSwitch extends BaseSwitch {
+public class HomewizardSwitch extends BaseSwitch
+{
 
     private int id;                 //HomeWizard id
     private boolean updating;       //Used to check if this switch is waiting for a state change response
 
-    public HomewizardSwitch(String name, String type, String status, String id){
+    public HomewizardSwitch(String name, String type, String status, String id)
+    {
         this.name = name;
         this.type = type;
         this.status = (status.equals("on")) ? true : false;
@@ -17,7 +19,8 @@ public class HomewizardSwitch extends BaseSwitch {
     }
 
     @Override
-    public String toString() {
+    public String toString()
+    {
         final StringBuilder sb = new StringBuilder("HomewizardSwitch{");
         sb.append("name='").append(name).append('\'');
         sb.append(", type='").append(type).append('\'');
@@ -30,32 +33,39 @@ public class HomewizardSwitch extends BaseSwitch {
     }
 
     @Override
-    public void sendStatus() {
+    public void sendStatus()
+    {
         MqttController.getInstance().publish("HYDRA/HMWZ/sw/" + id, status ? "on" : "off");
     }
 
     @Override
-    public void sendDimmer() {
+    public void sendDimmer()
+    {
         MqttController.getInstance().publish("HYDRA/HMWZ/sw/dim/" + id, "" + dimmer);
     }
 
-    public boolean isUpdating() {
+    public boolean isUpdating()
+    {
         return updating;
     }
 
-    public void setUpdating(boolean updating) {
+    public void setUpdating(boolean updating)
+    {
         this.updating = updating;
     }
 
-    public void setId(int id){
+    public void setId(int id)
+    {
         this.id = id;
     }
 
-    public int getId(){
+    public int getId()
+    {
         return id;
     }
 
-    public void sendEdit(){
+    public void sendEdit()
+    {
         ///sw/edit/%IdVanSwitch%/%NaamVanLamp%/no/dimmer/0
         String urlName = name.trim().replace(" ", "+");
         MqttController.getInstance().publish("HYDRA/HMWZ/sw/edit/" + id, urlName + "/no/" + type + "/0");

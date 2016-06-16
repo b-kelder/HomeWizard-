@@ -5,7 +5,8 @@ import java.util.Arrays;
 /**
  * Created by Wouter on 31-05-16.
  */
-public class HueSwitch extends BaseSwitch {
+public class HueSwitch extends BaseSwitch
+{
 
     /*
     "name": l.name,
@@ -26,74 +27,91 @@ public class HueSwitch extends BaseSwitch {
     protected int id;
     protected float[] xy;
 
-	public HueSwitch() {
-		
-	}
+    public HueSwitch()
+    {
+
+    }
 
 
     @Override
-    public String getType() {
+    public String getType()
+    {
         return "hue";
     }
 
-    public String getHueType() {
+    public String getHueType()
+    {
         return hueType;
     }
 
-    public void setHueType(String hueType) {
+    public void setHueType(String hueType)
+    {
         this.hueType = hueType;
     }
 
-    public String getColormode() {
+    public String getColormode()
+    {
         return colormode;
     }
 
-    public void setColormode(String colormode) {
+    public void setColormode(String colormode)
+    {
         this.colormode = colormode;
     }
 
-    public int getBrightness() {
+    public int getBrightness()
+    {
         return brightness;
     }
 
-    public void setBrightness(int brightness) {
+    public void setBrightness(int brightness)
+    {
         this.brightness = brightness;
     }
 
-    public int getHue() {
+    public int getHue()
+    {
         return hue;
     }
 
-    public void setHue(int hue) {
+    public void setHue(int hue)
+    {
         this.hue = hue;
     }
 
-    public int getSaturation() {
+    public int getSaturation()
+    {
         return saturation;
     }
 
-    public void setSaturation(int saturation) {
+    public void setSaturation(int saturation)
+    {
         this.saturation = saturation;
     }
 
-    public float[] getXy() {
+    public float[] getXy()
+    {
         return xy;
     }
 
-    public void setXy(float[] xy) {
+    public void setXy(float[] xy)
+    {
         this.xy = xy;
     }
 
-    public int getId() {
+    public int getId()
+    {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(int id)
+    {
         this.id = id;
     }
 
     @Override
-    public String toString() {
+    public String toString()
+    {
         final StringBuilder sb = new StringBuilder("HueSwitch{");
         sb.append("colormode='").append(colormode).append('\'');
         sb.append(", brightness=").append(brightness);
@@ -104,7 +122,8 @@ public class HueSwitch extends BaseSwitch {
         return sb.toString();
     }
 
-    public boolean isColorLight() {
+    public boolean isColorLight()
+    {
         return hueType.equals("Extended color light");
     }
 }

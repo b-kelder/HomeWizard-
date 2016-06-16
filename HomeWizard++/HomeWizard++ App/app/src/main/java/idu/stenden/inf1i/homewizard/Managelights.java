@@ -19,7 +19,8 @@ import org.json.JSONObject;
 
 import java.util.Date;
 
-public class Managelights extends BaseMqttEventActivity {
+public class Managelights extends BaseMqttEventActivity
+{
 
     private MqttController mqttController;
     private ListView mainListView;
@@ -33,7 +34,8 @@ public class Managelights extends BaseMqttEventActivity {
     private long loginTimestamp;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         context = this;
         super.onCreate(savedInstanceState);
 
@@ -52,13 +54,14 @@ public class Managelights extends BaseMqttEventActivity {
             loginTimestamp = getLoginAttempts.getLong("timestamp");
             counter = getLoginAttempts.getInt("attempts");
         }
-        catch(Exception e)
+        catch (Exception e)
         {
             e.printStackTrace();
         }
 
         //  if adminpin is enabled and pin is not empty, show dialog
-        if(adminPinEnabled && !adminPin.isEmpty()) {
+        if (adminPinEnabled && !adminPin.isEmpty())
+        {
             final Dialog login = new Dialog(this);
 
             login.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -70,19 +73,28 @@ public class Managelights extends BaseMqttEventActivity {
             final Button btnCancel = (Button) login.findViewById(R.id.btnCancel);
             final EditText txtPassword = (EditText) login.findViewById(R.id.txtPassword);
 
-            btnLogin.setOnClickListener(new View.OnClickListener() {
+            btnLogin.setOnClickListener(new View.OnClickListener()
+            {
                 @Override
-                public void onClick(View v) {
-                    if (txtPassword.getText().toString().trim().length() > 0) {
-                        if(loginEnabled) {
-                            if (txtPassword.getText().toString().equals(adminPin)) {
+                public void onClick(View v)
+                {
+                    if (txtPassword.getText().toString().trim().length() > 0)
+                    {
+                        if (loginEnabled)
+                        {
+                            if (txtPassword.getText().toString().equals(adminPin))
+                            {
                                 login.dismiss();
                                 Util.saveLoginAttempts(context, 0, 2, true); // On login, reset login-attempts
-                            } else if (counter == 0) {
+                            }
+                            else if (counter == 0)
+                            {
                                 Toast.makeText(Managelights.this, "Login disabled. To many failed attempts. Try again in 60 seconds.", Toast.LENGTH_LONG).show();
                                 Util.saveLoginAttempts(context, new Date().getTime(), 0, false); // set login to false and attempts to 0
                                 finish();
-                            } else {
+                            }
+                            else
+                            {
                                 Toast.makeText(Managelights.this, "Incorrect pin - " + counter + " attempt(s) left", Toast.LENGTH_LONG).show();
                                 // subtract 1 from current counter, and save
                                 counter--;
@@ -95,25 +107,29 @@ public class Managelights extends BaseMqttEventActivity {
                             long timespan = Math.abs((System.currentTimeMillis() - 60000 - loginTimestamp) / 1000); // display timer for when login is re-enabled
 
                             // when 60 seconds passed (in miliseconds), re-enable login
-                            if(System.currentTimeMillis() - 60000 > loginTimestamp)
+                            if (System.currentTimeMillis() - 60000 > loginTimestamp)
                             {
                                 Util.saveLoginAttempts(context, 0, 2, true); // set login to true and reset attempts
-                                Toast.makeText(Managelights.this, "Login attempts resetting." , Toast.LENGTH_LONG).show();
+                                Toast.makeText(Managelights.this, "Login attempts resetting.", Toast.LENGTH_LONG).show();
                                 finish();
                             }
                             else
                             {
-                                Toast.makeText(Managelights.this, "Login is disabled for " + timespan + " seconds." , Toast.LENGTH_LONG).show();
+                                Toast.makeText(Managelights.this, "Login is disabled for " + timespan + " seconds.", Toast.LENGTH_LONG).show();
                             }
                         }
-                    } else {
+                    }
+                    else
+                    {
                         Toast.makeText(Managelights.this, "Please enter a pin code", Toast.LENGTH_LONG).show();
                     }
                 }
             });
-            btnCancel.setOnClickListener(new View.OnClickListener() {
+            btnCancel.setOnClickListener(new View.OnClickListener()
+            {
                 @Override
-                public void onClick(View v) {
+                public void onClick(View v)
+                {
                     finish();
                 }
             });
@@ -125,12 +141,14 @@ public class Managelights extends BaseMqttEventActivity {
         //MQTT
         mqttController = MqttController.getInstance();
         mqttController.setContext(getApplicationContext());
-        
+
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+        fab.setOnClickListener(new View.OnClickListener()
+        {
             @Override
-            public void onClick(View view) {
+            public void onClick(View view)
+            {
                 startActivity(new Intent(getApplicationContext(), AddChoice.class));
             }
         });
@@ -144,28 +162,36 @@ public class Managelights extends BaseMqttEventActivity {
     }
 
 
-	@Override
-	protected void addEventListeners(){
-		addEventListener(new MqttControllerMessageCallbackListener() {
-			@Override
-			public void onMessageArrived(String topic, MqttMessage message) {
-                if(topic.equals("HYDRA/HMWZRETURN")){
-                    try {
+    @Override
+    protected void addEventListeners()
+    {
+        addEventListener(new MqttControllerMessageCallbackListener()
+        {
+            @Override
+            public void onMessageArrived(String topic, MqttMessage message)
+            {
+                if (topic.equals("HYDRA/HMWZRETURN"))
+                {
+                    try
+                    {
                         JSONObject json = new JSONObject(message.toString());
                         json = json.getJSONObject("request");
                         String route = json.getString("route");
 
                         // Since MainActivity SHOULD have added their event listener first this SHOULD be called after that
                         // so we can assume the lights array is updated
-                        if (route.equals("/get-sensors")) {
+                        if (route.equals("/get-sensors"))
+                        {
                             AppDataContainer.getInstance().getDeviceEditAdapter().notifyDataSetChanged();
                             mainListView.invalidate();
                         }
-                    } catch (JSONException e) {
+                    }
+                    catch (JSONException e)
+                    {
                         e.printStackTrace();
                     }
                 }
-			}
-		});
-	}
+            }
+        });
+    }
 }
