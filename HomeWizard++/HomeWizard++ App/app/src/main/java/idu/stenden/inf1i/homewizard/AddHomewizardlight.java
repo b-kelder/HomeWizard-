@@ -56,16 +56,18 @@ public class AddHomewizardlight extends BaseMqttEventActivity {
                     String name = HMWZlightname.getText().toString().trim().replace(" ", "+");
                     String code = HMWZlightcode.getText().toString().trim().replace(" ", "+");
                     if(HMWZlightdimmer.isChecked()) {
-                        mqttController.publish("HYDRA/HMWZ/sw/add", name + "/dimmer/" + code + "/0");
+                        if(mqttController.publish("HYDRA/HMWZ/sw/add", name + "/dimmer/" + code + "/0"))
+                        {
+                            Toast.makeText(getApplicationContext(), "Device added", Toast.LENGTH_SHORT).show();
+                        }
                     } else {
-                        mqttController.publish("HYDRA/HMWZ/sw/add", name + "/switch/" + code + "/0");
+                        if(mqttController.publish("HYDRA/HMWZ/sw/add", name + "/switch/" + code + "/0"))
+                        {
+                            Toast.makeText(getApplicationContext(), "Device added", Toast.LENGTH_SHORT).show();
+                        }
                     }
 
-                    Toast.makeText(getApplicationContext(), "Device added", Toast.LENGTH_SHORT).show();
-
                     finish();
-                    //This just adds to the activity stack, we don't want that!
-                    //startActivity(new Intent(getApplicationContext(), MainActivity.class));
                 } else {
                     Toast toaster = Toast.makeText(getApplicationContext(), "Fields cannot be empty", Toast.LENGTH_SHORT);
                     toaster.show();
