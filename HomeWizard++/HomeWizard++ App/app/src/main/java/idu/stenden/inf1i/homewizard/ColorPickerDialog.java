@@ -15,6 +15,7 @@ import android.view.View;
 
 /**
  * Created by Bram on 01/06/2016.
+ * This code is based on: http://stackoverflow.com/questions/16363235/android-color-picker-to-be-included-in-the-activity
  */
 public class ColorPickerDialog extends Dialog {
 
