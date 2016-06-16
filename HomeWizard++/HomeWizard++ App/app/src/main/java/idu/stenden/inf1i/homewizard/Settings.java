@@ -215,7 +215,13 @@ public class Settings extends BaseMqttEventActivity{
         loginbutton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 //publish email/password
-                mqttController.loginHomeWizard(emailField.getText().toString(), passwordField.getText().toString(), Settings.context);
+                if(!emailField.getText().toString().isEmpty() && !passwordField.getText().toString().isEmpty()) {
+                    mqttController.loginHomeWizard(emailField.getText().toString(), passwordField.getText().toString(), Settings.context);
+                }
+                else
+                {
+                    Toast.makeText(Settings.this, "Username and password field cannot empty.", Toast.LENGTH_LONG).show();
+                }
             }
         });
 
