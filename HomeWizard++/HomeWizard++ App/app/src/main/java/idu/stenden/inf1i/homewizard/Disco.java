@@ -6,7 +6,14 @@ import android.graphics.Color;
  * Created by Wouter on 03-06-16.
  */
 public class Disco {
+    public static boolean isDisco = false;
+
     public static void doDisco(int lightId) {
+        if(isDisco) {
+            return;
+        }
+        isDisco = true;
+
         int index = 0;
         int loops = 0;
         while(true) {
@@ -35,6 +42,7 @@ public class Disco {
 
 
             if(!MqttController.getInstance().publish("HYDRA/HUE/set-light", pld, false)) {
+                isDisco = false;
                 return;
             }
 
@@ -46,6 +54,7 @@ public class Disco {
                 loops++;
 
                 if(loops > 5) {
+                    isDisco = false;
                     return;
                 }
             }
