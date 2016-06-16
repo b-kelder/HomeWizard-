@@ -1,6 +1,5 @@
 package idu.stenden.inf1i.homewizard;
 
-import android.app.Activity;
 import android.graphics.Color;
 
 /**

@@ -3,10 +3,7 @@ package idu.stenden.inf1i.homewizard;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.CountDownTimer;
-import android.support.design.widget.Snackbar;
 import android.util.Log;
-import android.view.View;
-import android.view.ViewConfiguration;
 import android.widget.Toast;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
@@ -131,7 +128,6 @@ public class MqttController {
             @Override
             public void onMessageArrived(String topic, MqttMessage message) {
 
-                //Toast.makeText(getApplicationContext(), "TRIGGERED SETTINGS EVENT LISTENER " + topic, Toast.LENGTH_SHORT).show();
                 if (topic.equals("HYDRA/AUTH/results")) {
                     dismissConnectingDialog();
 
@@ -165,7 +161,6 @@ public class MqttController {
             @Override
             public void onMessageArrived(String topic, MqttMessage message) {
 
-                //Toast.makeText(getApplicationContext(), "TRIGGERED SETTINGS EVENT LISTENER " + topic, Toast.LENGTH_SHORT).show();
                 if (topic.equals("HYDRA/HUERETURN/connect")) {
                     JSONObject json;
                     try {
@@ -196,29 +191,18 @@ public class MqttController {
 
     public void addMessageListener(MqttControllerMessageCallbackListener listener)
     {
-        //Log.e("MQTT", "Added MQTT listener, size " + messageListeners.size());
         messageListeners.add(listener);
     }
 	
 	public void removeMessageListener(MqttControllerMessageCallbackListener listener)
 	{
         messageListeners.remove(listener);
-        /*if(messageListeners.remove(listener)){
-            Log.e("MQTT", "Removed MQTT listener, size " + messageListeners.size());
-        } else {
-            Log.e("MQTT", "Could not remove MQTT listener, size " + messageListeners.size());
-        }*/
 	}
 	
 	public void removeMessageListeners(MqttControllerMessageCallbackListener[] listeners)
 	{
 		for(MqttControllerMessageCallbackListener l:listeners) {
             messageListeners.remove(l);
-            /*if(messageListeners.remove(l)){
-                Log.e("MQTT", "Removed MQTT listener, size " + messageListeners.size());
-            } else {
-                Log.e("MQTT", "Could not remove MQTT listener, size " + messageListeners.size());
-            }*/
 		}
 	}
 

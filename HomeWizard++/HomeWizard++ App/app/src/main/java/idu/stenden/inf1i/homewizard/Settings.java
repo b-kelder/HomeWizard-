@@ -15,17 +15,10 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.util.Date;
-import java.util.Set;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.view.View.OnClickListener;
-import android.widget.Button;
 
 public class Settings extends BaseMqttEventActivity{
 
@@ -297,7 +290,6 @@ public class Settings extends BaseMqttEventActivity{
             /// Stores last successful login data and serial
             public void onMessageArrived(String topic, MqttMessage message) {
 
-                //Toast.makeText(getApplicationContext(), "TRIGGERED SETTINGS EVENT LISTENER " + topic, Toast.LENGTH_SHORT).show();
                 if (topic.equals("HYDRA/AUTH/results")) {
                     //haal serial code uit json bericht
                     JSONObject json = null;

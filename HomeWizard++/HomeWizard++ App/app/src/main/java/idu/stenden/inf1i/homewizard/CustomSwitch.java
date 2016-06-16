@@ -1,8 +1,6 @@
 package idu.stenden.inf1i.homewizard;
 
 import android.graphics.Color;
-import android.graphics.Interpolator;
-import android.util.Log;
 
 /**
  * Created by Wouter on 26-05-16.

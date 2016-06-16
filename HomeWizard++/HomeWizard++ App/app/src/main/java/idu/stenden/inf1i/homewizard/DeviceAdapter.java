@@ -388,12 +388,6 @@ class DeviceAdapter extends ArrayAdapter<BaseSwitch> {
 
                 swButton.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View v) {
-                        /*float[] xyB = {
-                                hueSwitch.getXy()[0],
-                                hueSwitch.getXy()[1],
-                                (float)hueSwitch.getBrightness() / 255f
-                        };
-                        int color = Util.XYBtoRGB(xyB);*/
                         int color = 0xFFFFFFFF;
 
                         ColorPickerDialog colorPickerDialog = new ColorPickerDialog(context, new OnColorChangedListener() {
@@ -504,7 +498,6 @@ class DeviceAdapter extends ArrayAdapter<BaseSwitch> {
 	public void clear() {
         Log.i("DeviceAdapter", "Clearing DeviceAdapter");
 		super.clear();
-		//MqttController.getInstance().removeMessageListeners((MqttControllerMessageCallbackListener[])viewMessageCallbacks.toArray());
 	}
 
 }
