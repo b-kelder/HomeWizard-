@@ -220,7 +220,7 @@ public class Settings extends BaseMqttEventActivity{
                 }
                 else
                 {
-                    Toast.makeText(Settings.this, "Username and password field cannot empty.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(Settings.this, "Username and password field cannot be empty.", Toast.LENGTH_LONG).show();
                 }
             }
         });
