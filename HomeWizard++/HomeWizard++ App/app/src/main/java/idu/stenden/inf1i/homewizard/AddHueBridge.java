@@ -66,7 +66,7 @@ public class AddHueBridge extends AppCompatActivity
                             e.printStackTrace();
                         }
 
-                        if(status.equals("ok"))
+                        if (status.equals("ok"))
                         {
                             try
                             {
@@ -76,6 +76,7 @@ public class AddHueBridge extends AppCompatActivity
 
                                 finish();
                                 startActivity(new Intent(getApplicationContext(), AddChoice.class));
+
                             }
                             catch (JSONException e)
                             {
