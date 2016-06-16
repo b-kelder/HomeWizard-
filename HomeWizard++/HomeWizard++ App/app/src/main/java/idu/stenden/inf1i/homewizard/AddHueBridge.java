@@ -20,10 +20,18 @@ public class AddHueBridge extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_hue_bridge);
-
         context = this;
 
+        //Load IP
+        JSONObject jsonObject = Util.readHueData(this);
+        String ip;
+        try{
+            ip = jsonObject.getString("ip");
+        } catch (JSONException e) {
+            ip = "";
+        }
         final EditText bridgeIP = (EditText) findViewById(R.id.hueBridgeIP);
+        bridgeIP.setText(ip);
 
         Button nextBtn = (Button) findViewById(R.id.btnHueBridgeConnect);
         nextBtn.setOnClickListener(new View.OnClickListener() {
