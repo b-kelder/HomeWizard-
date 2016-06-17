@@ -22,7 +22,6 @@ import android.view.View.OnClickListener;
 
 public class Settings extends BaseMqttEventActivity
 {
-
     //fields
     private MqttController mqttController;
     private String serial;
@@ -337,7 +336,6 @@ public class Settings extends BaseMqttEventActivity
             /// Stores last successful login data and serial
             public void onMessageArrived(String topic, MqttMessage message)
             {
-
                 if (topic.equals("HYDRA/AUTH/results"))
                 {
                     //haal serial code uit json bericht

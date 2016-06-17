@@ -410,7 +410,6 @@ public class Util
                 inputStream.close();
                 settings = stringBuilder.toString();
             }
-
         }
         catch (Exception e)
         {

@@ -85,11 +85,6 @@ class DeviceEditAdapter extends ArrayAdapter<BaseSwitch>
 
                 btnName.setText(sw.getName());
 
-                if (HueSwitch.class.isInstance(sw))
-                {
-                    btnDelete.setVisibility(View.GONE);
-                }
-
                 final Dialog delete = new Dialog(getContext());
                 delete.requestWindowFeature(Window.FEATURE_NO_TITLE);
                 delete.setContentView(R.layout.delete_dialog);
@@ -99,11 +94,16 @@ class DeviceEditAdapter extends ArrayAdapter<BaseSwitch>
 
                 btnName.setText(sw.getName());
 
+                // Disable the delete option for Huelights (doesn't work). Can only be removed by using the Hue Bridge
+                if (HueSwitch.class.isInstance(sw))
+                {
+                    btnDelete.setVisibility(View.GONE);
+                }
+
                 btnChange.setOnClickListener(new View.OnClickListener()
                 {
                     public void onClick(View v)
                     {
-
                         if (HomewizardSwitch.class.isInstance(sw))
                         {
                             EditDialogs.showHomeWizardSwitchDialog(getContext(), (HomewizardSwitch) sw);
@@ -170,7 +170,6 @@ class DeviceEditAdapter extends ArrayAdapter<BaseSwitch>
             }
             break;
         }
-
         return convertView;
     }
 }
