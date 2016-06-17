@@ -29,14 +29,6 @@ public class SetupStep2 extends AppCompatActivity
         final EditText brokerPass = (EditText) findViewById(R.id.setupPassword);
         final CheckBox secureConnection = (CheckBox) findViewById(R.id.secureConnection);
 
-        Boolean connectSecure = false;
-
-        if(secureConnection.isChecked()){
-            connectSecure = true;
-        }
-
-        final Boolean useTLS = connectSecure;
-
         Button brokerSettings = (Button) findViewById(R.id.btnStep2);
         brokerSettings.setOnClickListener(new View.OnClickListener()
         {
@@ -45,7 +37,7 @@ public class SetupStep2 extends AppCompatActivity
                 //publish email/password
                 if (!brokerIP.getText().toString().isEmpty() && !brokerPort.getText().toString().isEmpty())
                 {
-                    Util.saveBrokerData(context, brokerIP.getText().toString(), brokerPort.getText().toString(), brokerUser.getText().toString(), brokerPass.getText().toString(), useTLS);
+                    Util.saveBrokerData(context, brokerIP.getText().toString(), brokerPort.getText().toString(), brokerUser.getText().toString(), brokerPass.getText().toString(), secureConnection.isChecked());
                     startActivity(new Intent(getApplicationContext(), SetupStep3.class));
                 }
                 else
