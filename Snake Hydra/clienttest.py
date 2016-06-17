@@ -233,8 +233,9 @@ try:
         print("Using cert", hydra.certFile)
         ####
     client.connect(hydra.brokerAddr, hydra.brokerPort, 60)
-except:
+except Exception as e:
     print("Oops")
+    print(e)
 else:
     client.loop_start()
 
