@@ -94,12 +94,6 @@ class DeviceEditAdapter extends ArrayAdapter<BaseSwitch>
 
                 btnName.setText(sw.getName());
 
-                // Disable the delete option for Huelights (doesn't work). Can only be removed by using the Hue Bridge
-                if (HueSwitch.class.isInstance(sw))
-                {
-                    btnDelete.setVisibility(View.GONE);
-                }
-
                 btnChange.setOnClickListener(new View.OnClickListener()
                 {
                     public void onClick(View v)
@@ -118,6 +112,16 @@ class DeviceEditAdapter extends ArrayAdapter<BaseSwitch>
                         }
                     }
                 });
+
+                // Disable the delete option for Huelights (doesn't work). Can only be removed by using the Hue Bridge
+                if (HueSwitch.class.isInstance(sw))
+                {
+                    btnDelete.setEnabled(false);
+                    btnDelete.setVisibility(View.INVISIBLE);
+                } else {
+                    btnDelete.setEnabled(true);
+                    btnDelete.setVisibility(View.VISIBLE);
+                }
 
                 btnDelete.setOnClickListener(new View.OnClickListener()
                 {
