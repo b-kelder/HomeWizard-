@@ -109,7 +109,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="To remove a device, click the 'Edit devices' in the menu and click on the red bin icon"
+            android:text="To remove a device, click the 'Edit devices' in the menu and click on the red bin icon next to the device you want to remove"
             android:id="@+id/textView18"
             android:layout_alignParentStart="true"
             android:layout_below="@+id/textView17"
