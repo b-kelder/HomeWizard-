@@ -212,6 +212,7 @@
             android:text="Use secure connection"
             android:id="@+id/brkUseCrt"
             android:layout_below="@+id/brokerPort"
-            android:layout_alignParentStart="true" />
+            android:layout_alignParentStart="true"
+            android:checked="false" />
     </RelativeLayout>
 </ScrollView>

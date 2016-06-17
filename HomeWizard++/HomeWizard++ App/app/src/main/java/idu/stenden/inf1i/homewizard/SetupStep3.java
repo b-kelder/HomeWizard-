@@ -29,7 +29,7 @@ public class SetupStep3 extends BaseMqttEventActivity
         {
             public void onClick(View v)
             {
-                if (!emailField.getText().toString().isEmpty() && passwordField.getText().toString().isEmpty())
+                if (!emailField.getText().toString().isEmpty() && !passwordField.getText().toString().isEmpty())
                 {
                     Util.saveLoginData(context, emailField.getText().toString(), passwordField.getText().toString());
                     Util.saveFirstSetup(context, false);
