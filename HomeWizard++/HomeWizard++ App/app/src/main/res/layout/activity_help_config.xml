@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingBottom="@dimen/activity_vertical_margin"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingRight="@dimen/activity_horizontal_margin"
+            android:paddingTop="@dimen/activity_vertical_margin"
+            tools:context="idu.stenden.inf1i.homewizard.HelpConfig">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Before you begin, make sure you have a HomeWizard account"
+            android:id="@+id/textView10"
+            android:inputType="textMultiLine"
+            android:layout_below="@+id/textView11"
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="10dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="Configuration help"
+            android:id="@+id/textView11"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentStart="true"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Step 1"
+            android:id="@+id/textView12"
+            android:layout_marginTop="20dp"
+            android:layout_below="@+id/textView10"
+            android:layout_alignParentStart="true"
+            android:textStyle="bold"
+            android:textSize="15dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="This application combines MQTT with the HomeWizard. Please login with your HomeWizard account to establish a connection."
+            android:id="@+id/textView13"
+            android:layout_below="@+id/textView12"
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="5dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Step 2"
+            android:id="@+id/textView14"
+            android:layout_below="@+id/textView13"
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="20dp"
+            android:textSize="15dp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="You are required to set up a mosquitto broker server. This translates the MQTT and JSON. Use the attached Hydra script for this broker. When you did this, configure the HomeWizard++ application to use the brokers IP and port."
+            android:id="@+id/textView15"
+            android:layout_below="@+id/textView14"
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="5dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Step 3"
+            android:id="@+id/textView16"
+            android:layout_below="@+id/textView15"
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="20dp"
+            android:textSize="15dp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Decide if you want to use an admin-pin. This locks up your settings and device configuration with a pin code. Enable the admin-pin by clicking the switch button, decide the code you want to use, and click apply. Warning: write this code down. Once set, you will need the code to access the settings menu."
+            android:id="@+id/textView17"
+            android:layout_below="@+id/textView16"
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="5dp"
+            android:layout_alignParentEnd="true" />
+
+    </RelativeLayout>
+</ScrollView>

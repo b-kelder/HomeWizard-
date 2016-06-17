@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingBottom="@dimen/activity_vertical_margin"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingRight="@dimen/activity_horizontal_margin"
+            android:paddingTop="@dimen/activity_vertical_margin"
+            tools:context="idu.stenden.inf1i.homewizard.HelpDevices">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="Device adding/removing"
+            android:id="@+id/textView11"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentStart="true"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Add devices"
+            android:id="@+id/textView10"
+            android:inputType="textMultiLine"
+            android:layout_below="@+id/textView11"
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="10dp"
+            android:textSize="14dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Step 1"
+            android:id="@+id/textView12"
+            android:layout_marginTop="15dp"
+            android:layout_below="@+id/textView10"
+            android:layout_alignParentStart="true"
+            android:textStyle="bold"
+            android:textSize="15dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="To add a device, click the 'Edit devices' in the menu and click on the blue + button"
+            android:id="@+id/textView13"
+            android:layout_below="@+id/textView12"
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="5dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Step 2"
+            android:id="@+id/textView14"
+            android:layout_below="@+id/textView13"
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="20dp"
+            android:textSize="15dp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Click on the device you want to add and configure it with the device specific information (such as IP Address and port) "
+            android:id="@+id/textView15"
+            android:layout_below="@+id/textView14"
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="5dp" />
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="2dip"
+            android:background="#715F5F"
+            android:id="@+id/view"
+            android:layout_below="@+id/textView15"
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="15dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Remove devices"
+            android:id="@+id/textView16"
+            android:inputType="textMultiLine"
+            android:textSize="14dp"
+            android:layout_below="@+id/view"
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="10dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Step 1"
+            android:id="@+id/textView17"
+            android:layout_alignParentStart="true"
+            android:textStyle="bold"
+            android:textSize="15dp"
+            android:layout_below="@+id/textView16"
+            android:layout_alignParentLeft="true"
+            android:layout_marginTop="15dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="To remove a device, click the 'Edit devices' in the menu and click on the red bin icon"
+            android:id="@+id/textView18"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/textView17"
+            android:layout_alignParentLeft="true"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Step 2"
+            android:id="@+id/textView19"
+            android:textSize="15dp"
+            android:textStyle="bold"
+            android:layout_below="@+id/textView18"
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="20dp"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="A pop-up to confirm your action will show. Click on delete"
+            android:id="@+id/textView20"
+            android:layout_below="@+id/textView19"
+            android:layout_alignParentStart="true"/>
+    </RelativeLayout>
+</ScrollView>

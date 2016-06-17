@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="idu.stenden.inf1i.homewizard">
+          package="idu.stenden.inf1i.homewizard">
 
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
         android:allowBackup="true"
@@ -14,14 +14,16 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <service android:name="org.eclipse.paho.android.service.MqttService" />
+        <service android:name="org.eclipse.paho.android.service.MqttService"/>
+
         //The main activity
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"
-            android:windowSoftInputMode="adjustPan" />
+            android:windowSoftInputMode="adjustPan"/>
+
         //The settings activity
         <activity
             android:name=".Settings"
@@ -30,8 +32,9 @@
             android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="idu.stenden.inf1i.homewizard.MainActivity" />
+                android:value="idu.stenden.inf1i.homewizard.MainActivity"/>
         </activity>
+
         //The help page activity
         <activity
             android:name=".HelpPage"
@@ -40,8 +43,9 @@
             android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="idu.stenden.inf1i.homewizard.MainActivity" />
+                android:value="idu.stenden.inf1i.homewizard.MainActivity"/>
         </activity>
+
         //The devices manage activity
         <activity
             android:name=".Managelights"
@@ -51,8 +55,9 @@
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="idu.stenden.inf1i.homewizard.MainActivity" />
+                android:value="idu.stenden.inf1i.homewizard.MainActivity"/>
         </activity>
+
         //Add tab to choose what to add
         <activity
             android:name=".AddChoice"
@@ -61,8 +66,9 @@
             android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="idu.stenden.inf1i.homewizard.Managelights" />
+                android:value="idu.stenden.inf1i.homewizard.Managelights"/>
         </activity>
+
         //Add homewizz light/switch/dimmer
         <activity
             android:name=".AddHomewizardlight"
@@ -71,8 +77,9 @@
             android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="idu.stenden.inf1i.homewizard.AddChoice" />
+                android:value="idu.stenden.inf1i.homewizard.AddChoice"/>
         </activity>
+
         //Add custom MQTT device
         <activity
             android:name=".AddCustomMqtt"
@@ -81,8 +88,9 @@
             android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="idu.stenden.inf1i.homewizard.AddChoice" />
+                android:value="idu.stenden.inf1i.homewizard.AddChoice"/>
         </activity>
+
         //Add hue bridge
         <activity
             android:name=".AddHueBridge"
@@ -91,24 +99,57 @@
             android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="idu.stenden.inf1i.homewizard.AddChoice" />
+                android:value="idu.stenden.inf1i.homewizard.AddChoice"/>
         </activity>
+
         //First time setup
         <activity
             android:name=".FirstTimeTetup"
             android:screenOrientation="portrait">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.MAIN"/>
 
-                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+
         <activity
             android:name=".SetupStep2"
             android:screenOrientation="portrait"/>
+
         <activity
             android:name=".SetupStep3"
             android:screenOrientation="portrait"/>
+
+        <activity
+            android:name=".HelpConfig"
+            android:label="Config help"
+            android:parentActivityName=".HelpPage"
+            android:screenOrientation="portrait">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="idu.stenden.inf1i.homewizard.HelpPage"/>
+        </activity>
+
+        <activity
+            android:name=".HelpDevices"
+            android:label="Device help"
+            android:parentActivityName=".HelpPage"
+            android:screenOrientation="portrait">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="idu.stenden.inf1i.homewizard.HelpPage"/>
+        </activity>
+
+        <activity
+            android:name=".HelpReturn"
+            android:label="Value help"
+            android:parentActivityName=".HelpPage"
+            android:screenOrientation="portrait">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="idu.stenden.inf1i.homewizard.HelpPage"/>
+        </activity>
     </application>
 
 </manifest>
