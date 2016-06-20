@@ -30,7 +30,7 @@
             style="?android:attr/buttonStyleSmall"
             android:layout_width="wrap_content"
             android:layout_height="40dp"
-            android:text="Phillips Hue Bridge"
+            android:text="Philips Hue Bridge"
             android:id="@+id/huebtnlight"
             android:background="@color/design_textinput_error_color_light"
             android:textColor="@color/abc_primary_text_material_dark"
